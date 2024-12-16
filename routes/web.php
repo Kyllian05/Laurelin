@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\HomeController;
+use App\Http\Middleware\DynamicController;
 
-Route::get('/Home', [HomeController::class, "index"]);
+Route::get('/{any}', function () {
+    // Ce callback n'est jamais appelé directement grâce au middleware.
+})->middleware(DynamicController::class);
