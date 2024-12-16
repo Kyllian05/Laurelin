@@ -6,10 +6,10 @@ use Inertia\Inertia;
 
 class HomeController extends Controller
 {
-    public function index($params){
+    public function index(array $params){
         $urlData = null;
-        if(sizeof($params) > 1){
-            $urlData = $params[1];
+        if(sizeof($params) > 0){
+            $urlData = $params[0];
         }
         return Inertia::render("Home",[
             "test"=>"coucou2",

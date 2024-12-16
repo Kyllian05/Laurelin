@@ -17,10 +17,19 @@ class DynamicController
         $path = trim($request->path(), '/'); // Supprime les "/" en début et fin
 
         // Si le chemin est vide ("/"), utilise le contrôleur HomeController par défaut
-        
-        $controller = explode("/",$path)[0];
 
-        $method = "index";
+        $path = explode("/",$path);
+        
+        $controller = $path[0];
+        array_shift($path);//on enlève le nom du controller de $path
+
+        if(sizeof($path) > 0){//si une méthode a été fourni dans $path
+            $method = $path[0];
+            array_shift($path);//on enlève le nom de la méthode de $path
+        }else{
+            $method = "index";
+        }
+
         if ($controller === '') {
             $controllerClass = "App\\Http\\Controllers\\HomeController";
         } else {
@@ -30,7 +39,7 @@ class DynamicController
 
         // Vérifie si le contrôleur et la méthode existent
         if (class_exists($controllerClass) && method_exists($controllerClass, $method)) {
-            return app($controllerClass)->$method(explode("/",$path)); // Appelle dynamiquement la méthode
+            return app($controllerClass)->$method($path); // Appelle dynamiquement la méthode
         }
 
         // Si rien n'est trouvé, retourne une erreur 404
