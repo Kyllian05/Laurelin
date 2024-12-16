@@ -12,7 +12,7 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
 ## Installation
 
 1. Clonez ce dépôt
-2. `composer install`
+2. `composer install` si sa marche pas c thomas a omis de préciser qu'il faut certaines extensions aller voir chatgpt
 3. `cp .env.example .env`
 4. `php artisan key:generate`
 5. `php artisan migrate`
