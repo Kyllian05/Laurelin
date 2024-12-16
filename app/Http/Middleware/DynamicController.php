@@ -13,16 +13,24 @@ class DynamicController
      */
     public function handle(Request $request, Closure $next)
     {
-        // Récupérer le segment de l'URL (par exemple : "/home" → "home")
-        $path = $request->path(); // Récupère le chemin (sans domaine, ex: "home")
+        // Récupère le chemin de l'URL
+        $path = trim($request->path(), '/'); // Supprime les "/" en début et fin
 
-        // Construit le nom du contrôleur et de la méthode
-        $controllerClass = "App\\Http\\Controllers\\" . ucfirst($path) . "Controller";
-        $method = "index"; // Méthode par défaut
+        // Si le chemin est vide ("/"), utilise le contrôleur HomeController par défaut
+        
+        $controller = explode("/",$path)[0];
+
+        $method = "index";
+        if ($controller === '') {
+            $controllerClass = "App\\Http\\Controllers\\HomeController";
+        } else {
+            // Pour les autres chemins, génère dynamiquement le contrôleur et la méthode
+            $controllerClass = "App\\Http\\Controllers\\" . ucfirst($controller) . "Controller";
+        }
 
         // Vérifie si le contrôleur et la méthode existent
         if (class_exists($controllerClass) && method_exists($controllerClass, $method)) {
-            return app($controllerClass)->$method($request); // Appelle dynamiquement la méthode
+            return app($controllerClass)->$method(explode("/",$path)); // Appelle dynamiquement la méthode
         }
 
         // Si rien n'est trouvé, retourne une erreur 404
