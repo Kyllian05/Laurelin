@@ -16,8 +16,7 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
 3. `cp .env.example .env`
 4. `php artisan key:generate`
 5. `php artisan migrate`
-6. `npm install`
-7. `npm run dev`
+6. `npm install && npm run build`
 
 ## Lancement du serveur de développement
 
