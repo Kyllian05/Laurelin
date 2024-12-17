@@ -1,5 +1,11 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
+## Design
+
+Pour coder les pages, il faut suivre la maquette Figma :
+
+> **[Lien de la maquette Figma](https://www.figma.com/design/0pmIhHAnn79f8gmy7klqZI/Laurelin?node-id=1669-162202&t=ZaVNb88bFe8RkRFk-1)**
+
 ## Lancement du serveur de développement
 
 + Pour lancer le serveur de développement : `composer run dev`
@@ -17,11 +23,23 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
 ## Installation
 
 1. Clonez ce dépôt
-2. `composer install` (des dépendances peuvent être nécessaires)
-3. `cp .env.example .env`
-4. `php artisan key:generate`
-5. `php artisan migrate`
-6. `npm install && npm run build`
+
+2. Lancer Composer (des dépendances peuvent être nécessaires)
+```shell
+composer install
+```
+3. Copier le `.env`
+```shell
+cp .env.example .env
+```
+4. Générer la key
+```shell
+php artisan key:generate
+```
+5. Installer les lib JS
+```shell
+npm install && npm run build
+```
 
 ### Installation MariaDB
 
@@ -51,14 +69,14 @@ Se connecter à la DB :
 sudo mariadb
 ```
 
-Exécuter ces commandes :
+Dans la DB exécuter ces commandes :
 ```SQL
 GRANT ALL ON *.* TO 'testuser'@'localhost' IDENTIFIED BY 'pswd1234' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 CREATE DATABASE laravel;
 ```
 
-Recopier le .env :
+Dans le répertoire du projet recopier le `.env` :
 ```shell
 cp .env.example .env
 ```
@@ -73,3 +91,10 @@ php artisan migrate
 + Framework PHP : **[Laravel](https://laravel.com/)**
 + Framework JS : **[Vue.js](https://vuejs.org/)**
 + Intégration Laravel et Vue : **[Inertia](https://inertiajs.com/)**
+
+## Indications Laravel
+
+Pour recréer la base de données, il faut utiliser :  
+```shell
+php artisan migrate
+```
