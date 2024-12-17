@@ -63,6 +63,7 @@ defineProps({
         border-radius: 10px;
         height: 5vh;
         margin-top: 4vh;
+        cursor: pointer;
     }
     #fieldWrapper{
         display: flex;

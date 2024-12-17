@@ -60,8 +60,10 @@
     #formWrapper{
         width: 50%;
         margin-left: 50%;
-        margin-top: 50vh;
-        transform: translate(-50%,-50%);
+        margin-top: 10vh;
+        /*margin-top: 50vh;
+        transform: translate(-50%,-50%);*/
+        transform: translateX(-50%);
     }
     #logo{
         filter: brightness(0%) grayscale(100%);
@@ -111,6 +113,7 @@
         font-family: "Tenor Sans", serif;
         margin: 0px;
     }
+    
 </style>
 
 <style>
