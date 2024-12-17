@@ -30,6 +30,11 @@ Installer MariaDB :
 sudo apt install mariadb-server
 ```
 
+Installer le driver :
+```shell
+sudo apt install php-mysql
+```
+
 Lancer le service : 
 ```shell
 sudo systemctl start mariadb
