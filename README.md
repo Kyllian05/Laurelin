@@ -6,6 +6,10 @@ Pour coder les pages, il faut suivre la maquette Figma :
 
 > **[Lien de la maquette Figma](https://www.figma.com/design/0pmIhHAnn79f8gmy7klqZI/Laurelin?node-id=1669-162202&t=ZaVNb88bFe8RkRFk-1)**
 
+## Liste des tâches
+
+> **[LIEN TÂCHES](https://docs.google.com/spreadsheets/d/16ti6cSp-BDn7ogAQqSeYjhii9XrCj8X_qY5EILp6RfM/edit?usp=sharing)**
+
 ## Lancement du serveur de développement
 
 + Pour lancer le serveur de développement : `composer run dev`
@@ -96,5 +100,5 @@ php artisan migrate
 
 Pour recréer la base de données, il faut utiliser :  
 ```shell
-php artisan migrate
+php artisan migrate:fresh
 ```
