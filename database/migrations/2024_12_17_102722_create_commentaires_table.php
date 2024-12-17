@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Exécuter du SQL brut
         DB::statement("
-            CREATE TABLE categorie (
-                ID INT PRIMARY KEY AUTO_INCREMENT,
-                NOM VARCHAR(255)
+            CREATE TABLE Commentaire (
+                CONTENU VARCHAR(255) PRIMARY KEY,
+                ID_UTILISATEUR INT,
+                ID_PRODUIT INT
             )
         ");
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categorie');
+        Schema::dropIfExists('Commentaire');
     }
 };

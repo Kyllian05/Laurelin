@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Exécuter du SQL brut
         DB::statement("
-            CREATE TABLE categorie (
+            CREATE TABLE Utilisateur (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                NOM VARCHAR(255)
-            )
+                EMAIL VARCHAR(255),
+                PASSWORD VARCHAR(255),
+                PRENOM VARCHAR(255),
+                NOM VARCHAR(255),
+                TELEPHONE VARCHAR(255),
+                PRIVILEGE INT
+                )
         ");
     }
 
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categorie');
+        Schema::dropIfExists('Utilisateur');
     }
 };
