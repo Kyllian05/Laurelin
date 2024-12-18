@@ -10,13 +10,12 @@ class Exceptions extends Model
 
     static $messages = [
         512 => "Email invalide",
-        513 => "Exception non existantes",
         514 => "Email déja inscrit"
     ];
 
     static public function createError(int $code):CustomExceptions{
         if(!in_array($code,Exceptions::$codes)){
-            return createError(513);
+            throw new \Exception("Probleme lors de la création d'une exception");
         }
         $message = Exceptions::$messages[$code];
         return new CustomExceptions($message,$code);

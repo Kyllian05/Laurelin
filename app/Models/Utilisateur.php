@@ -21,6 +21,8 @@ class Utilisateur extends Model
         "PASSWORD",
         "PRENOM",
         "NOM",
+        "TOKEN",
+        "TOKENGEN",
     ];
 
     static function register(string $firstName, string $lastName, string $email, string $password){
@@ -28,7 +30,8 @@ class Utilisateur extends Model
             throw \App\Models\Exceptions::createError(512);
         }
         try{
-            Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>$password,"PRENOM"=>$firstName,"NOM"=>$lastName]);
+            $token = Utilisateur::generateToken();
+            Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>$password,"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
         }catch(\Exception $e){
             if($e->getCode() == 23000){
                 throw \App\Models\Exceptions::createError(514);
@@ -36,5 +39,29 @@ class Utilisateur extends Model
                 throw $e;
             }
         }
+    }
+
+    static function generateToken() : string{
+        $allToken = array();
+        Utilisateur::all()->each(function($utilisateur){
+            $allToken[] = $utilisateur["TOKEN"];
+        });
+        $currentToken = self::generateRandomString(32);
+        while(in_array($currentToken, $allToken)){
+            $currentToken = self::generateToken(20);
+        }
+        return $currentToken;
+    }
+
+    static protected function generateRandomString($length) : string {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
     }
 }
