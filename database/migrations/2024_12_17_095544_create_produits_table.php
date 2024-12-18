@@ -15,9 +15,9 @@ return new class extends Migration
             CREATE TABLE Produit (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
                 NOM VARCHAR(255) NOT NULL,
-                DESCRIPTION VARCHAR(255) NOT NULL,
+                DESCRIPTION TEXT NOT NULL,
                 PRIX FLOAT NOT NULL,
-                ANNEE_CREATION DATE,
+                ANNEE_CREATION INT,
                 ETAT VARCHAR(255),
                 STOCK INT,
                 ID_CATEGORIE INT,
