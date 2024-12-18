@@ -9,15 +9,9 @@ use Illuminate\Support\Facades\Mail;
 
 class HomeController extends Controller
 {
-    public function index(array $params){
-        $urlData = null;
-        if(sizeof($params) > 0){
-            $urlData = $params[0];
-        }
+    public function index(){
         return Inertia::render("Home",[
-            "test"=>"coucou2",
-            "urlData"=>$urlData,
-            "usersName" => Utilisateur::all(),
+            "test"=>"coucou2"
         ]);
     }
 

@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Middleware\DynamicController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 
-Route::get('/{any?}', function () {
-    // Ce callback est ignoré grâce au middleware.
-})->where('any', '.*')->middleware(DynamicController::class);
+Route::get("/",[HomeController::class,"index"]);
+
+Route::get("/auth/{method?}",[AuthController::class,"index"]);
+
+Route::post("/auth/{method}",[AuthController::class,"authentificate"]);
