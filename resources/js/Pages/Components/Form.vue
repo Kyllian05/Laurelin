@@ -2,7 +2,7 @@
     <div id="fieldWrapper">
         <div v-for="field in fields" class="fieldDiv">
         <p>{{ field.name }}</p>
-        <input :type="field.type ? field.type : 'text'">
+        <input :type="field.type ? field.type : 'text'" :id="'field_'+encodeURI(field.name)">
     </div>
     </div>
     <div id="checkBoxWrapper">
@@ -14,18 +14,37 @@
     <div id="linksWrapper">
         <a v-for="link in links" :href="link.link">{{ link.text }}</a>
     </div>
-    <button v-if="buttonText">{{ buttonText }}</button>
+    <button v-if="buttonText" @click="sendData()">{{ buttonText }}</button>
 </template>
 
 <script setup>
 import { defineProps } from 'vue';
 
-defineProps({
+let props = defineProps({
     "fields":Array[Object],
     "buttonText":String,
     "checkBoxs":Array,
-    "links":Array[Object]
+    "links":Array[Object],
+    "dest":String
 })
+
+function sendData(){
+    let body = {}
+
+    props.fields.forEach(field => {
+        body[field.name] = document.getElementById("field_"+encodeURI(field.name)).value
+    });
+
+    fetch(props.dest,{
+        method:"POST",
+        body: JSON.stringify(body),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        }
+    })
+}
+
 </script>
 
 <style scoped>
