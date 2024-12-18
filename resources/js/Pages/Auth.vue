@@ -16,8 +16,8 @@
                     <button :class="{autChoiceActive :  authMethod == 'login'}" @click="changeAuthMethod()">Connexion</button>
                     <button :class="{autChoiceActive :  authMethod == 'register'}" @click="changeAuthMethod()">Inscription</button>
                 </div>
-                <Form v-if="authMethod=='login'" :fields="[{'name':'Adresse e-mail'},{'name':'Mot de passe',type:'password'}]" button-text="Connexion" :check-boxs="['Se souvenir de moi']" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]"></Form>
-                <Form v-else :fields="[{'name':'First Name'},{'name':'Last Name'},{'name':'Adresse e-mail'},{'name':'Mot de passe','type':'password'}]" :check-boxs="['J\'ai lu et j\' accepte les termes et conditions']" button-text="S'inscrire"></Form>
+                <Form v-if="authMethod=='login'" :fields="[{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe',type:'password'}]" button-text="Connexion" :check-boxs="['Se souvenir de moi']" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]" dest="/auth/login"></Form>
+                <Form v-else :fields="[{'name':'First Name'},{'name':'Last Name'},{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe','type':'password'}]" :check-boxs="['J\'ai lu et j\' accepte les termes et conditions']" button-text="S'inscrire" dest="/auth/register"></Form>
             </div>
         </div>
     </div>
