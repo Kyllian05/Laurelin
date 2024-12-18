@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Utilisateur;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -13,7 +14,8 @@ class HomeController extends Controller
         }
         return Inertia::render("Home",[
             "test"=>"coucou2",
-            "urlData"=>$urlData
+            "urlData"=>$urlData,
+            "usersName" => Utilisateur::all(),
         ]);
     }
 }

@@ -4,6 +4,9 @@
     <button @click="compteur++">Incrémenter</button>
     <p v-if="urlData">Voici la valeur passé en url : {{ urlData }}</p>
     <p v-else>Vous n'avez pas passé de valeur dans l'url</p>
+    <pre>
+        {{usersName}}
+    </pre>
     <Footer></Footer>
 </template>
 
@@ -13,7 +16,8 @@ import Footer from "./Components/Footer.vue"
 
 defineProps({
     test : String,
-    urlData : String
+    urlData : String,
+    usersName: Array,
 })
 
 let compteur = ref(0)
