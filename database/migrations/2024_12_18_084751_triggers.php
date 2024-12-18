@@ -22,9 +22,9 @@ return new class extends Migration
         ");
 
         DB::statement("
-            Create TRIGGER IF NOT EXISTS annee_produit after insert on Produit FOR EACH ROW
+            Create TRIGGER annee_produit after insert on Produit FOR EACH ROW
             begin 
-                if 1965 < NEW.ANNEE_CREATION < 2025 then
+                if 1964 > NEW.ANNEE_CREATION or NEW.ANNEE_CREATION > 2025 then
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'le produit ne peut pas avoir été créer avant l_entreprise ou dans le futur';
                 END IF;
             END;

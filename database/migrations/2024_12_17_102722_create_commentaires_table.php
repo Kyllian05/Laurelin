@@ -13,7 +13,7 @@ return new class extends Migration
     {
         DB::statement("
             CREATE TABLE Commentaire (
-                CONTENU VARCHAR(255) PRIMARY KEY,
+                CONTENU VARCHAR(255),
                 ID_UTILISATEUR INT NOT NULL,
                 ID_PRODUIT INT NOT NULL
             )
