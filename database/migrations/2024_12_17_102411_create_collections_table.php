@@ -14,8 +14,8 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE Collection (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                NOM VARCHAR(255),
-                ANNEE DATE,
+                NOM VARCHAR(255) NOT NULL,
+                ANNEE DATE NOT NULL,
                 DESCRIPTION VARCHAR(255)
             )
         ");

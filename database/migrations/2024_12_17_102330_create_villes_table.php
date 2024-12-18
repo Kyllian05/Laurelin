@@ -13,7 +13,7 @@ return new class extends Migration
     {
         DB::statement("
             CREATE TABLE Ville (
-                NOM VARCHAR(255),
+                NOM VARCHAR(255) NOT NULL,
                 CODE_POSTAL INT PRIMARY KEY
             )
         ");

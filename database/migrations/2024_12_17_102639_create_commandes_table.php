@@ -14,10 +14,10 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE Commande (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                DATE DATE,
-                ETAT VARCHAR(255),
+                DATE DATE NOT NULL,
+                ETAT VARCHAR(255) NOT NULL,
                 MODE_LIVRAISON VARCHAR(255),
-                ID_UTILISATEUR INT,
+                ID_UTILISATEUR INT NOT NULL,
                 ID_ADRESSE INT
             )
         ");
