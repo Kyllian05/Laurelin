@@ -15,11 +15,13 @@ return new class extends Migration
             CREATE TABLE Utilisateur (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
                 EMAIL VARCHAR(255) NOT NULL UNIQUE,
-                PASSWORD VARCHAR(255) NOT NULL UNIQUE,
+                PASSWORD VARCHAR(255) NOT NULL,
                 PRENOM VARCHAR(255) NOT NULL,
                 NOM VARCHAR(255) NOT NULL,
-                TELEPHONE VARCHAR(255) NOT NULL,
-                PRIVILEGE INT NOT NULL
+                TELEPHONE VARCHAR(255) NOT NULL UNIQUE,
+                PRIVILEGE INT,
+                TOKEN VARCHAR(32) UNIQUE,
+                TOKENGEN DATETIME
                 )
         ");
     }

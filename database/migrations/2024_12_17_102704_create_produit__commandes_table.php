@@ -13,9 +13,9 @@ return new class extends Migration
     {
         DB::statement("
             CREATE TABLE Produit_Commande (
-                QUANTITE INT,
-                ID_PRODUIT INT,
-                ID_COMMANDE INT
+                QUANTITE INT NOT NULL,
+                ID_PRODUIT INT NOT NULL UNIQUE,
+                ID_COMMANDE INT NOT NULL UNIQUE
             )
         ");
     }

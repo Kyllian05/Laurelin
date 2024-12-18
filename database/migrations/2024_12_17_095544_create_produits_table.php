@@ -17,10 +17,10 @@ return new class extends Migration
                 NOM VARCHAR(255) NOT NULL,
                 DESCRIPTION TEXT NOT NULL,
                 PRIX FLOAT NOT NULL,
-                ANNEE_CREATION INT,
-                ETAT VARCHAR(255),
-                STOCK INT,
-                ID_CATEGORIE INT,
+                ANNEE_CREATION INT NOT NULL ,
+                ETAT VARCHAR(255) NOT NULL,
+                STOCK INT NOT NULL,
+                ID_CATEGORIE INT NOT NULL,
                 ID_COLLECTION INT
             )
         ");
