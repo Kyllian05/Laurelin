@@ -2,7 +2,7 @@
     <div id="fieldWrapper">
         <div v-for="field in fields" class="fieldDiv">
         <p>{{ field.name }}</p>
-        <input :type="field.type ? field.type : 'text'" :id="'field_'+encodeURI(field.name)">
+        <input :type="field.type ? field.type : 'text'" :id="'field_'+encodeURI(field.name)" required>
     </div>
     </div>
     <div id="checkBoxWrapper">
@@ -28,14 +28,18 @@ let props = defineProps({
     "dest":String
 })
 
-function sendData(){
+async function sendData(){
     let body = {}
 
-    props.fields.forEach(field => {
-        body[field.name] = document.getElementById("field_"+encodeURI(field.name)).value
-    });
+    for(let i = 0;i<props.fields.length;i++){
+        if(!document.getElementById("field_"+encodeURI(props.fields[i].name)).checkValidity()){
+            alert("Formulaire invalide")
+            return
+        }
+        body[props.fields[i].name] = document.getElementById("field_"+encodeURI(props.fields[i].name)).value
+    }
 
-    fetch(props.dest,{
+    const response = await fetch(props.dest,{
         method:"POST",
         body: JSON.stringify(body),
         headers: {
@@ -43,6 +47,11 @@ function sendData(){
             "Content-Type":"application/json"
         }
     })
+    if(response.status != 200){
+        const reader = response.body.getReader()
+        const text = new TextDecoder().decode((await reader.read()).value)
+        alert(text)
+    }
 }
 
 </script>

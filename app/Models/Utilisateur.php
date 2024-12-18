@@ -20,10 +20,21 @@ class Utilisateur extends Model
         "EMAIL",
         "PASSWORD",
         "PRENOM",
-        "NOM"
+        "NOM",
     ];
 
     static function register(string $firstName, string $lastName, string $email, string $password){
-        Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>$password,"PRENOM"=>$firstName,"NOM"=>$lastName]);
+        if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
+            throw \App\Models\Exceptions::createError(512);
+        }
+        try{
+            Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>$password,"PRENOM"=>$firstName,"NOM"=>$lastName]);
+        }catch(\Exception $e){
+            if($e->getCode() == 23000){
+                throw \App\Models\Exceptions::createError(514);
+            }else{
+                throw $e;
+            }
+        }
     }
 }

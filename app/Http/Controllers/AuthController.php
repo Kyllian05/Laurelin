@@ -22,7 +22,18 @@ class AuthController extends Controller
         $data = $request->post();
 
         if($method == "register"){
-            \App\Models\Utilisateur::register($data["First Name"],$data["Last Name"],$data["Adresse e-mail"],$data["Mot de passe"]);
+            try{
+                \App\Models\Utilisateur::register($data["First Name"],$data["Last Name"],$data["Adresse e-mail"],$data["Mot de passe"]);
+            }catch (\Exception $e){
+                $class = explode("\\",get_class($e));
+                $class = $class[sizeof($class)-1];
+                if($class == "CustomExceptions"){
+                    return response($e->getMessage(),$e->getCode());
+                }else{
+                    \Log::info($e);
+                    return response("Erreur inconnu",500);
+                }
+            }
         }
     }
 }
