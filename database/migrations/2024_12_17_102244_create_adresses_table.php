@@ -14,8 +14,8 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE Adresse (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                NUM_RUE INT,
-                NOM_RUE VARCHAR(255),
+                NUM_RUE INT NOT NULL,
+                NOM_RUE VARCHAR(255)NOT NULL,
                 ID_UTILISATEUR INT,
                 CODE_POSTAL INT
             )

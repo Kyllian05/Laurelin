@@ -14,11 +14,12 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE Collection (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                NOM VARCHAR(255),
-                ANNEE DATE,
+                NOM VARCHAR(255) NOT NULL,
+                ANNEE INT, 
                 DESCRIPTION VARCHAR(255)
             )
         ");
+        // Annee modifié en int pour facilité les checks
     }
 
     /**

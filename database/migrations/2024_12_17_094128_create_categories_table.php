@@ -15,7 +15,7 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE categorie (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                NOM VARCHAR(255)
+                NOM VARCHAR(255) NOT NULL UNIQUE
             )
         ");
     }

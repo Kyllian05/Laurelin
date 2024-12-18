@@ -14,12 +14,12 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE Utilisateur (
                 ID INT PRIMARY KEY AUTO_INCREMENT,
-                EMAIL VARCHAR(255),
-                PASSWORD VARCHAR(255),
-                PRENOM VARCHAR(255),
-                NOM VARCHAR(255),
-                TELEPHONE VARCHAR(255),
-                PRIVILEGE INT
+                EMAIL VARCHAR(255) NOT NULL UNIQUE,
+                PASSWORD VARCHAR(255) NOT NULL UNIQUE,
+                PRENOM VARCHAR(255) NOT NULL,
+                NOM VARCHAR(255) NOT NULL,
+                TELEPHONE VARCHAR(255) NOT NULL,
+                PRIVILEGE INT NOT NULL
                 )
         ");
     }
