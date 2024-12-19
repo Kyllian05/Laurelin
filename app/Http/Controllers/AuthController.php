@@ -23,7 +23,10 @@ class AuthController extends Controller
         try{
             if($method == "register"){
 
-                \App\Models\Utilisateur::register($data["Prénom"],$data["Nom"],$data["Adresse e-mail"],$data["Mot de passe"]);
+                $current = \App\Models\Utilisateur::register($data["Prénom"],$data["Nom"],$data["Adresse e-mail"],$data["Mot de passe"]);
+
+                session(["EMAIL"=>$current["EMAIL"],"PASSWORD"=>$current["PASSWORD"]]);
+                return response("registered successfuly");
 
             }else if($method == "login"){
 

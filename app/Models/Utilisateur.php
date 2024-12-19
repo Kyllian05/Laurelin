@@ -35,15 +35,14 @@ class Utilisateur extends Model
         $this->prenom = $result->PRENOM;
     }*/
 
-    static function register(string $firstName, string $lastName, string $email, string $password){
+    static function register(string $firstName, string $lastName, string $email, string $password) : Utilisateur{
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
             throw \App\Models\Exceptions::createError(512);
         }
         try{
             $token = Utilisateur::generateToken();
-            Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>hash("sha256",$password),"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
+            return Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>hash("sha256",$password),"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
 
-            return new Utilisateur($email,hash("sha256",$password));
         }catch(\Exception $e){
             if($e->getCode() == 23000){
                 throw \App\Models\Exceptions::createError(514);
