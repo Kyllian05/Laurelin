@@ -21,7 +21,10 @@ return new class extends Migration
                 ETAT VARCHAR(255) NOT NULL,
                 STOCK INT NOT NULL,
                 ID_CATEGORIE INT NOT NULL,
-                ID_COLLECTION INT
+                ID_COLLECTION INT,
+                CHECK (STOCK >= 0),
+                CHECK (PRIX > 0),
+                CHECK ( 1964 < ANNEE_CREATION < 2025 )
             )
         ");
     }

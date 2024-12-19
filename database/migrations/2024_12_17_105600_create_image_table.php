@@ -12,16 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement("
-            CREATE TABLE image (
+            CREATE TABLE Image (
                 URL VARCHAR(255) PRIMARY KEY,
                 ID_PRODUIT INT
             )
-        ");
-
-        DB::statement("
-            ALTER TABLE image
-                ADD CONSTRAINT fk_produit
-                    FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
         ");
     }
 
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('image');
+        Schema::dropIfExists('Image');
     }
 };
