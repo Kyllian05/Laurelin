@@ -98,6 +98,11 @@ php artisan migrate
 
 ## Indications Laravel
 
+Important pour la lecture du CSV :
+```shell
+composer require league/csv
+```
+
 Pour recréer la base de données, il faut utiliser :  
 ```shell
 php artisan migrate:fresh
