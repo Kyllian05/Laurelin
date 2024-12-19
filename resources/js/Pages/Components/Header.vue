@@ -68,7 +68,7 @@
         flex-direction: row;
         gap: 2vw;
         align-items: center;
-        position: absolute;
+        position: relative;
         top: 2.5vh;
     }
     img{
@@ -76,7 +76,7 @@
         height: 5vw;
     }
     #centerWrapper{
-        gap: 2.5vw;   
+        gap: 2.5vw;
         background-color: white;
         padding: .5vw;
         border-radius: 50px;

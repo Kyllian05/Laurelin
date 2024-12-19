@@ -11,7 +11,8 @@ class HomeController extends Controller
 {
     public function index(){
         return Inertia::render("Home",[
-            "test"=>"coucou2"
+            "test"=>"coucou2",
+            "prenom"=>session("prenom","alo")
         ]);
     }
 
@@ -20,7 +21,7 @@ class HomeController extends Controller
             'title' => 'Titre de l’e-mail',
             'body' => 'Contenu de l’e-mail.'
         ];
-    
+
         Mail::to('MAILTEST')->send(new Laurelin($details));
         return Inertia::render("Home",[
             "test"=>"coucou2"

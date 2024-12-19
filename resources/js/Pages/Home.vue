@@ -1,5 +1,6 @@
 <template>
     <Header currentPage="Accueil"></Header>
+    <p v-if="prenom">Bienvenue {{ prenom }}</p>
     <p>Voici le props passé : {{ test }}</p>
     <p>{{ compteur }}</p>
     <button @click="compteur++">Incrémenter</button>
@@ -16,7 +17,7 @@ import Header from "./Components/Header.vue";
 defineProps({
     test : String,
     urlData : String,
-    usersName: Array,
+    prenom: String,
 })
 
 let compteur = ref(0)

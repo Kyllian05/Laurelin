@@ -7,7 +7,7 @@
     </div>
     <div id="checkBoxWrapper">
         <div v-for="checkbox in checkBoxs" class="checkBoxDiv">
-            <input type="checkbox">
+            <input type="checkbox" :id="'check_'+encodeURI(checkbox)">
             <p>{{checkbox}}</p>
         </div>
     </div>
@@ -39,6 +39,10 @@ async function sendData(){
         body[props.fields[i].name] = document.getElementById("field_"+encodeURI(props.fields[i].name)).value
     }
 
+    for(let i = 0;i<props.checkBoxs.length;i++){
+        body[props.checkBoxs[i]] = document.getElementById("check_"+encodeURI(props.checkBoxs[i])).checked
+    }
+
     const response = await fetch(props.dest,{
         method:"POST",
         body: JSON.stringify(body),
@@ -53,7 +57,6 @@ async function sendData(){
         alert(text)
     }
 }
-
 </script>
 
 <style scoped>

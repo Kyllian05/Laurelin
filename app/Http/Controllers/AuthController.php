@@ -21,18 +21,34 @@ class AuthController extends Controller
     public function authentificate(string $method,Request $request){
         $data = $request->post();
 
-        if($method == "register"){
-            try{
+        try{
+            if($method == "register"){
+
                 \App\Models\Utilisateur::register($data["First Name"],$data["Last Name"],$data["Adresse e-mail"],$data["Mot de passe"]);
-            }catch (\Exception $e){
-                $class = explode("\\",get_class($e));
-                $class = $class[sizeof($class)-1];
-                if($class == "CustomExceptions"){
-                    return response($e->getMessage(),$e->getCode());
+
+            }else if($method == "login"){
+
+                $current = \App\Models\Utilisateur::login($data["Adresse e-mail"],$data["Mot de passe"]);
+
+                if($data["Se souvenir de moi"]){
+
                 }else{
-                    \Log::info($e);
-                    return response("Erreur inconnu",500);
+                    session(["prenom"=>$current->prenom]);
                 }
+
+            }else{
+
+                throw \App\Models\Exceptions::createError(513);
+
+            }
+        }catch (\Exception $e){
+            $class = explode("\\",get_class($e));
+            $class = $class[sizeof($class)-1];
+            if($class == "CustomExceptions"){
+                return response($e->getMessage(),$e->getCode());
+            }else{
+                \Log::info($e);
+                return response("Erreur inconnu",500);
             }
         }
     }
