@@ -50,12 +50,6 @@ return new class extends Migration
 
         DB::statement("
             ALTER TABLE Produit_Commande
-                ADD CONSTRAINT pk_produit_commande_produit
-                    PRIMARY KEY (ID_PRODUIT, ID_COMMANDE)
-        ");
-
-        DB::statement("
-            ALTER TABLE Produit_Commande
                 ADD CONSTRAINT fk_produit_commande_produit
                     FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
         ");
@@ -78,8 +72,8 @@ return new class extends Migration
             ALTER TABLE Commentaire
                 ADD CONSTRAINT fk_commentaire_produit
                     FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
+            ON DELETE CASCADE
         ");
-
 
         DB::statement("
             ALTER TABLE Commentaire
@@ -88,9 +82,10 @@ return new class extends Migration
         ");
 
         DB::statement("
-            ALTER TABLE Collection
-                ADD CONSTRAINT Annee_correct
-                    CHECK (1965 < Annee < 2025)
+            ALTER TABLE Image
+                ADD CONSTRAINT fk_produit
+                    FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
+            ON DELETE CASCADE
         ");
     }
 

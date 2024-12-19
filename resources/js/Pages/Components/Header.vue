@@ -68,7 +68,7 @@
         flex-direction: row;
         gap: 2vw;
         align-items: center;
-        position: absolute;
+        position: relative;
         top: 2.5vh;
     }
     img{

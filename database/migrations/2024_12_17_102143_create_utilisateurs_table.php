@@ -18,8 +18,8 @@ return new class extends Migration
                 PASSWORD VARCHAR(255) NOT NULL,
                 PRENOM VARCHAR(255) NOT NULL,
                 NOM VARCHAR(255) NOT NULL,
-                TELEPHONE VARCHAR(255) NOT NULL UNIQUE,
-                PRIVILEGE INT,
+                TELEPHONE VARCHAR(255) UNIQUE,
+                PRIVILEGE INT DEFAULT 0,
                 TOKEN VARCHAR(32) UNIQUE,
                 TOKENGEN DATETIME
                 )
