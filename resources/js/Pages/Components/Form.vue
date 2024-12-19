@@ -1,24 +1,23 @@
 <template>
     <div id="fieldWrapper">
         <div v-for="field in fields" class="fieldDiv">
-        <p>{{ field.name }}</p>
+        <p class="font-body-s">{{ field.name }}</p>
         <input :type="field.type ? field.type : 'text'" :id="'field_'+encodeURI(field.name)">
     </div>
     </div>
-    <div id="checkBoxWrapper">
+    <div id="bottomFormWrapper">
         <div v-for="checkbox in checkBoxs" class="checkBoxDiv">
             <input type="checkbox">
-            <p>{{checkbox}}</p>
+            <p class="font-normal-12">{{checkbox}}</p>
         </div>
+        <a v-for="link in links" :href="link.link" class="font-normal-12" id="linksWrapper">{{ link.text }}</a>
     </div>
-    <div id="linksWrapper">
-        <a v-for="link in links" :href="link.link">{{ link.text }}</a>
-    </div>
-    <button v-if="buttonText" @click="sendData()">{{ buttonText }}</button>
+    <ButtonSubmit :button-text="buttonText" @submit-clicked="sendData"></ButtonSubmit>
 </template>
 
 <script setup>
 import { defineProps } from 'vue';
+import ButtonSubmit from "./ButtonSubmit.vue";
 
 let props = defineProps({
     "fields":Array[Object],
@@ -48,41 +47,29 @@ function sendData(){
 </script>
 
 <style scoped>
-    #linksWrapper a:hover{
+    #bottomFormWrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+    }
+    #linksWrapper:hover {
         text-decoration: underline;
     }
-    #linksWrapper a{
+    #linksWrapper {
         cursor: pointer;
         text-decoration: none;
         color: black;
-    }
-    #linksWrapper{
-        margin-top: 2vh;
-        float: right;
     }
     input[type="checkbox"]{
         accent-color: #000000;
         cursor: pointer;
     }
-    #checkBoxWrapper{
-        margin-top: 2vh;
-        float: left;
-    }
     .checkBoxDiv{
         display: flex;
         flex-direction: row;
-        gap: 0.25vw;
+        gap: 8px;
         align-items: center;
-    }
-    button{
-        background-color: black;
-        width: 100%;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        height: 5vh;
-        margin-top: 4vh;
-        cursor: pointer;
     }
     #fieldWrapper{
         display: flex;
@@ -92,7 +79,7 @@ function sendData(){
     .fieldDiv{
         display: flex;
         flex-direction: column;
-        gap: 1vh;
+        gap: 4px;
     }
     .fieldDiv input{
         border-radius: 10px;
@@ -100,10 +87,5 @@ function sendData(){
         height: 5vh;
         width: 98%;
         padding-left: 2%;
-    }
-    p, a{
-        font-family: "Tenor Sans", serif;
-        margin: 0px;
-        font-size: 12px;;
     }
 </style>

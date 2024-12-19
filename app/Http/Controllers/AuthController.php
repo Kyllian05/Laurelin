@@ -22,7 +22,7 @@ class AuthController extends Controller
         $data = $request->post();
 
         if($method == "register"){
-            \App\Models\Utilisateur::register($data["First Name"],$data["Last Name"],$data["Adresse e-mail"],$data["Mot de passe"]);
+            \App\Models\Utilisateur::register($data["Prénom"],$data["Nom"],$data["Adresse e-mail"],$data["Mot de passe"]);
         }
     }
 }

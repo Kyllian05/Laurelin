@@ -1,23 +1,23 @@
 <template>
-    <div id="globalWrapper">    
+    <div id="globalWrapper">
         <div id="leftWrapper">
-            <img src="/public/images/joliBijoux.png">
+            <img src="/public/images/login-bijoux.avif">
         </div>
         <div id="rightWrapper">
             <div id="backWrapper" onclick="window.location = '/'">
-                <span class="material-symbols-outlined">
-                    keyboard_backspace
+                <span class="material-symbols-rounded">
+                    arrow_back
                 </span>
-                <p>Retour</p>
+                <p class="font-body-m">Retour</p>
             </div>
             <div id="formWrapper">
                 <img src="/public/images/logo.png" id="logo">
                 <div id="authChoiceWrapper">
-                    <button :class="{autChoiceActive :  authMethod == 'login'}" @click="changeAuthMethod()">Connexion</button>
-                    <button :class="{autChoiceActive :  authMethod == 'register'}" @click="changeAuthMethod()">Inscription</button>
+                    <button :class="{autChoiceActive :  authMethod === 'login'}" @click="changeAuthMethod()" class="font-subtitle-16">Connexion</button>
+                    <button :class="{autChoiceActive :  authMethod === 'register'}" @click="changeAuthMethod()" class="font-subtitle-16">Inscription</button>
                 </div>
-                <Form v-if="authMethod=='login'" :fields="[{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe',type:'password'}]" button-text="Connexion" :check-boxs="['Se souvenir de moi']" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]" dest="/auth/login"></Form>
-                <Form v-else :fields="[{'name':'First Name'},{'name':'Last Name'},{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe','type':'password'}]" :check-boxs="['J\'ai lu et j\' accepte les termes et conditions']" button-text="S'inscrire" dest="/auth/register"></Form>
+                <Form v-if="authMethod === 'login'" :fields="[{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe',type:'password'}]" button-text="Connexion" :check-boxs="['Se souvenir de moi']" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]" dest="/auth/login"></Form>
+                <Form v-else :fields="[{'name':'Prénom'},{'name':'Nom'},{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe','type':'password'}]" :check-boxs="['J\'ai lu et j\' accepte les condition d\'utilisation']" button-text="S'inscrire" dest="/auth/register"></Form>
             </div>
         </div>
     </div>
@@ -30,9 +30,9 @@
     let props = defineProps(["authMethod"])
 
     let authMethod = ref(props.authMethod)
-    
+
     function changeAuthMethod(){
-        if(authMethod.value == "login")authMethod.value = "register"
+        if(authMethod.value === "login")authMethod.value = "register"
         else authMethod.value = "login"
     }
 </script>
@@ -44,25 +44,23 @@
     #authChoiceWrapper button{
         background: none;
         border: none;
-        font-family: "Tenor Sans", sans-serif;
+        padding-bottom: 8px;
         cursor: pointer;
     }
     #authChoiceWrapper{
         display: flex;
         flex-direction: row;
-        width: 80%;
+        width: 100%;
         margin-left: 50%;
         transform: translateX(-50%);
-        border-bottom: solid 1px gray;
+        border-bottom: solid 1px #E9E9E9;
         justify-content: space-around;
-        margin-bottom: 3vh;
+        margin-bottom: 32px;
     }
     #formWrapper{
         width: 50%;
         margin-left: 50%;
         margin-top: 10vh;
-        /*margin-top: 50vh;
-        transform: translate(-50%,-50%);*/
         transform: translateX(-50%);
     }
     #logo{
@@ -75,11 +73,14 @@
         position: absolute;
         display: flex;
         flex-direction: row;
-        gap: 1vw;
+        gap: 8px;
         align-items: center;
-        margin-left: 2vw;
-        margin-top: 1vw;
+        margin-left: 32px;
+        margin-top: 32px;
         cursor: pointer;
+    }
+    #backWrapper:hover p{
+        text-decoration: underline;
     }
     #leftWrapper img{
         position: absolute;
@@ -89,13 +90,13 @@
         transform: translate(-50%,-50%);
         aspect-ratio: 1/1;
         object-fit: cover;
-        box-shadow: 4px 4px 16px rgba(0,0,0,15);
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.40);
     }
     #leftWrapper{
         width: 50vw;
         float: left;
         align-items: center;
-        background-color: #EEEEEE;
+        background-color: #F0F0F0;
         height: 100vh;
         justify-content: center;
         position: relative;
@@ -109,20 +110,20 @@
         overflow-y: hidden;
         max-height: 100vh;
     }
-    p{
-        font-family: "Tenor Sans", serif;
-        margin: 0px;
-    }
-    
-</style>
 
-<style>
-.material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 100,
-    'GRAD' 0,
-    'opsz' 24;
-    transform: scale(1.5);
-}
+    @media screen and (max-width: 1100px) {
+        #leftWrapper {
+            display: none;
+        }
+        #rightWrapper {
+            width: 80%;
+            float: none;
+            height: 100%;
+        }
+        #globalWrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
 </style>

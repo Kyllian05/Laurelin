@@ -1,3 +1,63 @@
-body{
-    margin: 0px;
+/*
+Reset
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*
+Font styles
+ */
+
+.font-title {
+    font-family: "Tenor Sans", serif;
+    font-size: 18px;
+    line-height: 40px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.font-body-m {
+    font-family: "Tenor Sans", serif;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+
+.font-body-s {
+    font-family: "Tenor Sans", serif;
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 0;
+}
+
+.font-body-l {
+    font-family: "Tenor Sans", serif;
+    font-size: 16px;
+    line-height: 18px;
+    letter-spacing: 0;
+}
+
+.font-subtitle-14 {
+    font-family: "Tenor Sans", serif;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.font-subtitle-16 {
+    font-family: "Tenor Sans", serif;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.font-normal-12 {
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
 }

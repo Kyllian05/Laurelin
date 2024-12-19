@@ -5,7 +5,7 @@
         <p>Laurelin</p>
     </div>
     <div id="centerWrapper">
-        <div v-for="page in Object.keys(allPages)" :class="{selected : currentPage == page}" @click="redirect(page)">
+        <div v-for="page in Object.keys(allPages)" :class="{selected : currentPage === page}" @click="redirect(page)">
         {{ page }}
         </div>
     </div>
@@ -13,7 +13,7 @@
         <span class="material-symbols-outlined">
             shopping_bag
         </span>
-        <p>Panier</p>
+        Pannier
     </button>
 </template>
 
@@ -76,7 +76,7 @@
         height: 5vw;
     }
     #centerWrapper{
-        gap: 2.5vw;   
+        gap: 2.5vw;
         background-color: white;
         padding: .5vw;
         border-radius: 50px;
