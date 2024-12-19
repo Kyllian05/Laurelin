@@ -16,8 +16,9 @@
                     <button :class="{autChoiceActive :  authMethod === 'login'}" @click="changeAuthMethod()" class="font-subtitle-16">Connexion</button>
                     <button :class="{autChoiceActive :  authMethod === 'register'}" @click="changeAuthMethod()" class="font-subtitle-16">Inscription</button>
                 </div>
-                <Form v-if="authMethod === 'login'" :fields="[{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe',type:'password'}]" button-text="Connexion" :check-boxs="['Se souvenir de moi']" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]" dest="/auth/login"></Form>
-                <Form v-else :fields="[{'name':'Prénom'},{'name':'Nom'},{'name':'Adresse e-mail',type:'email'},{'name':'Mot de passe','type':'password'}]" :check-boxs="['J\'ai lu et j\' accepte les condition d\'utilisation']" button-text="S'inscrire" dest="/auth/register"></Form>
+                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]" dest="/auth/login"></Form>
+
+                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register"></Form>
             </div>
         </div>
     </div>
@@ -27,7 +28,9 @@
     import Form from "./Components/Form.vue"
     import { defineProps,ref } from "vue";
 
-    let props = defineProps(["authMethod"])
+    let props = defineProps(["authMethod","inputs"])
+
+    console.log(props.inputs)
 
     let authMethod = ref(props.authMethod)
 

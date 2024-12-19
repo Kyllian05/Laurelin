@@ -9,12 +9,24 @@ use \App\Models;
 
 class AuthController extends Controller
 {
+    static $fiels = [
+        "login"=>[
+            "fields"=>["Adresse e-mail","Mot de passe"],
+            "checkBoxs" => ["Se souvenir de moi"]
+        ],
+        "register"=>[
+            "fields"=>["Prénom","Nom","Adresse e-mail","Mot de passe"],
+            "checkBoxs" => ["J'ai lu et j' accepte les condition d'utilisation"]
+        ]
+    ];
+
     public function index(string $method = ""){
         if($method == ""){
             $method = "login";
         }
         return Inertia::render("Auth",[
-            "authMethod"=>$method
+            "authMethod"=>$method,
+            "inputs"=>self::$fiels
         ]);
     }
 
