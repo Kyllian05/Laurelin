@@ -13,15 +13,15 @@ class HomeController extends Controller
     public function index(Request $request){
 
         $current = null;
-        if(session()->has('email') && session()->has('password')){
-            $current = Utilisateur::login(session('email'),session('password'));
-        }else if($request->hasCookie("token")){
-            $current = Utilisateur::loginWithToken($request->cookie("token"));
+        if(session()->has('EMAIL') && session()->has('PASSWORD')){
+            $current = Utilisateur::login(session('EMAIL'),session('PASSWORD'));
+        }else if($request->hasCookie("TOKEN")){
+            $current = Utilisateur::loginWithToken($request->cookie("TOKEN"));
         }
 
         return Inertia::render("Home",[
             "test"=>"coucou2",
-            "prenom"=>$current->prenom ?? "",
+            "prenom"=>$current["PRENOM"] ?? "",
         ]);
     }
 

@@ -27,15 +27,15 @@ class AuthController extends Controller
 
             }else if($method == "login"){
 
-                $current = \App\Models\Utilisateur::login($data["Adresse e-mail"],$data["Mot de passe"]);
+                $current = \App\Models\Utilisateur::login($data["Adresse e-mail"],hash("sha256",$data["Mot de passe"]));
 
                 if($data["Se souvenir de moi"]){
                     return response("login successfuly")->cookie(
-                        "token",
-                        $current->token
+                        "TOKEN",
+                        $current["TOKEN"]
                     );
                 }else{
-                    session(["email"=>$current->email,"password"=>$current->password]);
+                    session(["EMAIL"=>$current["EMAIL"],"PASSWORD"=>$current["PASSWORD"]]);
                     return response("login successfuly");
                 }
 
