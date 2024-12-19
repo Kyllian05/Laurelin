@@ -31,9 +31,13 @@ class AuthController extends Controller
                 $current = \App\Models\Utilisateur::login($data["Adresse e-mail"],$data["Mot de passe"]);
 
                 if($data["Se souvenir de moi"]){
-
+                    return response("login successfuly")->cookie(
+                        "token",
+                        $current->token
+                    );
                 }else{
-                    session(["prenom"=>$current->prenom]);
+                    session(["email"=>$current->email,"password"=>$current->password]);
+                    return response("login successfuly");
                 }
 
             }else{

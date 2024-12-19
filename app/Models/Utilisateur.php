@@ -97,4 +97,19 @@ class Utilisateur extends Model
         }
         return new Utilisateur($email, $password);
     }
+
+    static function loginWithToken(string $token) : Utilisateur{
+        try{
+            $result = DB::table("Utilisateur")->where("TOKEN",$token)->firstOrFail();
+        }catch(\Exception $e){
+            $class = explode("\\",get_class($e));
+            $class = $class[sizeof($class)-1];
+            if($class == "RecordNotFoundException"){
+                throw \App\Models\Exceptions::createError(515);
+            }else{
+                throw $e;
+            }
+        }
+        return new Utilisateur($result->EMAIL, $result->PASSWORD);
+    }
 }
