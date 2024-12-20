@@ -1,19 +1,56 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><img src="./public/images/logo.png" width="300" alt="Laravel Logo"></a></p>
 
-## Design
+# Sommaire
 
-Pour coder les pages, il faut suivre la maquette Figma :
++ [Indication pour dévelloper](#indication-pour-dévelloper)
++ [Procédure d'installation du projet](#procédure-dinstallation-du-projet)
 
-> **[Lien de la maquette Figma](https://www.figma.com/design/0pmIhHAnn79f8gmy7klqZI/Laurelin?node-id=1669-162202&t=ZaVNb88bFe8RkRFk-1)**
+# Indication pour dévelloper
 
-## Liste des tâches
-
-> **[LIEN TÂCHES](https://docs.google.com/spreadsheets/d/16ti6cSp-BDn7ogAQqSeYjhii9XrCj8X_qY5EILp6RfM/edit?usp=sharing)**
-
-## Lancement du serveur de développement
+### Lancement du serveur de développement
 
 + Pour lancer le serveur de développement : `composer run dev`
 + Le serveur se lance à l'adresse : [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
++ (Sur la VM c'est différent)
++ S'il manque des dépendances lancer `composer install` et `npm install`
+
+### Les pages
+
++ Les fichiers des pages sont dans `ressources/js/Pages`
++ Il faut utliser les composants Vue créés qui sont dans `ressources/js/Pages/Components`
+
+### Indications Laravel
+
+Pour recréer la base de données et la remplir, il faut utiliser :
+```shell
+php artisan migrate:fresh --seed
+```
+
+Pour créer un model, une migration, etc.
+```shell
+php aritsan make:[model, migration, ...] [nom fichier]
+```
+
+### Design
+
++ Pour coder les pages, il faut suivre la maquette Figma :
+
+> **[Lien de la maquette Figma](https://www.figma.com/design/0pmIhHAnn79f8gmy7klqZI/Laurelin?node-id=1669-162202&t=ZaVNb88bFe8RkRFk-1)**
+
++ Il y a des classes CSS globales qui sont définies dans `ressources/css/app.css`
++ Pour les icônes, on utilise [Google icons](https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded) (déjà importé), vous avez juste à ajouter l'élément `<span>`  
++ Les polices aussi sont déjà ajoutées : `Tenor Sans`, `Parisienne`, `Poppins`
+
+### Tutoriels
+
++ [Tutoriel Vue.js](https://grafikart.fr/formations/vuejs)
++ [Tutoriel Laravel](https://grafikart.fr/formations/laravel)
+
+### Liste des tâches
+
+> **[Lien des tâches](https://docs.google.com/spreadsheets/d/16ti6cSp-BDn7ogAQqSeYjhii9XrCj8X_qY5EILp6RfM/edit?usp=sharing)**
+
+# Procédure d'installation du projet
 
 ## Prérequis
 
@@ -95,15 +132,3 @@ php artisan migrate
 + Framework PHP : **[Laravel](https://laravel.com/)**
 + Framework JS : **[Vue.js](https://vuejs.org/)**
 + Intégration Laravel et Vue : **[Inertia](https://inertiajs.com/)**
-
-## Indications Laravel
-
-Important pour la lecture du CSV :
-```shell
-composer require league/csv
-```
-
-Pour recréer la base de données, il faut utiliser :  
-```shell
-php artisan migrate:fresh
-```
