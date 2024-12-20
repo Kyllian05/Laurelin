@@ -42,6 +42,26 @@ class Code extends Model
     }
 
     static function verifyCode(int $userId, int $code){
-        Code::where("UTILISATEUR", $userId)->where(["CODE"=>$code])->delete();
+        $code = Code::where("UTILISATEUR", $userId)->where(["CODE"=>$code])->first();
+        $genDate = ($code["CODEGEN"]);
+        $currentDate = date ('Y-m-d H:i:s', time());
+
+        $genTimestamp = strtotime($genDate);
+        $currentTimestamp = strtotime($currentDate);
+
+        if($currentTimestamp - $genTimestamp > 10*60){
+            \Log::info("le code a expiré");
+            $newcode = random_int(100000,999999);
+            Code::where(["UTILISATEUR"=>$userId])->update(["CODEGEN"=>date ('Y-m-d H:i:s', time()),"CODE"=>$newcode]);
+
+            if(Code::where(["UTILISATEUR"=>$userId,"CODE"=>$newcode])->first()){
+                $user = \App\Models\Utilisateur::where("ID", $userId)->first();
+                Mail::to($user["EMAIL"])->send(new \App\Mail\EmailVerification($user["ID"],$newcode));
+            }else{
+                \Log::info("erreur lors de la regénération du code");
+            }
+        }else{
+            Code::where(["UTILISATEUR" => $userId,"CODE"=>$code["CODE"]])->delete();
+        }
     }
 }
