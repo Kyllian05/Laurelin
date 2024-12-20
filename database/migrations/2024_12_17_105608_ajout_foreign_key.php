@@ -87,6 +87,13 @@ return new class extends Migration
                     FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
             ON DELETE CASCADE
         ");
+
+        DB::statement("
+            ALTER TABLE Code
+                ADD CONSTRAINT fk_code_utilisateur
+                    FOREIGN KEY (UTILISATEUR) REFERENCES Utilisateur(ID)
+            ON DELETE CASCADE
+        ");
     }
 
     /**

@@ -26,15 +26,6 @@ class Utilisateur extends Model
         "TOKENGEN",
     ];
 
-    /*protected function __construct(string $email,string $password){
-        $this->email = $email;
-        $this->password = $password;
-        $result = DB::table("Utilisateur")->where("EMAIL", $email)->where("PASSWORD", $password)->first();
-
-        $this->token = $result->TOKEN;
-        $this->prenom = $result->PRENOM;
-    }*/
-
     static function register(string $firstName, string $lastName, string $email, string $password) : Utilisateur{
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
             throw \App\Models\Exceptions::createError(512);

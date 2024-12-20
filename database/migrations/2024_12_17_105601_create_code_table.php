@@ -14,7 +14,8 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE Code (
                 CODE INT PRIMARY KEY,
-                CODEGEN DATETIME
+                CODEGEN DATETIME NOT NULL,
+                UTILISATEUR INT NOT NULL UNIQUE
                 )
         ");
     }
