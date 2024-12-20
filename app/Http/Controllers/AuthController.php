@@ -70,4 +70,13 @@ class AuthController extends Controller
             }
         }
     }
+
+    public function verifyEmail(string $rawID,string $rawCode,Request $request){
+        $ID = intval($rawID);
+        $CODE = intval($rawCode);
+
+        \App\Models\Code::verifyCode($ID,$CODE);
+
+        return redirect("/");
+    }
 }

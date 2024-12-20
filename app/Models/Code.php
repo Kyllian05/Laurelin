@@ -44,4 +44,8 @@ class Code extends Model
             return false;
         }
     }
+
+    static function verifyCode(int $userId, int $code){
+        Code::where("UTILISATEUR", $userId)->where(["CODE"=>$code])->delete();
+    }
 }

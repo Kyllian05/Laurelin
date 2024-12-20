@@ -10,3 +10,5 @@ Route::get("/",[HomeController::class,"index"]);
 Route::get("/auth/{method?}",[AuthController::class,"index"]);
 
 Route::post("/auth/{method}",[AuthController::class,"authentificate"]);
+
+Route::get("/verifyEmail/{ID}/{CODE}",[AuthController::class,"verifyEmail"]);
