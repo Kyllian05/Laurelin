@@ -1,9 +1,6 @@
 <template>
     <div id="fieldWrapper">
-        <div v-for="field in fields" class="fieldDiv">
-        <p class="font-body-s">{{ field.name }}</p>
-        <input :type="field.type ? field.type : 'text'" :id="'field_'+encodeURI(field.name)" required>
-    </div>
+        <Field v-for="field in fields" :name="field.name" :type="field.type" :id="'field_'+encodeURI(field.name)"></Field>
     </div>
     <div id="bottomFormWrapper">
         <div v-for="checkbox in checkBoxs" class="checkBoxDiv">
@@ -16,8 +13,9 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps,onMounted } from 'vue';
 import ButtonSubmit from "./ButtonSubmit.vue";
+import Field from "./Field.vue"
 
 let props = defineProps({
     "fields":Array[Object],
@@ -31,11 +29,11 @@ async function sendData(){
     let body = {}
 
     for(let i = 0;i<props.fields.length;i++){
-        if(!document.getElementById("field_"+encodeURI(props.fields[i].name)).checkValidity()){
+        if(!document.getElementById("field_"+encodeURI(props.fields[i].name)).children[1].checkValidity()){
             alert("Formulaire invalide")
             return
         }
-        body[props.fields[i].name] = document.getElementById("field_"+encodeURI(props.fields[i].name)).value
+        body[props.fields[i].name] = document.getElementById("field_"+encodeURI(props.fields[i].name)).children[1].value
     }
 
     for(let i = 0;i<props.checkBoxs.length;i++){
@@ -83,21 +81,9 @@ async function sendData(){
         gap: 8px;
         align-items: center;
     }
-    #fieldWrapper{
-        display: flex;
-        flex-direction: column;
-        gap: 2vh;
-    }
     .fieldDiv{
         display: flex;
         flex-direction: column;
         gap: 4px;
-    }
-    .fieldDiv input{
-        border-radius: 10px;
-        border: solid 1px black;
-        height: 5vh;
-        width: 98%;
-        padding-left: 2%;
     }
 </style>

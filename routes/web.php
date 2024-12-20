@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PersonnalController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -12,3 +13,5 @@ Route::get("/auth/{method?}",[AuthController::class,"index"]);
 Route::post("/auth/{method}",[AuthController::class,"authentificate"]);
 
 Route::get("/verifyEmail/{ID}/{CODE}",[AuthController::class,"verifyEmail"]);
+
+Route::get("/personnal",[PersonnalController::class,"index"]);

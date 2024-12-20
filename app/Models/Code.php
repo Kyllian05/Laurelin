@@ -50,7 +50,6 @@ class Code extends Model
         $currentTimestamp = strtotime($currentDate);
 
         if($currentTimestamp - $genTimestamp > 10*60){
-            \Log::info("le code a expiré");
             $newcode = random_int(100000,999999);
             Code::where(["UTILISATEUR"=>$userId])->update(["CODEGEN"=>date ('Y-m-d H:i:s', time()),"CODE"=>$newcode]);
 
