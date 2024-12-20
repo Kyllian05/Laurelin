@@ -12,7 +12,7 @@ class UtilisateurSeeder extends Seeder
         // Admin
         DB::table('Utilisateur')->insert([
             'EMAIL' => "admin@admin.com",
-            'PASSWORD' => "$2y$10\$cC5T7c4oy4G397TgUhHpZOyIB1ZbO1wUBHw3W1o8Ja0pqMbYBnuBy", // admin
+            'PASSWORD' => hash("sha256","admin"), // admin
             'PRENOM' => "Admin",
             'NOM' => "Admin",
             'TELEPHONE' => "0606060606",
@@ -22,7 +22,7 @@ class UtilisateurSeeder extends Seeder
         // Test user
         DB::table('Utilisateur')->insert([
             'EMAIL' => "user@user.com",
-            'PASSWORD' => "$2y$10$8s3ERuMJ8eg2Rop4jR.rxemHyRu5gEStA.z/m4L7DELISlW4DarN2", // user
+            'PASSWORD' => hash("sha256","user"), // user
             'PRENOM' => "User",
             'NOM' => "User",
             'TELEPHONE' => "0707070707",

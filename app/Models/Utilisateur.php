@@ -8,14 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class Utilisateur extends Model
 {
-    public string $email;
-
-    public string $password;
-
-    public string $token;
-
-    public string $prenom;
-
     /**
      * Le nom de la table associée au modèle.
      *
@@ -34,22 +26,14 @@ class Utilisateur extends Model
         "TOKENGEN",
     ];
 
-    protected function __construct(string $email,string $password){
-        $this->email = $email;
-        $this->password = $password;
-        $result = DB::table("Utilisateur")->where("EMAIL", $email)->where("PASSWORD", $password)->first();
-
-        $this->token = $result->TOKEN;
-        $this->prenom = $result->PRENOM;
-    }
-
-    static function register(string $firstName, string $lastName, string $email, string $password){
+    static function register(string $firstName, string $lastName, string $email, string $password) : Utilisateur{
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
             throw \App\Models\Exceptions::createError(512);
         }
         try{
             $token = Utilisateur::generateToken();
-            Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>$password,"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
+            return Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>hash("sha256",$password),"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
+
         }catch(\Exception $e){
             if($e->getCode() == 23000){
                 throw \App\Models\Exceptions::createError(514);
@@ -95,12 +79,12 @@ class Utilisateur extends Model
                 throw $e;
             }
         }
-        return new Utilisateur($email, $password);
+        return Utilisateur::where("EMAIL",$email)->where("PASSWORD",$password)->first();
     }
 
     static function loginWithToken(string $token) : Utilisateur{
         try{
-            $result = DB::table("Utilisateur")->where("TOKEN",$token)->firstOrFail();
+            return Utilisateur::where("TOKEN",$token)->firstOrFail();
         }catch(\Exception $e){
             $class = explode("\\",get_class($e));
             $class = $class[sizeof($class)-1];
@@ -110,6 +94,5 @@ class Utilisateur extends Model
                 throw $e;
             }
         }
-        return new Utilisateur($result->EMAIL, $result->PASSWORD);
     }
 }
