@@ -1,6 +1,5 @@
 <template>
     <div id="firstWrapper">
-      <!-- Laurelin Section -->
       <div class="footer-section">
           <img src="/public/images/logo.png" alt="Logo Laurelin" class="logo">
         </div>
@@ -63,7 +62,6 @@
       </div>
     </div>
     <div id="secondWrapper">
-        <img href="https://fr.wikipedia.org/wiki/Jeffrey_Epstein" src="/public/images/logo.png" alt="Logo Laurelin" class="logo">
         <a href="https://fr.wikipedia.org/wiki/Jeffrey_Epstein">Notre association</a>     
     </div>
   </template>
@@ -104,6 +102,7 @@
   </script>
   
   <style scoped>
+  /* General Wrapper */
   #firstWrapper {
     display: flex;
     justify-content: space-between;
@@ -112,21 +111,29 @@
     background-color: #f9f9f9;
     gap: 1rem;
   }
-  #secondWrapper{
+  #secondWrapper {
+    height: 400px;
+    background-image: url('/public/images/paysage.jpg');
+    background-size: cover;
+    background-position: center;
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 2rem 3rem;
-    background-color: #f9f9f9;
-    gap: 1rem;
-  }
+    justify-content: center;
+    align-items: center;
+}
 
-  #secondWrapper img{
-    width: auto;
-    min-width: 100%;
-    height: auto;
-  }
-
+#secondWrapper a {
+    color: white;
+    font-size: 30px;
+    text-decoration: none;
+}
+#secondWrapper a:hover {
+    cursor: pointer;
+    color: white;
+    transition-duration: 0.5s;
+    scale: 1.1;
+    font-size: 30px;
+    text-decoration: none;
+}
   .footer-section {
     flex: 1;
     margin: 0 1rem;
@@ -194,3 +201,4 @@
     }
   }
   </style>
+  
