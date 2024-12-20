@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,7 +13,8 @@ return new class extends Migration
     public function up(): void
     {
 
-/* OK */DB::statement("
+        /* OK */
+        DB::statement("
             CREATE OR REPLACE TRIGGER STOCK_INSUFFISANT
             BEFORE INSERT ON Produit_Commande
             FOR EACH ROW
@@ -27,7 +29,8 @@ return new class extends Migration
         ");
 
 
-/* OK */DB::statement("
+        /* OK */
+        DB::statement("
             CREATE OR REPLACE TRIGGER ANNULLATION_COMMANDE_STOCK
             AFTER DELETE ON Produit_Commande
             FOR EACH ROW
@@ -39,7 +42,8 @@ return new class extends Migration
         ");
 
 
-/* OK */DB::statement("
+        /* OK */
+        DB::statement("
             CREATE OR REPLACE TRIGGER COMMENTAIRE_PRODUIT_RETIRE
             BEFORE INSERT ON Commentaire
             FOR EACH ROW
@@ -53,7 +57,8 @@ return new class extends Migration
         ");
 
 
-/* OK */DB::statement("
+        /* OK */
+        DB::statement("
             CREATE OR REPLACE TRIGGER MISE_A_JOUR_STOCK
             AFTER INSERT ON Produit_Commande
             FOR EACH ROW
@@ -65,7 +70,8 @@ return new class extends Migration
         ");
 
 
-/* OK */DB::statement("
+        /* OK */
+        DB::statement("
             CREATE OR REPLACE TRIGGER MISE_A_JOUR_ETAT
             AFTER INSERT ON Produit_Commande
             FOR EACH ROW
@@ -77,18 +83,80 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER VERIF_COMMENTAIRE
+            BEFORE INSERT ON Commentaire
+            FOR EACH ROW
+            BEGIN
+                IF TRIM(NEW.CONTENU) = '' THEN
+                    SIGNAL SQLSTATE '45009' SET MESSAGE_TEXT = 'Le commentaire ne peut être vide.';
+                END IF;
+            END;
+        ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER NO_DELETE_USER_COMMANDES
+            BEFORE DELETE ON Utilisateur
+            FOR EACH ROW
+            BEGIN
+                DECLARE nb_commandes INT;
+                SELECT COUNT(*) INTO nb_commandes
+                FROM Commande
+                WHERE Commande.ID_UTILISATEUR = OLD.ID;
+
+                IF nb_commandes > 0 THEN
+                    SIGNAL SQLSTATE '45010' SET MESSAGE_TEXT = 'Impossible de supprimer un utilisateur ayant des commandes.';
+                END IF;
+            END;
+        ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER SET_DATE_COMMANDE
+            BEFORE INSERT ON Commande
+            FOR EACH ROW
+            BEGIN
+                IF NEW.DATE IS NULL THEN
+                    SET NEW.DATE = NOW();
+                END IF;
+            END;
+        ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER VALID_NUMBER
+            BEFORE INSERT ON Utilisateur
+            FOR EACH ROW
+            BEGIN
+                IF NEW.TELEPHONE NOT REGEXP '^\\\\+[0-9]{1,15}$' THEN
+                    SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Le numéro de téléphone peut être composé au maximum de 15 chiffres.';
+                END IF;
+            END;
+        ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER VALID_EMAIL
+            BEFORE INSERT ON Utilisateur
+            FOR EACH ROW
+            BEGIN
+                IF NEW.EMAIL NOT REGEXP '^[[:alnum:]_.-]+@([[:alnum:]-]+\\.)+[[:alnum:]]{2,4}$' THEN
+                    SIGNAL SQLSTATE '45016'
+                    SET MESSAGE_TEXT = 'Adresse EMAIL non valide.';
+                END IF;
+            END;
+        ");
     }
 
-    /* EXEMPLE
-
-    3. Trigger pour vérifier qu'un utilisateur ne laisse pas de commentaire vide AVEC ESPACE AUSSI
-
-    11. Trigger pour interdire la suppression d’un utilisateur s’il a passé des commandes
-
-    14. Trigger pour s’assurer que le téléphone utilisateur a un format valide
-
-    15. Trigger pour ajouter automatiquement une date à une commande
-    */
 
 
     /**
@@ -101,5 +169,10 @@ return new class extends Migration
         DB::statement("DROP TRIGGER IF EXISTS ANNULLATION_COMMANDE_STOCK");
         DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_ETAT");
         DB::statement("DROP TRIGGER IF EXISTS COMMENTAIRE_PRODUIT_RETIRE");
+        DB::statement("DROP TRIGGER IF EXISTS VERIF_COMMENTAIRE");
+        DB::statement("DROP TRIGGER IF EXISTS NO_DELETE_USER_COMMANDES");
+        DB::statement("DROP TRIGGER IF EXISTS SET_DATE_COMMANDE");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_NUMBER");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL");
     }
 };
