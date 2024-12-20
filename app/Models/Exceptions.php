@@ -9,6 +9,7 @@ class Exceptions
         514 => "Email déja inscrit",
         513 => "API invalide",
         515 => "Identifiant invalide",
+        516 => "Erreur lors de la création du Code de vérification",
     ];
 
     static public function createError(int $code):CustomExceptions{

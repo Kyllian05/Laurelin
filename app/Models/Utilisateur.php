@@ -30,17 +30,20 @@ class Utilisateur extends Model
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
             throw \App\Models\Exceptions::createError(512);
         }
-        try{
-            $token = Utilisateur::generateToken();
-            return Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>hash("sha256",$password),"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
 
-        }catch(\Exception $e){
-            if($e->getCode() == 23000){
-                throw \App\Models\Exceptions::createError(514);
-            }else{
-                throw $e;
-            }
+        if(Utilisateur::where("EMAIL",$email)->exists()){
+            throw \App\Models\Exceptions::createError(514);
         }
+        $token = Utilisateur::generateToken();
+        Utilisateur::create(["EMAIL"=>$email,"PASSWORD"=>hash("sha256",$password),"PRENOM"=>$firstName,"NOM"=>$lastName,"TOKEN"=>$token,"TOKENGEN"=>date ('Y-m-d H:i:s', time())]);
+        $user = Utilisateur::where("EMAIL",$email)->first();
+        try{
+            \App\Models\Code::generateCode($user["ID"]);
+        }catch (\Exception $e){
+            Utilisateur::where("EMAIL",$email)->delete();
+            throw \App\Models\Exceptions::createError(516);
+        }
+        return $user;
     }
 
     static function generateToken() : string{
