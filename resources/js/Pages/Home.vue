@@ -1,11 +1,15 @@
 <template>
     <Header currentPage="Accueil"></Header>
+    <!--
     <p v-if="prenom">Bienvenue {{ prenom }}</p>
     <p>Voici le props passé : {{ test }}</p>
     <p>{{ compteur }}</p>
     <button @click="compteur++">Incrémenter</button>
     <p v-if="urlData">Voici la valeur passé en url : {{ urlData }}</p>
-    <p v-else>Vous n'avez pas passé de valeur dans l'url</p>
+    <p v-else>Vous n'avez pas passé de valeur dans l'url</p>-->
+    <div class="ImgDefillante"> 
+        <img src="/public/images/home_img.webp">
+    </div>
     <Footer></Footer>
 </template>
 
