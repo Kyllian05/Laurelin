@@ -1,89 +1,196 @@
 <template>
     <div id="firstWrapper">
-        <div v-for="element in Object.keys(content)">
-            <h1 class="fontNewsreader">{{ element }}</h1>
-            <div v-for="element2 in Object.keys(content[element])">
-                <h2 class="fontNewsreader">{{ element2 }}</h2>
-                <p v-for="element3 in Object.keys(content[element][element2])" class="fontNewsreader">{{ element3 }}</p>
-            </div>
+      <!-- Laurelin Section -->
+      <div class="footer-section">
+          <img src="/public/images/logo.png" alt="Logo Laurelin" class="logo">
         </div>
+        <div class="footer-section">
+          <h2 class="section-title">Laurelin</h2>
+        <ul>
+          <li class="subsection-title">Nos Produits</li>
+          <ul>
+            <li v-for="(link, product) in content.Laurelin['Nos Produits']" :key="product">
+              <a :href="link">{{ product }}</a>
+            </li>
+          </ul>
+          <li class="subsection-title">À Propos de Nous</li>
+          <ul>
+            <li v-for="(link, about) in content.Laurelin['A Propos de Nous']" :key="about">
+              <a :href="link">{{ about }}</a>
+            </li>
+          </ul>
+          <li class="subsection-title">Contact</li>
+          <ul>
+            <li v-for="(link, contact) in content.Laurelin.Contact" :key="contact">
+              <a :href="link">{{ contact }}</a>
+            </li>
+          </ul>
+        </ul>
+      </div>
+  
+      <!-- Legal and Confidentiality Section -->
+      <div class="footer-section">
+        <h2 class="section-title">Légal et Confidentialité</h2>
+        <ul>
+          <li class="subsection-title">Mentions Légales</li>
+          <ul>
+            <li v-for="(link, legal) in content['Legal et Confidentialité']['Mentions Légales']" :key="legal">
+              <a :href="link">{{ legal }}</a>
+            </li>
+          </ul>
+          <li class="subsection-title">Support</li>
+          <ul>
+            <li v-for="(link, support) in content['Legal et Confidentialité'].Support" :key="support">
+              <a :href="link">{{ support }}</a>
+            </li>
+          </ul>
+        </ul>
+      </div>
+  
+      <div class="footer-section">
+        <h2 class="section-title">Canaux Principaux</h2>
+        <div class="social-links">
+          <a href="https://www.instagram.com/laurelin.jewels/">
+            <img src="#" alt="Instagram" class="icon">
+          </a>
+          <a href="https://x.com/LaurelinJewels">
+            <img src="#" alt="X" class="icon">
+          </a>
+          <a href="#">
+            <img src="#" alt="Pinterest" class="icon">
+          </a>
+        </div>
+      </div>
     </div>
     <div id="secondWrapper">
-        <h1 class="fontNewsreader">Notre association</h1>
-        <img src="/public/images/goofyHouse.png">
+        <img href="https://fr.wikipedia.org/wiki/Jeffrey_Epstein" src="/public/images/logo.png" alt="Logo Laurelin" class="logo">
+        <a href="https://fr.wikipedia.org/wiki/Jeffrey_Epstein">Notre association</a>     
     </div>
-</template>
+  </template>
+  
+  <script setup>
+  const content = {
+    "Laurelin": {
+      "Nos Produits": {
+        "Bagues": "/bagues",
+        "Bracelet": "/bracelet",
+        "Collier": "/collier",
+        "Parures": "/parures",
+        "Boucles d'Oreilles": "/boucles-d-oreilles",
+      },
+      "A Propos de Nous": {
+        "Créateur": "/createur",
+        "Créations": "/creations",
+        "Durabilité": "/durabilite",
+      },
+      "Contact": {
+        "Nous contacter": "/contact",
+        "Questions fréquentes": "/faq",
+      },
+    },
+    "Legal et Confidentialité": {
+      "Mentions Légales": {
+        "Conditions d’utilisation": "/conditions-utilisation",
+        "Conditions de vente": "/conditions-vente",
+        "Politique de confidentialité": "/politique-confidentialite",
+        "Politique de cookies": "/politique-cookies",
+      },
+      "Support": {
+        "Accessibilité": "/accessibilite",
+        "Effectuer un signalement": "/signalement",
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  #firstWrapper {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 2rem 3rem;
+    background-color: #f9f9f9;
+    gap: 1rem;
+  }
+  #secondWrapper{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 2rem 3rem;
+    background-color: #f9f9f9;
+    gap: 1rem;
+  }
 
-<script setup>
-    const content = {
-        "Laurelin":{
-            "Nos Produits":{
-                "Bagues":undefined,//il faudra mettre les liens de redirection
-                "Bracelet":undefined,
-                "Collier":undefined,
-                "Parures":undefined,
-                "Boucles d'Oreilles":undefined
-            },
-            "A Propos de nous":{
-                "Créateur":undefined,
-                "Créations":undefined,
-                "Durabilité":undefined
-            },
-            "Contact":{
-                "Nous contacter":undefined,
-                "Questions fréquentes":undefined
-            }
-        },
-        "Legal et Confidentialité":{
-            "Mention légale":{
-                "Condition d’utilisation":undefined,
-                "Condition de vente":undefined,
-                "Politique de confidentialité":undefined,
-                "Politique de cookies":undefined,
-                "Cookies center":undefined
-            },
-            "Support":{
-                "Brochures":undefined,
-                "Accesibilité":undefined,
-                "Effectuer un signalement":undefined
-            }
-        },
-        "Canaux Principaux" : {
+  #secondWrapper img{
+    width: auto;
+    min-width: 100%;
+    height: auto;
+  }
 
-        }
-    }
-</script>
-
-<style scoped>
-#secondWrapper img{
-    position: absolute;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: opacity(0.7)
-}
-#secondWrapper h1{
-    color: black;
-    position: relative;
-    margin-left: 7.5vw;
-    font-weight: 500;
-    font-size: 40px;
-}
-#secondWrapper{
-    position: relative;
-    aspect-ratio: 16/5;
-    height: fit-content;
-    width: 100vw;
+  .footer-section {
+    flex: 1;
+    margin: 0 1rem;
+  }
+  
+  .section-title {
+    font-size: 20px;
+    color: #c79600;
+    margin-bottom: 1rem;
+  }
+  
+  .logo-title-container {
     display: flex;
     align-items: center;
-}
-.fontNewsreader{
-    font-family: "Newsreader", serif;
-}
-#firstWrapper{
+    padding: 10px;
+    justify-content: space-between;
+  }
+  
+  .logo {
+    width: 150px;
+    height: auto;
+  }
+  
+  .subsection-title {
+    font-size: 16px;
+    margin: 1rem 0 0.5rem;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+
+  
+  a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  .social-links {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
-</style>
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  @media (max-width: 768px) {
+    #firstWrapper {
+      flex-direction: column;
+    }
+  
+    .footer-section {
+      margin-bottom: 2rem;
+    }
+  }
+  </style>
