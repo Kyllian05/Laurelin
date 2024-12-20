@@ -123,7 +123,7 @@
 
 #secondWrapper a {
     color: white;
-    font-size: 30px;
+    font-size: 50px;
     text-decoration: none;
 }
 #secondWrapper a:hover {
@@ -131,8 +131,6 @@
     color: white;
     transition-duration: 0.5s;
     scale: 1.1;
-    font-size: 30px;
-    text-decoration: none;
 }
   .footer-section {
     flex: 1;
