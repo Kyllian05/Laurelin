@@ -1,5 +1,5 @@
 <template>
-    <div id="fieldWrapper">
+    <div id="fieldWrapper" :class="displayColumn ? 'gridDisplay' : ''">
         <Field v-for="field in fields" :name="field.name" :type="field.type" :id="'field_'+encodeURI(field.name)"></Field>
     </div>
     <div id="bottomFormWrapper">
@@ -22,7 +22,8 @@ let props = defineProps({
     "buttonText":String,
     "checkBoxs":Array,
     "links":Array[Object],
-    "dest":String
+    "dest":String,
+    "displayColumn" : Boolean
 })
 
 async function sendData(){
@@ -57,6 +58,10 @@ async function sendData(){
 </script>
 
 <style scoped>
+    .gridDisplay{
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+    }
     #bottomFormWrapper {
         display: flex;
         justify-content: space-between;
@@ -80,10 +85,5 @@ async function sendData(){
         flex-direction: row;
         gap: 8px;
         align-items: center;
-    }
-    .fieldDiv{
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
     }
 </style>
