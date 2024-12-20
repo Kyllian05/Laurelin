@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Mail\Laurelin;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class Code extends Model
 {
@@ -23,7 +26,22 @@ class Code extends Model
 
     static function generateCode(int $userId){
         $user = \App\Models\Utilisateur::where("ID", $userId)->first();
-        Code::create(["CODE"=>random_int(100000,999999),"CODEGEN"=>date ('Y-m-d H:i:s', time()),"UTILISATEUR"=>$userId]);
+        $code = random_int(100000,999999);
+        Code::create(["CODE"=>$code,"CODEGEN"=>date ('Y-m-d H:i:s', time()),"UTILISATEUR"=>$userId]);
+        $details = [
+            'title' => 'Votre code de vérification : '.$code,
+            'body' => "Ce code est valable 10 minutes"
+        ];
 
+        Mail::to($user["EMAIL"])->send(new Laurelin($details));
+    }
+
+    static function isUserVerified(int $userId) : bool{
+        $result = Code::where("UTILISATEUR", $userId)->first();
+        if(!$result){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

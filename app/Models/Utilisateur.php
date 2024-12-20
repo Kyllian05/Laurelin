@@ -40,7 +40,7 @@ class Utilisateur extends Model
         try{
             \App\Models\Code::generateCode($user["ID"]);
         }catch (\Exception $e){
-            Utilisateur::where("EMAIL",$email)->delete();
+            Utilisateur::where("ID",$user["ID"])->delete();
             throw \App\Models\Exceptions::createError(516);
         }
         return $user;
@@ -72,7 +72,7 @@ class Utilisateur extends Model
 
     static function login(string $email, string $password): Utilisateur{
         try{
-            DB::table("Utilisateur")->where("EMAIL",$email)->where("PASSWORD",$password)->firstOrFail();
+            $user = Utilisateur::where("EMAIL",$email)->where("PASSWORD",$password)->firstOrFail();
         }catch(\Exception $e){
             $class = explode("\\",get_class($e));
             $class = $class[sizeof($class)-1];
@@ -82,6 +82,12 @@ class Utilisateur extends Model
                 throw $e;
             }
         }
+
+        $verified = \App\Models\Code::isUserVerified($user["ID"]);
+        if(!$verified){
+            throw  \App\Models\Exceptions::createError(517);
+        }
+
         return Utilisateur::where("EMAIL",$email)->where("PASSWORD",$password)->first();
     }
 
