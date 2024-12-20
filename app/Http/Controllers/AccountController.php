@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class AccountController extends Controller
+{
+    function index(Request $request){
+        $user = \App\Models\Utilisateur::getLoggedUser($request);
+
+        return Inertia::render("Account",[
+            "page"=>"info",
+            "info"=>[
+                "Prénom"=>$user["PRENOM"],
+                "Nom"=>$user["NOM"],
+                "Adresse mail"=>$user["EMAIL"],
+                "Téléphone"=>$user["TELEPHONE"],
+            ],
+        ]);
+    }
+}

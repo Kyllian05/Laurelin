@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,24 @@ class Utilisateur extends Model
         "TOKEN",
         "TOKENGEN",
     ];
+
+    static function getLoggedUser(Request $request) : Utilisateur{
+        $current = null;
+        try{
+            if(session()->has('EMAIL') && session()->has('PASSWORD')){
+                $current = Utilisateur::login(session('EMAIL'),session('PASSWORD'));
+            }else if($request->hasCookie("TOKEN")){
+                $current = Utilisateur::loginWithToken($request->cookie("TOKEN"));
+            }
+        }catch(\Exception $e){
+            if($e->getCode() == 517){
+                $current = null;
+            }else{
+                throw $e;
+            }
+        }
+        return $current;
+    }
 
     static function register(string $firstName, string $lastName, string $email, string $password) : Utilisateur{
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)){

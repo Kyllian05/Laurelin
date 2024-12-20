@@ -1,14 +1,14 @@
 <template>
     <div id="wrapper">
         <p class="font-body-s">{{ name }}</p>
-        <input :type="type ? type : 'text'" required>
+        <input :type="type ? type : 'text'" :value="value" required>
     </div>
 </template>
 
 <script setup>
     import {defineProps} from "vue";
 
-    let props = defineProps(["name","type"])
+    let props = defineProps(["name","type","value"])
 </script>
 
 <style scoped>

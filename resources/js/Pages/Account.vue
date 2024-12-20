@@ -8,7 +8,6 @@
         </div>
         <div id="contentWrapper">
             <div v-if="page == 'info'">
-                <p>Vous êtes sur la page info</p>
                 <div id="formWrapper">
                     <Form :fields="infoFields" :check-boxs="[]" buttonText="Valider les modifications" :displayColumn="true"></Form>
                 </div>
@@ -39,7 +38,7 @@ let props = defineProps(
     let infoFields = []
 
     for(let i = 0;i<Object.keys(props.info).length;i++){
-        infoFields.push({"name":Object.keys(props.info)[i]})
+        infoFields.push({"name":Object.keys(props.info)[i],"value":props.info[Object.keys(props.info)[i]]})
     }
 
 </script>

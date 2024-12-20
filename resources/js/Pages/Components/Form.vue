@@ -1,6 +1,6 @@
 <template>
     <div id="fieldWrapper" :class="displayColumn ? 'gridDisplay' : ''">
-        <Field v-for="field in fields" :name="field.name" :type="field.type" :id="'field_'+encodeURI(field.name)"></Field>
+        <Field v-for="field in fields" :name="field.name" :type="field.type" :id="'field_'+encodeURI(field.name)" :value="field.value"></Field>
     </div>
     <div id="bottomFormWrapper">
         <div v-for="checkbox in checkBoxs" class="checkBoxDiv">
@@ -58,8 +58,13 @@ async function sendData(){
 </script>
 
 <style scoped>
+    #fieldWrapper{
+        gap: 2vw;
+        display: flex;
+        flex-direction: column;
+    }
     .gridDisplay{
-        display: grid;
+        display: grid !important;
         grid-template-columns: repeat(2,1fr);
     }
     #bottomFormWrapper {
