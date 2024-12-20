@@ -28,12 +28,8 @@ class Code extends Model
         $user = \App\Models\Utilisateur::where("ID", $userId)->first();
         $code = random_int(100000,999999);
         Code::create(["CODE"=>$code,"CODEGEN"=>date ('Y-m-d H:i:s', time()),"UTILISATEUR"=>$userId]);
-        $details = [
-            'title' => 'Votre code de vérification : '.$code,
-            'body' => "Ce code est valable 10 minutes"
-        ];
 
-        Mail::to($user["EMAIL"])->send(new Laurelin($details));
+        Mail::to($user["EMAIL"])->send(new \App\Mail\EmailVerification($user["ID"],$code));
     }
 
     static function isUserVerified(int $userId) : bool{
