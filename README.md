@@ -41,6 +41,17 @@ php aritsan make:[model, migration, ...] [nom fichier]
 + Pour les icônes, on utilise [Google icons](https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded) (déjà importé), vous avez juste à ajouter l'élément `<span>`  
 + Les polices aussi sont déjà ajoutées : `Tenor Sans`, `Parisienne`, `Poppins`
 
+### Sites de bijoux pour inspiration
+
++ https://www.cartier.com/fr-fr/
++ https://www.tiffany.fr/
++ https://fr.pandora.net/fr/
++ https://www.prada.com/fr/fr/fine-jewelry/fine-jewelry-collection/c/10628EU
++ https://www.dior.com/fr_fr/fashion/joaillerie-horlogerie/joaillerie-par-categorie/toute-la-joaillerie
++ https://www.chanel.com/fr/joaillerie/
++ https://fr.arthusbertrand.com/
++ https://www.hermes.com/fr/fr/category/bijouterie/bijoux-en-or/#|
+
 ### Tutoriels
 
 + [Tutoriel Vue.js](https://grafikart.fr/formations/vuejs)
