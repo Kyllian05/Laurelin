@@ -9,6 +9,9 @@ class AccountController extends Controller
 {
     function index(Request $request){
         $user = \App\Models\Utilisateur::getLoggedUser($request);
+        if($user == null){
+            return redirect("/auth");
+        }
 
         return Inertia::render("Account",[
             "page"=>"info",

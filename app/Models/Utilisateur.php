@@ -27,7 +27,7 @@ class Utilisateur extends Model
         "TOKENGEN",
     ];
 
-    static function getLoggedUser(Request $request) : Utilisateur{
+    static function getLoggedUser(Request $request) : ?Utilisateur{
         $current = null;
         try{
             if(session()->has('EMAIL') && session()->has('PASSWORD')){
