@@ -2,9 +2,31 @@
 
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
+
+defineProps({
+    produits: Array, // Liste des produits passés depuis Laravel
+});
+
+/* Gère l'espace du prix */
+const formatPrix = (prix) => {
+    return new Intl.NumberFormat("fr-FR", {
+        style: "decimal",
+        maximumFractionDigits: 0, // Pas de décimales
+    }).format(prix);
+};
+
+const handleClick = (produit) => {
+    console.log(`Produit cliqué : ${produit.NOM}`);
+    // Par exemple : navigation vers une page de détail produit
+    $inertia.visit(`/produits/${produit.ID}`);
+};
+
 </script>
 
+/* -----------------------HTML----------------------- */
+
 <template>
+
 <Header current-page="Magasin"></Header>
   <div id="FirstRange" >
     <span class="material-symbols-rounded">
@@ -13,53 +35,33 @@ import Footer from "./Components/Footer.vue";
   </div>
 
   <div id="ProduitRange">
-    <div class="container">
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-        <div class="item">
-            <span class="item-text">Bague Etincelles</span>
-        </div>
-    </div>
+      <div class="container">
+          <div
+              v-for="(produit, index) in produits"
+              :key="produit.ID"
+              class="item"
+              @click="handleClick(produit)"
+              :style="{ backgroundImage: `url('/images/imgProd/w1242_tpadding12.webp')` }"
+          >
+              <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+              <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+          </div>
+      </div>
   </div>
+
 <Footer></Footer>
+
 </template>
 
-<style scoped>
+/* -----------------------CSS----------------------- */
 
+<style scoped>
 
 #FirstRange {
     width: 100%;
     height: 100vh;
     position: relative;
-    background: url("/public/images/imgProd/w1242_tpadding12.webp") no-repeat center center/cover;
+    background: url("/public/images/imgProd/img_caté_bagues_finale.jpg") no-repeat center 30%/cover;
 }
 
 #FirstRange span {
@@ -79,22 +81,35 @@ import Footer from "./Components/Footer.vue";
 }
 
 
+
 #ProduitRange .container .item {
     position: relative;
-    background-image: url("/public/images/imgProd/w1242_tpadding12.webp");
     background-size: cover;
     background-position: center;
     width: 100%;
-    height: 500px;
+    height: 700px;
+    cursor: pointer;
 }
 
 #ProduitRange .container .item .item-text {
     position: absolute;
-    bottom: 20%;
+    bottom: 15%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
+    width: 90%;
+    font-size: 24px;
 }
+
+#ProduitRange .container .item .prix {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 24px;
+}
+
 
 @media (max-width: 1366px) and (max-height: 768px) {
     #ProduitRange .container {
@@ -104,6 +119,10 @@ import Footer from "./Components/Footer.vue";
         gap: 20px;
         min-height: 100vh;
 
+    }
+
+    #ProduitRange .container .item {
+        height: 500px;
     }
 }
 
@@ -126,6 +145,10 @@ import Footer from "./Components/Footer.vue";
         min-height: 100vh;
 
     }
+
+    #ProduitRange .container .item {
+        height: 500px;
+    }
 }
 
 @media (min-width: 800px) and (max-width: 1300px) and (min-height: 800px) {
@@ -136,6 +159,10 @@ import Footer from "./Components/Footer.vue";
         gap: 20px;
         min-height: 100vh;
 
+    }
+
+    #ProduitRange .container .item {
+        height: 500px;
     }
 }
 
