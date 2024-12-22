@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ListeProduitController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -18,3 +19,5 @@ Route::get("/verifyEmail/{ID}/{CODE}",[AuthController::class,"verifyEmail"]);
 Route::get("/account",[AccountController::class,"index"]);
 
 Route::get("/shop", [MagasinController::class, "index"]);
+
+Route::get("/listeproduit", [ListeProduitController::class, "index"]);
