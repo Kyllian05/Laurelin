@@ -10,7 +10,7 @@ class AccountController extends Controller
     function index(Request $request){
         $user = \App\Models\Utilisateur::getLoggedUser($request);
         if($user == null){
-            return redirect("/auth");
+            return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false);
         }
 
         return Inertia::render("Account",[

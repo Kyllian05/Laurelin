@@ -41,19 +41,33 @@ async function sendData(){
         body[props.checkBoxs[i]] = document.getElementById("check_"+encodeURI(props.checkBoxs[i])).checked
     }
 
-    const response = await fetch(props.dest,{
+    var redirectCookie = getCookie("redirect")
+    fetch(props.dest,{
         method:"POST",
         body: JSON.stringify(body),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
+        },
+    }).then(async response =>{
+        if(response.status == 200){
+            if (redirectCookie != undefined){
+                window.location = redirectCookie.replace("%2F","/")
+            }else{
+                alert("vous êtes connecté !");
+            }
+        }else{
+            const reader = response.body.getReader()
+            const text = new TextDecoder().decode((await reader.read()).value)
+            alert(text)
         }
     })
-    if(response.status != 200){
-        const reader = response.body.getReader()
-        const text = new TextDecoder().decode((await reader.read()).value)
-        alert(text)
-    }
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }
 </script>
 

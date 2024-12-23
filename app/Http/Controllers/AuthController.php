@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use http\Cookie;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -47,7 +48,11 @@ class AuthController extends Controller
                 if($data[$currentFields["checkBoxs"][0]]){
                     return response("login successfuly")->cookie(
                         "TOKEN",
-                        $current["TOKEN"]
+                        $current["TOKEN"],
+                        43800,
+                        "/",
+                        null,
+                        true
                     );
                 }else{
                     session(["EMAIL"=>$current["EMAIL"],"PASSWORD"=>$current["PASSWORD"]]);
