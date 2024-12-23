@@ -13,7 +13,7 @@ class ListeProduitController extends Controller
     public function index(Request $request)
     {
         // Récupérer les produits avec une limite ou une pagination si nécessaire
-        $produits = Produit::select('ID', 'NOM', 'DESCRIPTION', 'PRIX', 'ETAT')
+        $produits = Produit::select('ID', 'NOM', 'MATERIAUX', 'DESCRIPTION', 'PRIX', 'ETAT')
             ->where('ETAT', 'Disponible') // Exemple : seulement les produits disponibles
             ->orderBy('ANNEE_CREATION', 'desc') // Exemple : tri par année de création
             ->get();

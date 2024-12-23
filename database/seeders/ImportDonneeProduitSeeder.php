@@ -25,6 +25,7 @@ class ImportDonneeProduitSeeder extends Seeder
             // Préparer les données avant insertion
             DB::table('Produit')->insert([
                 'NOM' => trim($row['NOM']) ?? null,
+                'MATERIAUX'=> $row['MATERIAUX'] ?? null,
                 'DESCRIPTION' => $row['DESCRIPTION'] ?? null,
                 'PRIX' => str_replace(',', '.', str_replace(' ', '', $row['PRIX']) )?? null, // Supprime les espaces des nombres
                 'ANNEE_CREATION' => $row['ANNEE_CREATION'] ?? null,

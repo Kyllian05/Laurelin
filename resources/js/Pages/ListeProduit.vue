@@ -44,6 +44,7 @@ const handleClick = (produit) => {
               :style="{ backgroundImage: `url('/images/imgProd/w1242_tpadding12.webp')` }"
           >
               <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+              <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
               <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
           </div>
       </div>
@@ -72,6 +73,7 @@ const handleClick = (produit) => {
     transform: translateX(-50%) rotate(-90deg)
 }
 
+
 #ProduitRange .container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -86,8 +88,8 @@ const handleClick = (produit) => {
     position: relative;
     background-size: cover;
     background-position: center;
-    width: 100%;
-    height: 700px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
     cursor: pointer;
 }
 
@@ -98,7 +100,8 @@ const handleClick = (produit) => {
     transform: translateX(-50%);
     text-align: center;
     width: 90%;
-    font-size: 24px;
+    font-weight: bolder;
+    font-size: clamp(10px, 2vw, 18px);
 }
 
 #ProduitRange .container .item .prix {
@@ -107,51 +110,93 @@ const handleClick = (produit) => {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    font-size: 24px;
+    font-size: clamp(14px, 2vw, 18px);
 }
 
+#ProduitRange .container .item .materiaux-text {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 90%;
+    font-size: clamp(12px, 2vw, 14px);
+}
 
-@media (max-width: 1366px) and (max-height: 768px) {
-    #ProduitRange .container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        margin: 20px;
-        gap: 20px;
-        min-height: 100vh;
-
+@media (min-width: 1050px) and (max-width: 1500px) {
+    #ProduitRange .container .item .item-text {
+        font-size: clamp(10px, 2vw, 14px);
+        line-height: 1;
+        bottom: 17%;
     }
 
-    #ProduitRange .container .item {
-        height: 500px;
+    #ProduitRange .container .item .prix {
+        bottom: 3%;
+        font-size: clamp(10px, 2vw, 16px);
+    }
+
+    #ProduitRange .container .item .materiaux-text {
+        font-size: clamp(10px, 2vw, 12px);
+        line-height: 1;
+        bottom: 10%;
     }
 }
+
 
 @media (max-width: 450px) and (max-height: 930px) {
     #FirstRange {
         height: 80vh;
     }
 
-    #ProduitRange .container .item {
-        height: 350px;
-    }
 }
 
 @media (max-width: 800px) {
     #ProduitRange .container {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         margin: 20px;
         gap: 20px;
         min-height: 100vh;
-
     }
 
     #ProduitRange .container .item {
-        height: 500px;
+        aspect-ratio: 4/5;
+    }
+
+
+    #ProduitRange .container .item .item-text {
+        bottom: 18%;
+        width: 90%;
+        font-size: clamp(8px, 2vw, 20px);
+        line-height: 1;
+    }
+
+    #ProduitRange .container .item .prix {
+        bottom: 1%;
+        font-size: clamp(8px, 2vw, 20px);
+    }
+
+    #ProduitRange .container .item .materiaux-text {
+        position: absolute;
+        bottom: 10%;
+        font-size: clamp(5px, 2vw, 12px);
+        line-height: 1;
     }
 }
 
-@media (min-width: 800px) and (max-width: 1300px) and (min-height: 800px) {
+@media (max-width: 650px) {
+    #ProduitRange .container .item .item-text {
+        bottom: 12%;
+    }
+
+    #ProduitRange .container .item .materiaux-text {
+        display: none;
+    }
+
+}
+
+
+@media (min-width: 800px) and (max-width: 1050px) and (min-height: 800px) {
     #ProduitRange .container {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -162,7 +207,26 @@ const handleClick = (produit) => {
     }
 
     #ProduitRange .container .item {
-        height: 500px;
+        aspect-ratio: 1 / 1;
+    }
+
+    #ProduitRange .container .item .item-text {
+        bottom: 18%;
+        width: 90%;
+        font-size: clamp(8px, 2vw, 20px);
+        line-height: 1;
+    }
+
+    #ProduitRange .container .item .prix {
+        bottom: 1%;
+        font-size: clamp(8px, 2vw, 20px);
+    }
+
+    #ProduitRange .container .item .materiaux-text {
+        position: absolute;
+        bottom: 10%;
+        font-size: clamp(5px, 2vw, 12px);
+        line-height: 1;
     }
 }
 

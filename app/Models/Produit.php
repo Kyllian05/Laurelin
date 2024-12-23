@@ -20,6 +20,7 @@ class Produit extends Model
      */
     protected $fillable = [
         'NOM',
+        'MATERIAUX',
         'DESCRIPTION',
         'PRIX',
         'ANNEE_CREATION',
