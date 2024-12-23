@@ -107,12 +107,21 @@ class Utilisateur extends Model
             throw  \App\Models\Exceptions::createError(517);
         }
 
+        self::loginWithToken($user["TOKEN"]);
+
         return Utilisateur::where("EMAIL",$email)->where("PASSWORD",$password)->first();
     }
 
-    static function loginWithToken(string $token) : Utilisateur{
+    static function loginWithToken(string $token) : ?Utilisateur{
         try{
-            return Utilisateur::where("TOKEN",$token)->firstOrFail();
+            $result = Utilisateur::where("TOKEN",$token)->firstOrFail();
+            $tokengen = strtotime($result["TOKENGEN"]);
+            if(time() > $tokengen){
+                $newToken = self::generateToken();
+                Utilisateur::where("TOKEN",$token)->update(["TOKEN"=>$newToken,"TOKENGEN"=>date ('Y-m-d H:i:s',time())]);
+                return null;
+            }
+            return $result;
         }catch(\Exception $e){
             $class = explode("\\",get_class($e));
             $class = $class[sizeof($class)-1];
