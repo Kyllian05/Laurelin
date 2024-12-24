@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use http\Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 use \App\Models;
@@ -83,5 +84,22 @@ class AuthController extends Controller
         \App\Models\Code::verifyCode($ID,$CODE);
 
         return redirect("/");
+    }
+
+    public function recoverPassword(string $ID, string $token,Request $request){
+        if($request->getMethod() == "GET"){
+            return Inertia::render("RecoverPassword",[
+                "ID"=>$ID,
+                "token"=>$token
+            ]);
+        }else{
+            \App\Models\Utilisateur::changePassword($ID,$token,$request->post()["Nouveau mot de passe"]);
+        }
+    }
+
+    public function sendRecoveryMail(Request $request){
+        $data = $request->post();
+        $user = \App\Models\Utilisateur::where("EMAIL",$data["Adresse mail"])->firstOrFail();
+        Mail::to($user["EMAIL"])->send(new \App\Mail\PasswordRecovery($user["ID"],$user["TOKEN"]));
     }
 }

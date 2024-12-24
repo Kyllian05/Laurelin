@@ -7,21 +7,23 @@
             <input type="checkbox" :id="'check_'+encodeURI(checkbox)">
             <p class="font-normal-12">{{checkbox}}</p>
         </div>
-        <a v-for="link in links" :href="link.link" class="font-normal-12" id="linksWrapper">{{ link.text }}</a>
+        <p v-for="text in texts"  class="font-normal-12" id="linksWrapper" @click="emit('textClicked',text)">{{ text }}</p>
     </div>
     <ButtonSubmit :button-text="buttonText" @submit-clicked="sendData"></ButtonSubmit>
 </template>
 
 <script setup>
-import { defineProps,onMounted } from 'vue';
+import {defineEmits, defineProps, onMounted} from 'vue';
 import ButtonSubmit from "./ButtonSubmit.vue";
 import Field from "./Field.vue"
+
+const emit = defineEmits(["textClicked"])
 
 let props = defineProps({
     "fields":Array[Object],
     "buttonText":String,
     "checkBoxs":Array,
-    "links":Array[Object],
+    "texts":Array[String],
     "dest":String,
     "displayColumn" : Boolean
 })

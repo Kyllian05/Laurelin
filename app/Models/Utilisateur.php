@@ -132,4 +132,10 @@ class Utilisateur extends Model
             }
         }
     }
+
+    static function changePassword(int $ID, string $token, string $newPassword){
+        self::where(["ID"=>$ID,"TOKEN"=>$token])->update(["PASSWORD"=>hash("sha256",$newPassword)]);
+        $newToken = self::generateToken();
+        Utilisateur::where(["TOKEN"=>$token,"ID"=>$ID])->update(["TOKEN"=>$newToken,"TOKENGEN"=>date ('Y-m-d H:i:s',time())]);
+    }
 }

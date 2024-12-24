@@ -21,3 +21,9 @@ Route::get("/account",[AccountController::class,"index"]);
 Route::get("/shop", [MagasinController::class, "index"]);
 
 Route::get("/listeproduit", [ListeProduitController::class, "index"]);
+
+Route::get("/recoverPassword/{ID}/{TOKEN}", [AuthController::class, "recoverPassword"]);
+
+Route::post("/recoverPassword/{ID}/{TOKEN}", [AuthController::class, "recoverPassword"]);
+
+Route::post("/sendRecoveryMail", [AuthController::class, "sendRecoveryMail"]);
