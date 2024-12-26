@@ -1,6 +1,6 @@
 <template>
     <div id="fieldWrapper" :class="displayColumn ? 'gridDisplay' : ''">
-        <Field v-for="field in fields" :name="field.name" :type="field.type" :id="'field_'+encodeURI(field.name)" :value="field.value"></Field>
+        <Field v-for="field in fields" :name="field.name" :type="field.type" :requied="field.required" :id="'field_'+encodeURI(field.name)" :value="field.value"></Field>
     </div>
     <div id="bottomFormWrapper">
         <div v-for="checkbox in checkBoxs" class="checkBoxDiv">
@@ -25,7 +25,8 @@ let props = defineProps({
     "checkBoxs":Array,
     "texts":Array[String],
     "dest":String,
-    "displayColumn" : Boolean
+    "displayColumn" : Boolean,
+    "succeedMessage" : String
 })
 
 async function sendData(){
@@ -56,7 +57,7 @@ async function sendData(){
             if (redirectCookie != undefined){
                 window.location = redirectCookie.replace("%2F","/")
             }else{
-                alert("vous êtes connecté !");
+                alert(props.succeedMessage);
             }
         }else{
             const reader = response.body.getReader()

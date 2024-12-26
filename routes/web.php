@@ -27,3 +27,5 @@ Route::get("/recoverPassword/{ID}/{TOKEN}", [AuthController::class, "recoverPass
 Route::post("/recoverPassword/{ID}/{TOKEN}", [AuthController::class, "recoverPassword"]);
 
 Route::post("/sendRecoveryMail", [AuthController::class, "sendRecoveryMail"]);
+
+Route::post("/updateInfo", [AccountController::class, "update"]);

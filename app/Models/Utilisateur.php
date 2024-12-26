@@ -115,7 +115,10 @@ class Utilisateur extends Model
     static function loginWithToken(string $token) : ?Utilisateur{
         try{
             $result = Utilisateur::where("TOKEN",$token)->firstOrFail();
-            $tokengen = strtotime($result["TOKENGEN"]);
+            if($result == null){
+                return null;
+            }
+            $tokengen = strtotime($result["TOKENGEN"])+2629800;
             if(time() > $tokengen){
                 $newToken = self::generateToken();
                 Utilisateur::where("TOKEN",$token)->update(["TOKEN"=>$newToken,"TOKENGEN"=>date ('Y-m-d H:i:s',time())]);
@@ -123,11 +126,14 @@ class Utilisateur extends Model
             }
             return $result;
         }catch(\Exception $e){
+            \Log::info($e);
             $class = explode("\\",get_class($e));
             $class = $class[sizeof($class)-1];
             if($class == "RecordNotFoundException"){
                 throw \App\Models\Exceptions::createError(515);
-            }else{
+            }else if($class == "ModelNotFoundException"){
+                throw \App\Models\Exceptions::createError(518);
+            } else{
                 throw $e;
             }
         }

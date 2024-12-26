@@ -10,7 +10,8 @@ class Exceptions
         513 => "API invalide",
         515 => "Identifiant invalide",
         516 => "Erreur lors de la création du Code de vérification",
-        517 => "Email non vérifiée"
+        517 => "Email non vérifiée",
+        518 => "Token invalide"
     ];
 
     static public function createError(int $code):CustomExceptions{

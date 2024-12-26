@@ -1,6 +1,6 @@
 <template>
     <div id="formWrapper">
-        <Form :fields="[{'name':'Nouveau mot de passe','type':'password'}]" :check-boxs="[]" button-text="Valider" dest=""></Form>
+        <Form :fields="[{'name':'Nouveau mot de passe','type':'password'}]" :check-boxs="[]" button-text="Valider" dest="" succeed-message="Votre mot de passe a bien été changé"></Form>
     </div>
 </template>
 

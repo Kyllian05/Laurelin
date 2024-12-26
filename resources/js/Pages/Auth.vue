@@ -16,9 +16,9 @@
                     <button :class="{autChoiceActive :  authMethod === 'login'}" @click="changeAuthMethod()" class="font-subtitle-16">Connexion</button>
                     <button :class="{autChoiceActive :  authMethod === 'register'}" @click="changeAuthMethod()" class="font-subtitle-16">Inscription</button>
                 </div>
-                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick"></Form>
+                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick" succeed-message="Vous êtes connecté"></Form>
 
-                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register"></Form>
+                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit"></Form>
             </div>
         </div>
     </div>
