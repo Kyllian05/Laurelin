@@ -8,9 +8,11 @@
         </div>
         <div id="contentWrapper">
             <div v-if="page == 'info'">
-                <p>Vous êtes sur la page info</p>
-                <div id="formWrapper">
-                    <Form :fields="infoFields" :check-boxs="[]" buttonText="Valider les modifications" :displayColumn="true"></Form>
+                <div id="formWrapper1">
+                    <Form :fields="infoFields[0]" :check-boxs="[]" buttonText="Valider les modifications" :displayColumn="true" dest="/updateInfo" succeed-message="Les modifications ont bien étés effectuées"></Form>
+                </div>
+                <div id="formWrapper2">
+                    <Form :fields="infoFields[1]" :check-boxs="[]" buttonText="Valider les modifications"  dest="/updateInfo" style="margin-top: 5vh"></Form>
                 </div>
             </div>
         </div>
@@ -36,11 +38,13 @@ let props = defineProps(
 
     let navList = ["Informations personnelles","Mes commandes","Mes produits favoris","Mes adresses"]
 
-    let infoFields = []
+    let infoFields = [[],[]]
 
-    for(let i = 0;i<Object.keys(props.info).length;i++){
-        infoFields.push({"name":Object.keys(props.info)[i]})
+    for(let i = 0;i<3;i++){
+        infoFields[0].push({"name":Object.keys(props.info)[i],"value":props.info[Object.keys(props.info)[i]]})
     }
+
+    infoFields[1].push({"name":Object.keys(props.info)[3],"value":props.info[Object.keys(props.info)[3]],"required":false})
 
 </script>
 
@@ -87,6 +91,7 @@ let props = defineProps(
     #contentWrapper{
         width: 50vw;
     }
-    #formWrapper{
+    #formWrapper2{
+        margin-top: 5vh;
     }
 </style>

@@ -16,9 +16,17 @@
                     <button :class="{autChoiceActive :  authMethod === 'login'}" @click="changeAuthMethod()" class="font-subtitle-16">Connexion</button>
                     <button :class="{autChoiceActive :  authMethod === 'register'}" @click="changeAuthMethod()" class="font-subtitle-16">Inscription</button>
                 </div>
-                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :links="[{'text':'Mot de passe oublié ?','link':'youtube.com'}]" dest="/auth/login"></Form>
+                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick" succeed-message="Vous êtes connecté"></Form>
 
-                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register"></Form>
+                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit"></Form>
+            </div>
+        </div>
+    </div>
+    <div v-if="recoverPassword" id="recoverWrapper">
+        <div id="recoverContent">
+            <span class="material-symbols-rounded" id="recoverArrow" @click="recoverPassword = false">arrow_back</span>
+            <div id="recoverFormWrapper">
+                <Form :fields="[{'name':'Adresse mail','type':'email'}]" button-text="Envoyer le mail de récupération" :check-boxs="[]" dest="/sendRecoveryMail"></Form>
             </div>
         </div>
     </div>
@@ -28,19 +36,51 @@
     import Form from "./Components/Form.vue"
     import { defineProps,ref } from "vue";
 
-    let props = defineProps(["authMethod","inputs"])
-
-    console.log(props.inputs)
+    const props = defineProps(["authMethod","inputs"])
 
     let authMethod = ref(props.authMethod)
+
+    let recoverPassword = ref(false)
 
     function changeAuthMethod(){
         if(authMethod.value === "login")authMethod.value = "register"
         else authMethod.value = "login"
     }
+
+    function handleClick(source){
+        if(source == "Mot de passe oublié"){
+            recoverPassword.value = true
+        }
+    }
 </script>
 
 <style scoped>
+    #recoverArrow{
+        font-size: 3vw;
+        cursor: pointer;
+    }
+    #recoverFormWrapper{
+        width: 50%;
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+    #recoverContent{
+        background-color: rgba(255,250,250);
+        width: 40vw;
+        margin-left: 50%;
+        margin-top: 25%;
+        transform: translate(-50%,-50%);
+        padding-bottom: 5vh;
+        border-radius: 30px;
+    }
+    #recoverWrapper{
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        top: 0px;
+        left: 0px;
+        background-color: rgba(0,0,0,0.4);
+    }
     .autChoiceActive{
         border-bottom: solid 2px black !important;
     }
