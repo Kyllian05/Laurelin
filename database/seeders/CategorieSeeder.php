@@ -14,7 +14,7 @@ class CategorieSeeder extends Seeder
     public function run(): void
     {
         DB::table('categorie')->insert([
-            'NOM' => "Collier"
+            'NOM' => "Colliers"
         ]);
 
         DB::table('categorie')->insert([

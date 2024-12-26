@@ -9,12 +9,27 @@ Reset
 }
 
 /*
+Colors
+ */
+:root {
+    --main: #C89601;
+}
+
+/*
 Font styles
  */
 
 .font-title {
     font-family: "Tenor Sans", serif;
-    font-size: 18px;
+    font-size: 20px;
+    line-height: 40px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.font-title-24 {
+    font-family: "Tenor Sans", serif;
+    font-size: 24px;
     line-height: 40px;
     letter-spacing: 4px;
     text-transform: uppercase;
