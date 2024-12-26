@@ -7,8 +7,7 @@
     <button @click="compteur++">Incrémenter</button>
     <p v-if="urlData">Voici la valeur passé en url : {{ urlData }}</p>
     <p v-else>Vous n'avez pas passé de valeur dans l'url</p>-->
-    <div class="ImgDefillante"> 
-        <img src="/public/images/home_img.webp">
+    <div class="hero">
     </div>
     <Footer></Footer>
 </template>
@@ -29,11 +28,9 @@ let compteur = ref(0)
 </script>
 
 <style scoped>
-#form{
-    width: 30vw;
-    margin-left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 10vh;
-    margin-top: 10vh;
-}
+    .hero {
+        width: 100vw;
+        height: 100vh;
+        background: url("/public/images/home-1.png") no-repeat center center/cover;
+    }
 </style>

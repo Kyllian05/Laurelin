@@ -1,31 +1,36 @@
 <template>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=shopping_bag" />
+<div id="header">
     <div id="imgWrapper">
-        <img src="/public/images/logoSansTexte.png">
-        <p>Laurelin</p>
+        <img src="/public/images/logo-simple.png" alt="Logo">
+        <a href="/">Laurelin</a>
     </div>
     <div id="centerWrapper">
         <div v-for="page in Object.keys(allPages)" :class="{selected : currentPage === page}" @click="redirect(page)">
         {{ page }}
         </div>
     </div>
-    <button>
-        <span class="material-symbols-outlined">
-            shopping_bag
-        </span>
-        Pannier
-    </button>
+    <div id="btn-wrapper">
+        <a class="font-body-m btn-side">
+            <span class="material-symbols-rounded">location_on</span>
+        </a>
+        <a href="/auth/login" class="font-body-m btn-side">
+            <span class="material-symbols-rounded">person</span>
+        </a>
+        <a class="font-body-m p-side btn-side">
+            <span class="material-symbols-rounded">shopping_bag</span>
+            Pannier
+        </a>
+    </div>
+</div>
 </template>
 
 <script setup>
-    import { defineProps } from 'vue';
-
     defineProps(["currentPage"])
 
     let allPages = {
         "Accueil":"/",
-        "Magasin":"/shop",
-        "Notre histoire" : "/story",
+        "Nos bijoux":"/categories",
+        "Notre histoire" : "/histoire",
         "Contact":"/contact"
     }
 
@@ -35,72 +40,90 @@
 </script>
 
 <style scoped>
-    button{
-        right: 5vw;
-        font-family: "Roboto";
-        background-color: white;
-        padding: 0.5vw;
-        border: none;
-        top: 2.5vh;
-        cursor: pointer;
-        border-radius: 10px;
-        padding-left: 1vw;
-        padding-right: 1vw;
-        transition-duration: .5s;
+    #header {
+        position: fixed;
         display: flex;
-        flex-direction: row;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.5vw;
-        position: absolute;
+        top: 0;
+        width: 100%;
+        padding: 32px 48px;
+        z-index: 1000;
     }
-    button:hover{
-        background-color: black;
-        color: white;
-        transform: scale(1.1);
-    }
-    #imgWrapper p{
-        font-family: "Parisienne", serif !important;
-        font-size: 30px;
-        margin: 0px;
+
+    /* Logo left */
+    #imgWrapper a{
+        font-family: "Parisienne", serif;
+        font-size: 40px;
+        text-decoration: none;
+        color: #000000;
     }
     #imgWrapper{
         display: flex;
-        flex-direction: row;
-        gap: 2vw;
         align-items: center;
-        position: relative;
-        top: 2.5vh;
+        justify-content: center;
+        gap: 16px;
     }
     img{
-        width: 5vw;
-        height: 5vw;
+        height: 48px;
+        width: auto;
+        filter: brightness(0%) grayscale(100%);
     }
-    #centerWrapper{
-        gap: 2.5vw;
-        background-color: white;
-        padding: .5vw;
-        border-radius: 50px;
-        width: fit-content;
+
+    /* Button right */
+    #btn-wrapper {
         display: flex;
-        flex-direction: row;
-        margin-left: 50%;
-        transform: translateX(-50%);
-        top: 2.5vh;
-        position: sticky;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
     }
-    .selected{
-        background-color: black;
-        color: white;
+    .btn-side {
+        background-color: white;
+        color: #000000;
+        text-decoration: none;
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 8px ;
+        transition-duration: .3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     }
-    #centerWrapper div:hover{
-        background-color: black;
-        color: white;
+    .btn-side:hover{
+        background-color: #252525;
+        color: #ffffff;
+    }
+    .p-side {
+        padding: 8px 18px;
+    }
+
+    /* Nav center */
+    #centerWrapper{
+        display: flex;
+        gap: 16px;
+        padding: 4px 6px;
+        border-radius: 50px;
+        background-color: #ffffff;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     }
     #centerWrapper div{
-        font-family: "Roboto", serif;
-        padding: .75vw;
+        font-family: "Poppins", sans-serif;
+        padding: 8px 16px;
         border-radius: 50px;
         cursor: pointer;
-        transition-duration: .5s;
+        transition-duration: .3s;
+    }
+    #centerWrapper div:hover{
+        background-color: #efefef;
+    }
+    .selected{
+        background-color: #000000;
+        color: #ffffff;
+    }
+    #centerWrapper .selected:hover {
+        background-color: #000000;
+        color: #ffffff;
     }
 </style>

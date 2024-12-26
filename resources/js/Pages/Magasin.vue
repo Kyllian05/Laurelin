@@ -1,5 +1,5 @@
 <template>
-    <Header currentPage="Magasin"></Header>
+    <Header currentPage="Nos bijoux"></Header>
     <div class="ImgDefillante">
         <div class="text-overlay">La collection
             <li>Bijoux Laurelin</li>
@@ -34,7 +34,7 @@
         <div class="text-overlay">Boucles d'oreilles
         </div>
     </div>
-    
+
     <Footer></Footer>
 </template>
 
@@ -45,7 +45,7 @@ import Header from "./Components/Header.vue";
 
 <style scoped>
     /*.ImgDefillante {
-        width: 100%; 
+        width: 100%;
         height: auto;
         display: flex;
         justify-content: center;
@@ -55,7 +55,7 @@ import Header from "./Components/Header.vue";
 
 
     .ImgDefillante img {
-        width: 100%; 
+        width: 100%;
         height: 100%;
         object-fit: cover;
     }*/
@@ -63,7 +63,7 @@ import Header from "./Components/Header.vue";
     /*
 
     .BasPage {
-        width: 100%; 
+        width: 100%;
         height: 300px;
         display: flex;
         justify-content: center;
@@ -76,7 +76,7 @@ import Header from "./Components/Header.vue";
         width: 50%;
         height: 100%;
         text-align: center;
-        
+
     }
 
     #Catégorie {
@@ -87,7 +87,7 @@ import Header from "./Components/Header.vue";
         text-align: center;
     }*/
     .ImgDefillante {
-    width: 100%; 
+    width: 100%;
     height: auto;
     display: flex;
     justify-content: center;
@@ -96,34 +96,34 @@ import Header from "./Components/Header.vue";
     }
 
     .ImgDefillante img {
-        width: 100%; 
+        width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
     .text-overlay {
-        position: absolute; 
-        left: 50%; 
+        position: absolute;
+        left: 50%;
         transform: translate(-50%, -50%);
         color: white;
-        font-size: 3em; 
+        font-size: 3em;
         font-weight: bold;
         /*text-shadow: 2px 5px 5px rgba(0, 0, 0, 0.7); */
-        text-align: center; 
+        text-align: center;
         z-index: 1;
         list-style: none;
 
     }
 
     .BasPage {
-        width: 100%; 
+        width: 100%;
         height: 250px;
         display: flex;
-        justify-content: space-between;  
+        justify-content: space-between;
         align-items: center;
     }
 
-   
+
     #Catégorie {
         display: flex;
         background-color: black;
@@ -170,5 +170,5 @@ import Header from "./Components/Header.vue";
         height: 103%;
         border-radius:0% 0% 3% 3%;
     }
-    
+
 </style>
