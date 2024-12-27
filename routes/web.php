@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HistoireController;
 use App\Http\Controllers\ListeProduitController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,3 +41,13 @@ Route::post("/updateInfo", [AccountController::class, "update"]);
 Route::get("/categories", [MagasinController::class, "index"]);
 
 Route::get("/listeproduit", [ListeProduitController::class, "index"]);
+
+// ---
+// Histoire
+// ---
+Route::get("/histoire", [HistoireController::class, "index"]);
+
+// ---
+// Contact
+// ---
+Route::get("/contact", [ContactController::class, "index"]);
