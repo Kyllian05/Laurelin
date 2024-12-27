@@ -13,7 +13,7 @@
                 {{ page }}
             </a>
         </nav>
-        <div id="search">
+        <div id="search" @click="showSearch = true">
             <span class="material-symbols-rounded">search</span>
         </div>
     </div>
@@ -21,7 +21,7 @@
         <a class="btn-side">
             <span class="material-symbols-rounded">location_on</span>
         </a>
-        <a href="/auth/login" class="btn-side">
+        <a href="/account" class="btn-side">
             <span class="material-symbols-rounded">person</span>
         </a>
         <a class="p-side btn-side">
@@ -38,7 +38,7 @@
         </a>
     </div>
     <div class="itemWrapper">
-        <a class="item">
+        <a class="item" @click="showSearch = true">
             <span class="material-symbols-rounded">search</span>
             Rechercher
         </a>
@@ -46,16 +46,30 @@
             <span class="material-symbols-rounded">location_on</span>
             Nos boutiques
         </a>
-        <a href="/auth/login" class="item">
+        <a href="/account" class="item">
             <span class="material-symbols-rounded">person</span>
             Espace personnel
         </a>
     </div>
 </div>
+<div id="searchMenu" v-show="showSearch" @click.self="showSearch = false">
+    <div id="searchForm">
+        <label for="query" id="searchBar">
+            <span class="material-symbols-rounded">search</span>
+            <input type="search" placeholder="Rechercher un produit" name="query" v-model="searchQuery">
+            <span class="material-symbols-rounded" @click.self="searchQuery = ''">backspace</span>
+            <span class="material-symbols-rounded" @click.self="showSearch = false">close</span>
+        </label>
+        <ul id="searchResult">
+            <li v-if="!results.length">Aucun résultat</li>
+            <li v-for="result in results" :key="result.ID" @click="handleClick(result.ID)">{{ result.NOM }}</li>
+        </ul>
+    </div>
+</div>
 </template>
 
 <script setup>
-    import { ref } from 'vue'
+    import { ref, watch } from 'vue'
 
     defineProps(["currentPage"])
 
@@ -67,6 +81,38 @@
     }
 
     const showMenu = ref(false)
+    const showSearch = ref(false)
+    const searchQuery = ref("");
+    const debouncedQuery = ref("");
+    const results = ref([]);
+
+    function handleClick(id) {
+        window.location.href = `/produit/${id}`
+    }
+
+    // Request API
+    const fetchResults = async (query) => {
+        if (!query) return [];
+        const response = await fetch('/search/'+query);
+        return await response.json();
+    };
+
+    // Watcher pour appliquer un debounce à `searchQuery`
+    let debounceTimeout = null;
+    watch(
+        searchQuery,
+        (newQuery) => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                debouncedQuery.value = newQuery;
+            }, 300); // Délai de debounce
+        }
+    );
+
+    // Watcher pour lancer la recherche lorsque `debouncedQuery` change
+    watch(debouncedQuery, async (query) => {
+        results.value = await fetchResults(query);
+    });
 </script>
 
 <style scoped>
@@ -79,6 +125,76 @@
         width: 100%;
         padding: 32px 48px;
         z-index: 500;
+    }
+
+    /* Search */
+    #searchMenu {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 502;
+        backdrop-filter: blur(5px);
+    }
+    #searchForm {
+        position: absolute;
+        background: #ffffff;
+        width: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 503;
+        border-radius: 12px;
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+    #searchBar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: solid 1px #000000;
+        padding-bottom: 8px;
+    }
+    #searchBar input {
+        flex-grow: 2;
+        margin: 0 16px;
+        padding: 8px 16px;
+        border: none;
+        font-size: 16px;
+    }
+    #searchBar input:focus {
+        outline: none;
+    }
+    #searchBar span:nth-child(3) {
+        cursor: pointer;
+        margin-right: 8px;
+    }
+    #searchBar span:nth-child(4) {
+        cursor: pointer;
+    }
+    #searchResult {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+    #searchResult li {
+        padding: 16px 16px;
+        cursor: pointer;
+        border: solid 1px transparent;
+        transition: all .1s;
+    }
+    #searchResult li:nth-child(even) {
+        background: rgba(0, 0, 0, 0.05);
+    }
+    #searchResult li:hover {
+        border: solid 1px #000000;
     }
 
     /* Menu burger */
@@ -190,6 +306,17 @@
     }
 
     /* Media queries */
+    @media screen and (max-width: 1000px) {
+        #searchForm {
+            width: 80%;
+        }
+    }
+    @media screen and (max-width: 500px) {
+        #searchForm {
+            width: 100%;
+        }
+    }
+
     @media screen and (max-width: 1200px) {
         #header {
             padding: 20px;

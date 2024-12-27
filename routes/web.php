@@ -42,6 +42,8 @@ Route::get("/categories", [MagasinController::class, "index"]);
 
 Route::get("/listeproduit", [ListeProduitController::class, "index"]);
 
+Route::get("/search/{query}", [HomeController::class, "search"]);
+
 // ---
 // Histoire
 // ---
