@@ -2,6 +2,8 @@
 
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
+import { router } from '@inertiajs/vue3';
+
 
 defineProps({
     produits: Array, // Liste des produits passés depuis Laravel
@@ -17,8 +19,9 @@ const formatPrix = (prix) => {
 
 const handleClick = (produit) => {
     console.log(`Produit cliqué : ${produit.NOM}`);
-    // Par exemple : navigation vers une page de détail produit
-    $inertia.visit(`/produits/${produit.ID}`);
+    router.visit('/Produit');
+    /* $inertia.visit(`/produits/${produit.ID}`);*/
+
 };
 
 </script>
@@ -36,16 +39,12 @@ const handleClick = (produit) => {
 
   <div id="ProduitRange">
       <div class="container">
-          <div
-              v-for="(produit, index) in produits"
-              :key="produit.ID"
-              class="item"
-              @click="handleClick(produit)"
-              :style="{ backgroundImage: `url('/images/imgProd/w1242_tpadding12.webp')` }"
-          >
+          <div v-for="(produit, index) in produits" :key="produit.ID" class="item" :style="{ backgroundImage: `url('/images/imgProd/img_bague_tressage.jpg')` }">
               <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
               <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
               <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+              <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+
           </div>
       </div>
   </div>
@@ -82,6 +81,21 @@ const handleClick = (produit) => {
     min-height: 100vh;
 }
 
+#ProduitRange .container .boutton_acheter {
+    position: absolute;
+    width: 70%;
+    height: clamp(50px, 2vw, 65px);
+    left: 50%;
+    border-width: 0;
+    font-size: clamp(10px, 2vw, 22px);
+    bottom: 1%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.3s ease, background-color 0.5s ease, color 0.5s ease;
+}
 
 
 #ProduitRange .container .item {
@@ -91,6 +105,37 @@ const handleClick = (produit) => {
     max-width: 100%;
     aspect-ratio: 1 / 1;
     cursor: pointer;
+    transition: box-shadow 0.5s ease;
+}
+
+#ProduitRange .container .item:hover {
+    box-shadow: 1px 1px 6px 6px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+#ProduitRange .container .item:hover .boutton_acheter{
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+#ProduitRange .container .item:hover .materiaux-text {
+    display: none;
+}
+
+#ProduitRange .container .item:hover .prix {
+    display: none;
+}
+
+
+#ProduitRange .container .item .boutton_acheter:hover {
+    background-color: transparent;
+    border: 2px solid black;
+    color: black;
+}
+
+#ProduitRange .container .item .boutton_acheter:active {
+    transform: translateX(-50%) translateY(-10px) scale(0.98);
 }
 
 #ProduitRange .container .item .item-text {
@@ -123,6 +168,10 @@ const handleClick = (produit) => {
     font-size: clamp(12px, 2vw, 14px);
 }
 
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
 @media (min-width: 1050px) and (max-width: 1500px) {
     #ProduitRange .container .item .item-text {
         font-size: clamp(10px, 2vw, 14px);
@@ -140,7 +189,16 @@ const handleClick = (produit) => {
         line-height: 1;
         bottom: 10%;
     }
+
+    #ProduitRange .container .boutton_acheter {
+        font-size: clamp(16px, 2vw, 18px);
+        height: clamp(40px, 2vw, 60px);
+    }
+
 }
+
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
 
 @media (max-width: 450px) and (max-height: 930px) {
@@ -149,6 +207,10 @@ const handleClick = (produit) => {
     }
 
 }
+
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
 
 @media (max-width: 800px) {
     #ProduitRange .container {
@@ -184,6 +246,10 @@ const handleClick = (produit) => {
     }
 }
 
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
 @media (max-width: 650px) {
     #ProduitRange .container .item .item-text {
         bottom: 12%;
@@ -193,10 +259,18 @@ const handleClick = (produit) => {
         display: none;
     }
 
+    #ProduitRange .container .boutton_acheter {
+        font-size: clamp(12px, 2vw, 16px);
+        height: clamp(25px, 2vw, 45px);
+    }
+
 }
 
 
-@media (min-width: 800px) and (max-width: 1050px) and (min-height: 800px) {
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
+@media (min-width: 800px) and (max-width: 1050px) {
     #ProduitRange .container {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -227,6 +301,11 @@ const handleClick = (produit) => {
         bottom: 10%;
         font-size: clamp(5px, 2vw, 12px);
         line-height: 1;
+    }
+
+    #ProduitRange .container .boutton_acheter {
+        font-size: clamp(18px, 2vw, 20px);
+        height: clamp(40px, 5vw, 50px);
     }
 }
 

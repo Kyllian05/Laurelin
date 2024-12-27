@@ -4,7 +4,7 @@
         <div class="text-overlay">La collection
             <li>Bijoux Laurelin</li>
         </div>
-        <img src="/public/images/first_img.avif">
+        <img src="/public/images/img_Nos_Bijoux_finale.jpg">
     </div>
     <div class = "BasPage">
         <div class="text-overlay" id="Catégorie">
