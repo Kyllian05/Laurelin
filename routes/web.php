@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
 use App\Http\Controllers\ListeProduitController;
+use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -43,6 +44,8 @@ Route::get("/categories", [MagasinController::class, "index"]);
 Route::get("/listeproduit", [ListeProduitController::class, "index"]);
 
 Route::get("/search/{query}", [HomeController::class, "search"]);
+
+Route::get("/produit/{id}", [ProduitController::class, "show"]);
 
 // ---
 // Histoire
