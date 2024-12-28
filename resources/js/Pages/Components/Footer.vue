@@ -54,9 +54,9 @@ const content = {
             "Boucles d'oreilles": "/categories/Boucles%20d%27oreilles",
         },
         "À propos de nous": {
-            Créateur: "/a-propos",
-            Créations: "/a-propos",
-            Durabilité: "/a-propos",
+            Créateur: "/histoire",
+            Créations: "/histoire",
+            Durabilité: "/histoire",
         },
         Contact: {
             "Nous contacter": "/contact",
@@ -65,14 +65,14 @@ const content = {
     },
     "Légal": {
         "Mentions Légales": {
-            "Conditions d’utilisation": "/conditions-utilisation",
-            "Conditions de vente": "/conditions-vente",
-            "Politique de confidentialité": "/politique-confidentialite",
-            "Politique de cookies": "/politique-cookies",
+            "Conditions d’utilisation": "/conditions",
+            "Conditions de vente": "/conditions",
+            "Politique de confidentialité": "/conditions",
+            "Politique de cookies": "/conditions",
         },
         Support: {
-            Accessibilité: "/accessibilite",
-            "Effectuer un signalement": "/signalement",
+            Accessibilité: "/conditions",
+            "Effectuer un signalement": "/conditions",
         },
     },
 };

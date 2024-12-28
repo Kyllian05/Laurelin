@@ -56,7 +56,7 @@
     <div id="searchForm">
         <label for="query" id="searchBar">
             <span class="material-symbols-rounded">search</span>
-            <input type="search" placeholder="Rechercher un produit" name="query" v-model="searchQuery">
+            <input type="search" placeholder="Rechercher un produit" name="query" v-model="searchQuery" ref="searchInput">
             <span class="material-symbols-rounded" @click.self="searchQuery = ''">backspace</span>
             <span class="material-symbols-rounded" @click.self="showSearch = false">close</span>
         </label>
@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-    import { ref, watch } from 'vue'
+    import { ref, watch, nextTick } from 'vue'
 
     defineProps(["currentPage"])
 
@@ -83,8 +83,9 @@
     const showMenu = ref(false)
     const showSearch = ref(false)
     const searchQuery = ref("");
-    const debouncedQuery = ref("");
+    const debouncedQuery = ref("Laurelin");
     const results = ref([]);
+    const searchInput = ref(null);
 
     function handleClick(id) {
         window.location.href = `/produit/${id}`
@@ -105,14 +106,31 @@
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 debouncedQuery.value = newQuery;
-            }, 300); // Délai de debounce
+            }, 500); // Délai de debounce
         }
     );
 
     // Watcher pour lancer la recherche lorsque `debouncedQuery` change
-    watch(debouncedQuery, async (query) => {
+    watch(
+        debouncedQuery,
+        async (query) => {
         results.value = await fetchResults(query);
-    });
+        },
+        {immediate: true}
+    );
+
+    // Watcher pour empêcher le scroll lorsque la recherche est affichée
+    watch(showSearch, async (newValue) => {
+        if (newValue) {
+            document.documentElement.style.overflow = "hidden"
+            await nextTick()
+            if (searchInput.value) {
+                searchInput.value.focus()
+            }
+        } else {
+            document.documentElement.style.overflow = "auto"
+        }
+    })
 </script>
 
 <style scoped>
@@ -125,11 +143,12 @@
         width: 100%;
         padding: 32px 48px;
         z-index: 500;
+        background: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
     }
 
     /* Search */
     #searchMenu {
-        position: absolute;
+        position: fixed;
         width: 100%;
         height: 100%;
         top: 0;
@@ -139,7 +158,7 @@
         backdrop-filter: blur(5px);
     }
     #searchForm {
-        position: absolute;
+        position: fixed;
         background: #ffffff;
         width: 50%;
         top: 50%;
