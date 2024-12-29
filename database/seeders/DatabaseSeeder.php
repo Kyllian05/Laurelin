@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
             CategorieSeeder::class,
             ImportDonneeProduitSeeder::class,
             UtilisateurSeeder::class,
+            VilleSeeder::class,
+            AdresseSeeder::class,
+            CommandeSeeder::class,
         ]);
     }
 }

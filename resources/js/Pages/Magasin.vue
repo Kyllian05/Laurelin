@@ -14,25 +14,9 @@
             <li>Collection</li>
         </div>
     </div>
-    <div class="ImgDefillante">
-        <img src="/public/images/second_img.webp">
-        <div class="text-overlay">Bague
-        </div>
-    </div>
-    <div class="ImgDefillante">
-        <img src="/public/images/third_img.webp">
-        <div class="text-overlay">Colliers
-        </div>
-    </div>
-    <div class="ImgDefillante">
-        <img src="/public/images/fourth_img.webp">
-        <div class="text-overlay">Bracelets
-        </div>
-    </div>
-    <div class="ImgDefillante">
-        <img src="/public/images/fifth_img.webp">
-        <div class="text-overlay">Boucles d'oreilles
-        </div>
+    <div class="ImgDefillante" v-for="categorie in allCategories">
+        <img :src="'/images/'+categorie.img+'_img.webp'">
+        <div class="text-overlay">{{ categorie.text }}</div>
     </div>
 
     <Footer></Footer>
@@ -41,6 +25,13 @@
 <script setup>
 import Footer from "./Components/Footer.vue"
 import Header from "./Components/Header.vue";
+
+let allCategories = [
+    {text : "Bague",img : "second"},
+    {text : "Colliers", img : "third"},
+    {text : "Bracelets",img :"fourth"},
+    {text : "Boucles d'oreilles", img : "fifth"}
+]
 </script>
 
 <style scoped>

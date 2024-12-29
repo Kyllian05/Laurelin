@@ -1,9 +1,11 @@
 <template>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <Header></Header>
     <div id="mainWrapper">
         <div id="navWrapper">
-            <div v-for="nav in navList" :class="navConv[page] == nav ? 'currentNav' : ''">
-                <p class="font-body-s">{{ nav }}</p>
+            <div v-for="nav in Object.keys(navConv)" :class="navConv[page] == nav ? 'currentNav' : ''">
+                <span class="material-symbols-outlined">{{ navConv[nav].icon }}</span>
+                <p class="font-body-s">{{ navConv[nav].text }}</p>
             </div>
         </div>
         <div id="contentWrapper">
@@ -33,10 +35,11 @@ let props = defineProps(
     })
 
     let navConv = {
-        "info" : "Informations personnelles"
+        "info" : {text:"Informations personnelles",icon:"person"},
+        "commandes" : {text: "Mes commandes",icon:"shopping_cart"},
+        "produits favoris" : {text:"Mes produits favoris",icon:"favorite"},
+        "adresses" : {text:"Mes adresses",icon:"home"}
     }
-
-    let navList = ["Informations personnelles","Mes commandes","Mes produits favoris","Mes adresses"]
 
     let infoFields = [[],[]]
 
@@ -56,8 +59,6 @@ let props = defineProps(
     #navWrapper div p{
         width: max-content;
         text-align: center;
-        margin-left: 50%;
-        transform: translateX(-50%);
     }
     #mainWrapper{
         display: flex;
@@ -66,6 +67,7 @@ let props = defineProps(
         width: fit-content;
         margin-left: 50%;
         transform: translateX(-50%);
+        margin-top: 11vh;
     }
     .currentNav{
         background-color: black;
@@ -81,12 +83,17 @@ let props = defineProps(
     }
     #navWrapper div{
         height: 4vh;
-        padding-left: 4vw;
-        padding-right: 4vw;
+        padding-left: 2vw;
+        padding-right: 2vw;
         text-align: center;
         align-content: center;
         cursor: pointer;
         transition-duration: .2s;
+        display: flex;
+        justify-content: left;
+        gap: 1vw;
+        align-items: center;
+        text-align: center;
     }
     #contentWrapper{
         width: 50vw;
