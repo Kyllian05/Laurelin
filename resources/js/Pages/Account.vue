@@ -4,7 +4,7 @@
     <div id="mainWrapper">
         <div id="navWrapper">
             <div v-for="nav in Object.keys(navConv)" :class="dynamicPage == nav ? 'currentNav' : ''" @click="dynamicPage = nav">
-                <span class="material-symbols-outlined">{{ navConv[nav].icon }}</span>
+                <span class="material-symbols-rounded">{{ navConv[nav].icon }}</span>
                 <p class="font-body-s">{{ navConv[nav].text }}</p>
             </div>
         </div>
