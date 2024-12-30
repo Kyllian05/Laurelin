@@ -32,7 +32,7 @@ Route::post("/sendRecoveryMail", [AuthController::class, "sendRecoveryMail"]);
 // ---
 // Account
 // ---
-Route::get("/account",[AccountController::class,"index"]);
+Route::get("/account/{page?}",[AccountController::class,"index"]);
 
 Route::post("/updateInfo", [AccountController::class, "update"]);
 

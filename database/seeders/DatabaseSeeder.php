@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             VilleSeeder::class,
             AdresseSeeder::class,
             CommandeSeeder::class,
+            Produit_CommandeSeeder::class,
         ]);
     }
 }

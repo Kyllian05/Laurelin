@@ -16,7 +16,7 @@ return new class extends Migration
                 QUANTITE INT NOT NULL,
                 TAILLE INT,
                 ID_PRODUIT INT NOT NULL,
-                ID_COMMANDE INT NOT NULL UNIQUE,
+                ID_COMMANDE INT NOT NULL,
                 PRIMARY KEY (ID_PRODUIT, ID_COMMANDE)
             )
         ");

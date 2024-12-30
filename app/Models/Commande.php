@@ -25,4 +25,8 @@ class Commande extends Model
         'ID_UTILISATEUR',
         'ID_ADRESSE',
     ];
+
+    static function getAllCommandes(Utilisateur $utilisateur){
+        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->get();
+    }
 }
