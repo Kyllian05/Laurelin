@@ -19,7 +19,7 @@ class ImageSeeder extends Seeder
             $images_root_url = Storage::files($product);
             foreach ($images_root_url as $image) {
 
-                $url = '/public/'.str_replace('images', 'pictures', $image);
+                $url = '/'.str_replace('images', 'pictures', $image);
                 $id_prod = pathinfo($product, PATHINFO_BASENAME);
 
                 DB::table('Image')->insert([

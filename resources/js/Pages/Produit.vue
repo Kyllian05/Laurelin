@@ -3,7 +3,8 @@ import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 
 defineProps({
-    produit: Object
+    produit: Object,
+    images: Array,
 })
 </script>
 
@@ -16,6 +17,8 @@ defineProps({
     <pre v-if="produit">
         {{produit}}
     </pre>
+    <h3>Images :</h3>
+    <img v-for="img in images" :key="img.URL" :src="img.URL">
 <Footer></Footer>
 </template>
 
