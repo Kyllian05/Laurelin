@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdresseSeeder::class,
             CommandeSeeder::class,
             ImageSeeder::class,
+            Produit_CommandeSeeder::class,
         ]);
     }
 }

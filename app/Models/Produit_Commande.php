@@ -23,4 +23,8 @@ class Produit_Commande extends Model
         'ID_PRODUIT',
         'ID_COMMANDE',
     ];
+
+    static function getAllProducts(int $commande_id){
+        return self::where("ID_COMMANDE", $commande_id)->get();
+    }
 }
