@@ -79,7 +79,7 @@ return new class extends Migration
                 DECLARE STOCK_STATUS INT;
                 SELECT STOCK INTO STOCK_STATUS FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
                 IF STOCK_STATUS = 0 THEN
-                    UPDATE Produit SET ETAT = 'Produit Plus Disponible' WHERE STOCK = STOCK_STATUS;
+                    UPDATE Produit SET ETAT = 'Produit indisponible' WHERE STOCK = STOCK_STATUS;
                 END IF;
             END;
         ");
@@ -130,9 +130,22 @@ return new class extends Migration
 
 
         /* OK */
+        // Insert
         DB::statement("
-            CREATE OR REPLACE TRIGGER VALID_NUMBER
+            CREATE TRIGGER VALID_NUMBER_INSERT
             BEFORE INSERT ON Utilisateur
+            FOR EACH ROW
+            BEGIN
+                IF NEW.TELEPHONE NOT REGEXP '^\\\\+[0-9]{1,15}$' THEN
+                    SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Le numéro de téléphone peut être composé au maximum de 15 chiffres.';
+                END IF;
+            END;
+        ");
+        // Update
+        DB::statement("
+            CREATE TRIGGER VALID_NUMBER_UPDATE
+            BEFORE UPDATE ON Utilisateur
             FOR EACH ROW
             BEGIN
                 IF NEW.TELEPHONE NOT REGEXP '^\\\\+[0-9]{1,15}$' THEN
@@ -144,9 +157,22 @@ return new class extends Migration
 
 
         /* OK */
+        // Insert
         DB::statement("
-            CREATE OR REPLACE TRIGGER VALID_EMAIL
+            CREATE OR REPLACE TRIGGER VALID_EMAIL_INSERT
             BEFORE INSERT ON Utilisateur
+            FOR EACH ROW
+            BEGIN
+                IF NEW.EMAIL NOT REGEXP '^[[:alnum:]_.-]+@([[:alnum:]-]+\\.)+[[:alnum:]]{2,4}$' THEN
+                    SIGNAL SQLSTATE '45016'
+                    SET MESSAGE_TEXT = 'Adresse EMAIL non valide.';
+                END IF;
+            END;
+        ");
+        // Update
+        DB::statement("
+            CREATE OR REPLACE TRIGGER VALID_EMAIL_UPDATE
+            BEFORE UPDATE ON Utilisateur
             FOR EACH ROW
             BEGIN
                 IF NEW.EMAIL NOT REGEXP '^[[:alnum:]_.-]+@([[:alnum:]-]+\\.)+[[:alnum:]]{2,4}$' THEN
@@ -172,7 +198,9 @@ return new class extends Migration
         DB::statement("DROP TRIGGER IF EXISTS VERIF_COMMENTAIRE");
         DB::statement("DROP TRIGGER IF EXISTS NO_DELETE_USER_COMMANDES");
         DB::statement("DROP TRIGGER IF EXISTS SET_DATE_COMMANDE");
-        DB::statement("DROP TRIGGER IF EXISTS VALID_NUMBER");
-        DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_NUMBER_INSERT");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_NUMBER_UPDATE");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL_INSERT");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL_UPDATE");
     }
 };

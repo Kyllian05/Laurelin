@@ -1,10 +1,9 @@
 <template>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <Header></Header>
     <div id="mainWrapper">
         <div id="navWrapper">
             <div v-for="nav in Object.keys(navConv)" :class="navConv[page] == nav ? 'currentNav' : ''">
-                <span class="material-symbols-outlined">{{ navConv[nav].icon }}</span>
+                <span class="material-symbols-rounded">{{ navConv[nav].icon }}</span>
                 <p class="font-body-s">{{ navConv[nav].text }}</p>
             </div>
         </div>
