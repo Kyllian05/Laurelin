@@ -75,7 +75,7 @@
 
     let allPages = {
         "Accueil":"/",
-        "Nos bijoux":"/categories",
+        "Nos bijoux":"/bijoux",
         "Notre histoire" : "/histoire",
         "Contact":"/contact"
     }

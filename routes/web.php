@@ -14,6 +14,8 @@ use App\Http\Controllers\MagasinController;
 // Home
 Route::get("/",[HomeController::class,"index"]);
 
+Route::get("/search/{query}", [HomeController::class, "search"]);
+
 // ---
 // Auth
 // ---
@@ -39,12 +41,17 @@ Route::post("/updateInfo", [AccountController::class, "update"]);
 // ---
 // Magasin
 // ---
-Route::get("/categories", [MagasinController::class, "index"]);
+Route::get("/bijoux", [MagasinController::class, "list_categories_collections"]);
+
+Route::get("/categories/{name}", [MagasinController::class, "list_categories"]);
+
+Route::get("/collections/{name}", [MagasinController::class, "list_collections"]);
 
 Route::get("/listeproduit", [ListeProduitController::class, "index"]);
 
-Route::get("/search/{query}", [HomeController::class, "search"]);
-
+// ---
+// Produit
+// ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
 
 // ---

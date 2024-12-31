@@ -12,23 +12,40 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Suppression des procédures pour que le "migrate:fresh" fonctionne
-        DB::statement("DROP PROCEDURE IF EXISTS select_all_images;");
-        DB::statement("DROP PROCEDURE IF EXISTS select_one_image;");
+        // ---
+        // Procédures table catégorie et collection avec produit
+        // ---
+        DB::statement("
+            CREATE OR REPLACE PROCEDURE select_product_categories (IN name VARCHAR(255))
+            BEGIN
+                SELECT * FROM Produit WHERE ID_CATEGORIE in (
+                    SELECT ID FROM categorie WHERE NOM = name
+                );
+            END;
+        ");
+
+        DB::statement("
+            CREATE OR REPLACE PROCEDURE select_product_collection (IN name VARCHAR(255))
+            BEGIN
+                SELECT * FROM Produit WHERE ID_COLLECTION in (
+                    SELECT ID FROM Collection WHERE NOM = name
+                );
+            END;
+        ");
 
         // ---
         // Procédures table Image
         // ---
 
         DB::statement("
-            CREATE PROCEDURE select_all_images (IN id INT)
+            CREATE OR REPLACE PROCEDURE select_all_images (IN id INT)
             BEGIN
                 SELECT URL FROM Image WHERE ID_PRODUIT = id;
             END;
         ");
 
         DB::statement("
-            CREATE PROCEDURE select_one_image (IN id INT)
+            CREATE OR REPLACE PROCEDURE select_one_image (IN id INT)
             BEGIN
                 SELECT URL FROM Image WHERE ID_PRODUIT = id LIMIT 1;
             END;
@@ -40,6 +57,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement("DROP PROCEDURE IF EXISTS select_product_collection;");
+        DB::statement("DROP PROCEDURE IF EXISTS select_product_categories;");
         DB::statement("DROP PROCEDURE IF EXISTS select_all_images;");
         DB::statement("DROP PROCEDURE IF EXISTS select_one_image;");
     }

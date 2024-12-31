@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Categorie extends Model
 {
@@ -21,4 +22,9 @@ class Categorie extends Model
     protected $fillable = [
         'NOM',
     ];
+
+    public static function get_products($categorie_name) {
+        $name = addslashes($categorie_name);
+        return DB::select("call select_product_categories('$name')");
+    }
 }
