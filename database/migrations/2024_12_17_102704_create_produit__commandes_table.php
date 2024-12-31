@@ -17,7 +17,8 @@ return new class extends Migration
                 TAILLE INT,
                 ID_PRODUIT INT NOT NULL,
                 ID_COMMANDE INT NOT NULL,
-                PRIMARY KEY (ID_PRODUIT, ID_COMMANDE)
+                PRIX INT NOT NULL,
+                PRIMARY KEY (ID_PRODUIT, ID_COMMANDE,TAILLE)
             )
         ");
     }

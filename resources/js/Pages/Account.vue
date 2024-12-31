@@ -28,6 +28,10 @@
                             <p class="font-body-s">{{ produit["Nom"] }} {{ produit["Quantité"] > 1 ? 'x'+produit["Quantité"] : '' }}</p>
                         </li>
                     </ul>
+                    <div class="commandSideWrapper">
+                        <button class="font-body-s" :class="commande['Etat'] == 2 ? 'commandFinished' : ''">{{ etatText[commande["Etat"]] }}</button>
+                        <p class="font-body-s">TOTAL : {{ getCommandeSum(commande) }}€</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -59,6 +63,12 @@ let props = defineProps(
         "adresses" : {text:"Mes adresses",icon:"home"}
     }
 
+    let etatText = {
+        "0" : "En cours de préparation",
+        "1" : "Expediée",
+        "2" : "Terminée"
+    }
+
     let infoFields = [[],[]]
 
     for(let i = 0;i<3;i++){
@@ -67,13 +77,44 @@ let props = defineProps(
 
     infoFields[1].push({"name":Object.keys(props.info)[3],"value":props.info[Object.keys(props.info)[3]],"required":false})
 
+    function getCommandeSum(commande){
+        let sum = 0
+        commande["Produits"].forEach((produit)=>{
+            sum += produit["Prix"] * produit["Quantité"]
+        })
+        return sum
+    }
 </script>
 
 <style scoped>
+    .commandSideWrapper p{
+        margin-top: 2vh;
+    }
+    .commandSideWrapper{
+        position: absolute;
+        right: 2vw;
+        top: 2vw;
+        text-align: center;
+    }
+    .commandFinished{
+        color: white;
+        background-color: black!important;
+    }
+    .commandWrapper button{
+        border: solid 2px black;
+        border-radius: 25px;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        padding-left: 2.5vw;
+        padding-right: 2.5vw;
+        background-color: transparent;
+        font-size: 16px;
+    }
     .commandWrapper{
         padding-bottom: 2vh;
         padding-top: 2vh;
         padding-left: 1vw;
+        position: relative;
     }
     .grayBackground{
         background-color: #eee;

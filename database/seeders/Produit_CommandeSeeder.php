@@ -18,6 +18,7 @@ class Produit_CommandeSeeder extends Seeder
             "TAILLE" => 0,
             "ID_PRODUIT" => 1,
             "ID_COMMANDE" => 1,
+            "PRIX" => \App\Models\Produit::getProduct(1)["PRIX"]
         ]);
 
         DB::table('Produit_Commande')->insert([
@@ -25,6 +26,7 @@ class Produit_CommandeSeeder extends Seeder
             "TAILLE" => 0,
             "ID_PRODUIT" => 5,
             "ID_COMMANDE" => 2,
+            "PRIX" => \App\Models\Produit::getProduct(5)["PRIX"]
         ]);
 
         DB::table('Produit_Commande')->insert([
@@ -32,6 +34,15 @@ class Produit_CommandeSeeder extends Seeder
             "TAILLE" => 0,
             "ID_PRODUIT" => 7,
             "ID_COMMANDE" => 2,
+            "PRIX" => \App\Models\Produit::getProduct(7)["PRIX"]
+        ]);
+
+        DB::table('Produit_Commande')->insert([
+            "QUANTITE" => 3,
+            "TAILLE" => 0,
+            "ID_PRODUIT" => 1,
+            "ID_COMMANDE" => 3,
+            "PRIX" => \App\Models\Produit::getProduct(1)["PRIX"]
         ]);
     }
 }

@@ -27,5 +27,12 @@ class CommandeSeeder extends Seeder
             "ID_UTILISATEUR" => 1,
             "ID_ADRESSE" => 1,
         ]);
+        DB::table('Commande')->insert([
+            "DATE" => date ('Y-m-d H:i:s', time()-100000),
+            "ETAT" => 2,
+            "MODE_LIVRAISON" => "domicile",
+            "ID_UTILISATEUR" => 1,
+            "ID_ADRESSE" => 1,
+        ]);
     }
 }

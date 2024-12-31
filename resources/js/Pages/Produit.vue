@@ -22,8 +22,6 @@ defineProps({
 <Footer></Footer>
 </template>
 
-
-
 <style scoped>
 
 #produitEnVente {

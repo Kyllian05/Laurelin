@@ -31,6 +31,7 @@ class AccountController extends Controller
                     $temp["Produits"][] = [
                         "Nom" => $produitEntity["NOM"],
                         "Quantité" => $produit["QUANTITE"],
+                        "Prix" => $produit["PRIX"],
                     ];
                 }
 
