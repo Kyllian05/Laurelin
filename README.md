@@ -26,6 +26,11 @@ Pour recréer la base de données et la remplir, il faut utiliser :
 php artisan migrate:fresh --seed
 ```
 
+Pour créer les liens symboliques avec les fichiers du storage :
+```shell
+php artisan storage:link
+```
+
 Pour créer un model, une migration, etc.
 ```shell
 php aritsan make:[model, migration, ...] [nom fichier]
