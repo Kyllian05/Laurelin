@@ -1,10 +1,8 @@
 <script setup>
-
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import { router } from '@inertiajs/vue3';
 import { reactive, computed } from "vue";
-
 
 const props = defineProps({
     produits: {
@@ -15,7 +13,6 @@ const props = defineProps({
 
 const produitsAffiches = reactive([...props.produits]);
 
-
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
     return new Intl.NumberFormat("fr-FR", {
@@ -25,10 +22,7 @@ const formatPrix = (prix) => {
 };
 
 const handleClick = (produit) => {
-    console.log(`Produit cliqué : ${produit.NOM}`);
-    router.visit(`/produit/${produit.ID}`); // J'ai modifié la route elle prend en paramètre l'id du produit
-    /* $inertia.visit(`/produits/${produit.ID}`);*/
-
+    router.visit(`/produit/${produit.ID}`);
 };
 
 // Fonction pour trier les produits
@@ -41,7 +35,6 @@ const trierProduits = (critere) => {
         produitsAffiches.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
     }
 };
-
 </script>
 
 /* -----------------------HTML----------------------- */
@@ -68,6 +61,9 @@ const trierProduits = (critere) => {
     <div id="ProduitRange">
         <div class="container">
             <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
+                <!-- TODO : faire le backend du btn favoris -->
+                <span class="material-symbols-rounded add-fav">favorite</span>
+                <!-- - - - - - - - - - - - - -  -->
                 <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                 <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
                 <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
@@ -79,6 +75,22 @@ const trierProduits = (critere) => {
 </template>
 
 <style scoped>
+.add-fav {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    cursor: pointer;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    padding: 8px 8px 7px 8px;
+    border-radius: 50px;
+    opacity: 0;
+    transition: all .3s;
+}
+.add-fav:hover {
+    background: #000;
+    color: #ffffff;
+}
 
 #FirstRange {
     width: 100%;
@@ -96,37 +108,34 @@ const trierProduits = (critere) => {
 }
 
 #SecondRange {
-    width: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 32px 64px;
 }
 
 #SecondRange #Tri-produit {
-    position: absolute;
-    padding: 5px;
-    margin: 10px;
+    padding: 10px 24px;
     font-size: 14px;
-    width: 18%;
-    height: 35px;
-    right: 10px;
+    width: 250px;
     background-color: black;
-    border: 0px;
     border-radius: 8px;
+    border: none;
     color: white;
-    transition: background-color 0.5s ease, color 0.5s ease, b;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 #SecondRange #Tri-produit:hover {
-    background-color: transparent;
-    color: black;
-    border: 2px solid black;
+    background-color: #333333;
 }
-
 
 #ProduitRange .container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    margin: 20px;
-    margin-top: 50px;
-    gap: 20px;
+    margin: 20px 20px 80px;
+    gap: 32px;
     min-height: 100vh;
 }
 
@@ -153,12 +162,11 @@ const trierProduits = (critere) => {
     background-position: center;
     max-width: 100%;
     aspect-ratio: 1 / 1;
-    cursor: pointer;
     transition: box-shadow 0.5s ease;
 }
 
 #ProduitRange .container .item:hover {
-    box-shadow: 1px 1px 6px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
     z-index: 10;
 }
 
@@ -166,6 +174,11 @@ const trierProduits = (critere) => {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(-10px);
+    cursor: pointer;
+}
+
+#ProduitRange .container .item:hover .add-fav {
+    opacity: 1;
 }
 
 #ProduitRange .container .item:hover .materiaux-text {
