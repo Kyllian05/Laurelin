@@ -1,16 +1,31 @@
 <template>
-<Header current-page="Nos bijoux"></Header>
-<div id="produitEnVente">
-    <button class="boutton_acheter font-subtitle-16" >Acheter</button>
-    <!--TODO rendre le bouton joli-->
-    <button @click="favorisAction()" id="favoriteButton">{{!dynamicFavorite ? "Ajouter aux favoris" : "Supprimer des favoris"}}</button>
-</div>
-    <pre v-if="produit">
-        {{produit}}
-    </pre>
-    <h3>Images :</h3>
-    <img v-for="img in images" :key="img.URL" :src="img.URL">
-<Footer></Footer>
+    <Header current-page="Nos bijoux"></Header>
+
+    <div id="page">
+        <div id="produitEnVente">
+            <pre v-if="produit">
+            {{produit}}
+            </pre>
+            <button class="boutton_acheter font-subtitle-16" >Acheter</button>
+            <!--TODO rendre le bouton joli-->
+            <button @click="favorisAction()" id="favoriteButton">{{!dynamicFavorite ? "Ajouter aux favoris" : "Supprimer des favoris"}}</button>
+
+        </div>
+
+        <div id="img1" v-if="images[0]">
+            <img :src="images[0].URL">
+        </div>
+
+        <div id="img2" v-if="images[1]">
+            <img :src="images[1].URL">
+        </div>
+
+        <div id="img3" v-if="images[2]">
+            <img :src="images[2].URL">
+        </div>
+    </div>
+
+    <Footer></Footer>
 </template>
 
 <script setup>
@@ -50,13 +65,16 @@ function favorisAction(){
 
 <style scoped>
 
-#favoriteButton{
-    margin-top: 10vh;
+#page {
+    display: grid;
+    margin-top: 8%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
 }
 
 #produitEnVente {
-    height: 100vh;
-    background: url("/public/images/imgProd/img_bague_tressage.jpg") no-repeat center 45%/cover;
+    grid-column: 3 / 4;
+    grid-row: 1 / 2;
 }
 
 #produitEnVente .boutton_acheter {
@@ -64,5 +82,35 @@ function favorisAction(){
     bottom: 20%;
 
 }
+
+#img1 {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    width: 52vw;
+    height: auto;
+}
+
+#img2 {
+    grid-column: 1/2;
+    grid-row: 2;
+    width: 26vw;
+    height: auto;
+}
+
+#img3 {
+    grid-column: 2 /3;
+    grid-row: 2;
+    width: 26vw;
+    height: auto;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+
 
 </style>
