@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use http\Cookie;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,6 +38,9 @@ class Utilisateur extends Model
             }
         }catch(\Exception $e){
             if($e->getCode() == 517){
+                $current = null;
+            }else if($e->getCode() == 518){
+                \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
                 $current = null;
             }else{
                 throw $e;

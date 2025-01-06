@@ -94,6 +94,18 @@ return new class extends Migration
                     FOREIGN KEY (UTILISATEUR) REFERENCES Utilisateur(ID)
             ON DELETE CASCADE
         ");
+
+        DB::statement("
+            ALTER TABLE Favoris
+                ADD CONSTRAINT fk_favoris_utilisateur
+                    FOREIGN KEY (ID_UTILISATEUR) REFERENCES Utilisateur(ID)
+        ");
+
+        DB::statement("
+            ALTER TABLE Favoris
+                ADD CONSTRAINT fk_favoris_produit
+                    FOREIGN KEY (ID_PRODUIT) REFERENCES PROduit(ID)
+        ");
     }
 
     /**

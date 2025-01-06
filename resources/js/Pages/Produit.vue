@@ -1,18 +1,9 @@
-<script setup>
-import Header from "./Components/Header.vue";
-import Footer from "./Components/Footer.vue";
-
-defineProps({
-    produit: Object,
-    images: Array,
-})
-</script>
-
-
 <template>
 <Header current-page="Nos bijoux"></Header>
 <div id="produitEnVente">
     <button class="boutton_acheter font-subtitle-16" >Acheter</button>
+    <!--TODO rendre le bouton joli-->
+    <button @click="favorisAction()" id="favoriteButton">{{!dynamicFavorite ? "Ajouter aux favoris" : "Supprimer des favoris"}}</button>
 </div>
     <pre v-if="produit">
         {{produit}}
@@ -22,7 +13,46 @@ defineProps({
 <Footer></Footer>
 </template>
 
+<script setup>
+import Header from "./Components/Header.vue";
+import Footer from "./Components/Footer.vue";
+import {ref} from "vue";
+
+const props = defineProps({
+    "produit" : Object,
+    "images" : String,
+    "isFavorite" : Boolean,
+})
+
+const dynamicFavorite = ref(props.isFavorite)
+
+function favorisAction(){
+    let destination = "/produit/ajouterFavoris"
+    if(dynamicFavorite.value){
+        destination = "/produit/supprimerFavoris"
+    }
+    fetch(destination,{
+        method : "POST",
+        body : JSON.stringify({
+            produit : props.produit["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+            dynamicFavorite.value = !dynamicFavorite.value
+        }
+    })
+}
+</script>
+
 <style scoped>
+
+#favoriteButton{
+    margin-top: 10vh;
+}
 
 #produitEnVente {
     height: 100vh;

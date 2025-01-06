@@ -51,6 +51,8 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // Produit
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
+Route::post("/produit/ajouterFavoris", [ProduitController::class, "ajoutFavoris"]);
+Route::post("/produit/supprimerFavoris", [ProduitController::class, "supprimerFavoris"]);
 
 // ---
 // Histoire
