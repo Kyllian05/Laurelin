@@ -18,12 +18,14 @@ class MagasinController extends Controller
     }
 
     public function list_categories(string $name, Request $request){
-        // TODO
-        return response(Categorie::get_products($name), 200);
+        return Inertia::render("ListeProduit", [
+            'produits' => Categorie::get_products($name)
+        ]);
     }
 
     public function list_collections(string $name, Request $request){
-        // TODO
-        return response(Collection::get_products($name), 200);
+        return Inertia::render("ListeProduit", [
+            'produits' => Collection::get_products($name)
+        ]);
     }
 }

@@ -3,11 +3,18 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import { router } from '@inertiajs/vue3';
+import { reactive, computed } from "vue";
 
 
-defineProps({
-    produits: Array, // Liste des produits passés depuis Laravel
+const props = defineProps({
+    produits: {
+        type: Array,
+        required: true
+    }
 });
+
+const produitsAffiches = reactive([...props.produits]);
+
 
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
@@ -24,36 +31,52 @@ const handleClick = (produit) => {
 
 };
 
+// Fonction pour trier les produits
+const trierProduits = (critere) => {
+    if (critere === "croiss") {
+        produitsAffiches.sort((a, b) => a.PRIX - b.PRIX);
+    } else if (critere === "decroiss") {
+        produitsAffiches.sort((a, b) => b.PRIX - a.PRIX);
+    } else if (critere === "recent") {
+        produitsAffiches.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
+    }
+};
+
 </script>
 
 /* -----------------------HTML----------------------- */
 
 <template>
-
-<Header current-page="Nos bijoux"></Header>
-  <div id="FirstRange" >
+    <Header current-page="Nos bijoux"></Header>
+    <div id="FirstRange" >
     <span class="material-symbols-rounded">
       arrow_back_ios
     </span>
-  </div>
+    </div>
 
-  <div id="ProduitRange">
-      <div class="container">
-          <div v-for="(produit, index) in produits" :key="produit.ID" class="item" :style="{ backgroundImage: `url('/images/imgProd/img_bague_tressage.jpg')` }">
-              <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
-              <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
-              <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
-              <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+    <div id="SecondRange">
+        <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
+            <option value="">Trier par</option>
+            <option value="croiss">Prix croissant</option>
+            <option value="decroiss">Prix décroissant</option>
+            <option value="recent">Les plus récents</option>
+        </select>
+    </div>
 
-          </div>
-      </div>
-  </div>
 
+
+    <div id="ProduitRange">
+        <div class="container">
+            <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
+                <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+                <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
+                <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+                <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+            </div>
+        </div>
+    </div>
 <Footer></Footer>
-
 </template>
-
-/* -----------------------CSS----------------------- */
 
 <style scoped>
 
@@ -72,11 +95,37 @@ const handleClick = (produit) => {
     transform: translateX(-50%) rotate(-90deg)
 }
 
+#SecondRange {
+    width: 100vh;
+}
+
+#SecondRange #Tri-produit {
+    position: absolute;
+    padding: 5px;
+    margin: 10px;
+    font-size: 14px;
+    width: 18%;
+    height: 35px;
+    right: 10px;
+    background-color: black;
+    border: 0px;
+    border-radius: 8px;
+    color: white;
+    transition: background-color 0.5s ease, color 0.5s ease, b;
+}
+
+#SecondRange #Tri-produit:hover {
+    background-color: transparent;
+    color: black;
+    border: 2px solid black;
+}
+
 
 #ProduitRange .container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     margin: 20px;
+    margin-top: 50px;
     gap: 20px;
     min-height: 100vh;
 }
@@ -217,6 +266,7 @@ const handleClick = (produit) => {
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
+        margin-top: 50px;
         gap: 20px;
         min-height: 100vh;
     }
@@ -275,6 +325,7 @@ const handleClick = (produit) => {
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
+        margin-top: 50px;
         gap: 20px;
         min-height: 100vh;
 
