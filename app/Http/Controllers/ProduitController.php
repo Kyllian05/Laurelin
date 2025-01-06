@@ -24,25 +24,5 @@ class ProduitController extends Controller
         return response("", 404);
     }
 
-    public function ajoutFavoris(Request $request){
-        $data = $request->post();
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
-        if($user == null){
-            return response("", 404);
-        }
-        $produit = \App\Models\Produit::getProduct($data['produit']);
-        \App\Models\Favoris::ajouterAuxFavoris($produit,$user);
-        return response("", 200);
-    }
 
-    public function supprimerFavoris(Request $request){
-        $data = $request->post();
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
-        if($user == null){
-            return response("", 404);
-        }
-        $produit = \App\Models\Produit::getProduct($data['produit']);
-        \App\Models\Favoris::supprimerDesFavoris($produit,$user);
-        return response("", 200);
-    }
 }

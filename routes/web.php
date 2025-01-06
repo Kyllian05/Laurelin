@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
 use App\Http\Controllers\ListeProduitController;
+use \App\Http\Controllers\FavorisController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,8 +52,12 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // Produit
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
-Route::post("/produit/ajouterFavoris", [ProduitController::class, "ajoutFavoris"]);
-Route::post("/produit/supprimerFavoris", [ProduitController::class, "supprimerFavoris"]);
+
+// ---
+// Favoris
+// ---
+Route::post("/ajouterFavoris", [FavorisController::class, "ajoutFavoris"]);
+Route::post("/supprimerFavoris", [FavorisController::class, "supprimerFavoris"]);
 
 // ---
 // Histoire

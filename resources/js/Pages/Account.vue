@@ -34,6 +34,18 @@
                     </div>
                 </div>
             </div>
+            <div v-else-if="dynamicPage == 'favoris'" id="favorisWrapper">
+                <div v-for="favori in dynamicFavoris" class="favorisWrappers">
+                    <div style="position: relative;width: fit-content">
+                        <a :href="'/produit/'+favori['ID']" target="_blank"><img :src="favori['Image']['URL']" class="favorisImage"></a>
+                        <span class="material-symbols-outlined favoriteRemoveSymbol" @click="supprimerFavoris(favori['ID'])">
+                            remove
+                        </span>
+                    </div>
+                    <p>{{ favori.Nom }}</p>
+                    <p>{{ favori.Prix }}€</p>
+                </div>
+            </div>
         </div>
     </div>
     <Footer></Footer>
@@ -49,17 +61,18 @@ let props = defineProps(
     {
         "page":String,
         "info":Object,
-        "commandes":Object
+        "commandes":Object,
+        "favoris" : Object
     })
 
-    console.log(props.commandes)
+    let dynamicFavoris = ref(props.favoris)
 
     let dynamicPage = ref(props.page)
 
     let navConv = {
         "info" : {text:"Informations personnelles",icon:"person"},
         "commandes" : {text: "Mes commandes",icon:"shopping_cart"},
-        "produits favoris" : {text:"Mes produits favoris",icon:"favorite"},
+        "favoris" : {text:"Mes produits favoris",icon:"favorite"},
         "adresses" : {text:"Mes adresses",icon:"home"}
     }
 
@@ -84,9 +97,53 @@ let props = defineProps(
         })
         return sum
     }
+
+    function supprimerFavoris(id){
+        fetch("/supprimerFavoris",{
+            method : "POST",
+            body : JSON.stringify({
+                produit : id
+            }),
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response => {
+            if(response.status == 200){
+                dynamicFavoris.value = dynamicFavoris.value.filter((favori) => favori["ID"] != id)
+            }
+        })
+    }
 </script>
 
 <style scoped>
+    .favoriteRemoveSymbol{
+        position: absolute;
+        right: 0.5vw;
+        top: 0.5vw;
+        display: none;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(0,0,0,20%);
+    }
+    .favorisWrappers a:hover + .favoriteRemoveSymbol{
+        display: inline!important;
+    }
+    .favorisImage:hover{
+        filter: brightness(70%);
+    }
+    .favorisWrappers{
+        text-align: center;
+    }
+    #favorisWrapper{
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+    }
+    .favorisImage{
+        width: 15vw;
+        cursor: pointer;
+        transition-duration: .25s;
+    }
     .commandSideWrapper p{
         margin-top: 2vh;
     }

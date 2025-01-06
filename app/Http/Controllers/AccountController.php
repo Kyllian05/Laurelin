@@ -38,6 +38,17 @@ class AccountController extends Controller
                 $commandesData[] = $temp;
             }
 
+            $favoris = [];
+            foreach(\App\Models\Favoris::getAllFavoris($user) as $favori){
+                $produit  = \App\Models\Produit::getProduct($favori["ID_PRODUIT"]);
+                $favoris[] = [
+                    "Nom" => $produit["NOM"],
+                    "Prix" => $produit["PRIX"],
+                    "Image" => \App\Models\Image::get_one_image($produit["ID"])[0],
+                    "ID" => $produit["ID"],
+                ];
+            }
+
             return Inertia::render("Account",[
                 "page"=>$page,
                 "info"=>[
@@ -46,7 +57,8 @@ class AccountController extends Controller
                     "Téléphone"=>$user["TELEPHONE"],
                     "Adresse mail"=>$user["EMAIL"],
                 ],
-                "commandes"=>$commandesData
+                "commandes"=>$commandesData,
+                "favoris"=>$favoris,
             ]);
         }catch (\Exception $e){
             if($e->getCode() == 518){

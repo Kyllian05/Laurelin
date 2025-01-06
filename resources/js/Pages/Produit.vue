@@ -42,9 +42,9 @@ const props = defineProps({
 const dynamicFavorite = ref(props.isFavorite)
 
 function favorisAction(){
-    let destination = "/produit/ajouterFavoris"
+    let destination = "/ajouterFavoris"
     if(dynamicFavorite.value){
-        destination = "/produit/supprimerFavoris"
+        destination = "/supprimerFavoris"
     }
     fetch(destination,{
         method : "POST",
