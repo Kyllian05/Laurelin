@@ -18,18 +18,20 @@ return new class extends Migration
         DB::statement("
             CREATE OR REPLACE PROCEDURE select_product_categories (IN name VARCHAR(255))
             BEGIN
-                SELECT * FROM Produit WHERE ID_CATEGORIE in (
+                SELECT p.ID, p.NOM, p.MATERIAUX, p.PRIX, p.ETAT, p.ANNEE_CREATION, MIN(i.URL) as URL FROM Produit p, Image i WHERE p.ID_CATEGORIE in (
                     SELECT ID FROM categorie WHERE NOM = name
-                );
+                ) and i.ID_PRODUIT = p.ID
+                GROUP BY p.ID, p.NOM, p.MATERIAUX, p.PRIX, p.ETAT, p.ANNEE_CREATION;
             END;
         ");
 
         DB::statement("
             CREATE OR REPLACE PROCEDURE select_product_collection (IN name VARCHAR(255))
             BEGIN
-                SELECT * FROM Produit WHERE ID_COLLECTION in (
+                SELECT p.ID, p.NOM, p.MATERIAUX, p.PRIX, p.ETAT, p.ANNEE_CREATION, MIN(i.URL) as URL FROM Produit p, Image i WHERE p.ID_COLLECTION in (
                     SELECT ID FROM Collection WHERE NOM = name
-                );
+                ) and i.ID_PRODUIT = p.ID
+                GROUP BY p.ID, p.NOM, p.MATERIAUX, p.PRIX, p.ETAT, p.ANNEE_CREATION;
             END;
         ");
 

@@ -47,8 +47,6 @@ Route::get("/categories/{name}", [MagasinController::class, "list_categories"]);
 
 Route::get("/collections/{name}", [MagasinController::class, "list_collections"]);
 
-Route::get("/listeproduit", [ListeProduitController::class, "index"]);
-
 // ---
 // Produit
 // ---
