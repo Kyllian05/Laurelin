@@ -1,5 +1,6 @@
 <template>
 <div id="header">
+    <link rel="icon" href="/images/logo-simple.png" type="image/png">
     <div id="burgerMenu" class="btn-side p-side" @click="showMenu = true">
         <span class="material-symbols-rounded">menu</span>
     </div>
