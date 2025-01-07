@@ -1,3 +1,7 @@
+
+/* -----------------------JS----------------------- */
+
+
 <script setup>
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
@@ -16,6 +20,9 @@ const props = defineProps({
 });
 
 const produitsAffiches = reactive([...props.produits]);
+const itemsPerPage = 6;
+let currentPage = 1;
+
 
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
@@ -25,9 +32,6 @@ const formatPrix = (prix) => {
     }).format(prix);
 };
 
-const handleClick = (produit) => {
-    router.visit(`/produit/${produit.ID}`);
-};
 
 // Fonction pour trier les produits
 const trierProduits = (critere) => {
@@ -40,8 +44,6 @@ const trierProduits = (critere) => {
     }
 };
 
-const itemsPerPage = 6;
-let currentPage = 1;
 
 // Charger les produits initialement avec limitation
 const fetchProducts = () => {
@@ -65,11 +67,36 @@ const hasMoreProducts = computed(() => {
     return produitsAffiches.length < props.produits.length;
 });
 
-// Appeler lors du montage
 onMounted(fetchProducts);
 
 
+//!!!!! VOIR LE TACTILE
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+
+const containers = document.querySelectorAll('.container .item');
+
+containers.forEach(container => {
+    if (isTouchDevice) {
+        container.style.pointerEvents = 'auto';
+        container.addEventListener('touchstart', () => handleTouchClick(container.dataset.id));
+    } else {
+        container.style.pointerEvents = 'none';
+    }
+});
+
+
+const handleClick = (produit) => {
+    router.visit(`/produit/${produit.ID}`);
+};
+
+
+const handleTouchClick = (id) => {
+    router.visit(`/produit/${id}`);
+};
+
+
 </script>
+
 
 /* -----------------------HTML----------------------- */
 
@@ -97,7 +124,7 @@ onMounted(fetchProducts);
 
         <div id="ProduitRange">
             <div class="container">
-                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
+                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }">
                     <!-- TODO : faire le backend du btn favoris -->
                     <span class="material-symbols-rounded add-fav">favorite</span>
                     <!-- - - - - - - - - - - - - -  -->
@@ -115,7 +142,12 @@ onMounted(fetchProducts);
 <Footer></Footer>
 </template>
 
+
+
+/* -----------------------CSS----------------------- */
+
 <style scoped>
+
 .add-fav {
     position: absolute;
     right: 12px;
@@ -204,7 +236,6 @@ onMounted(fetchProducts);
     grid-template-columns: 1fr 1fr 1fr;
     margin: 20px 20px 80px;
     gap: 32px;
-    min-height: 100vh;
 }
 
 #ProduitRange .container .boutton_acheter {
@@ -347,9 +378,8 @@ onMounted(fetchProducts);
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
-        margin-top: 50px;
+        margin-top: 0;
         gap: 20px;
-        min-height: 100vh;
     }
 
     #ProduitRange .container .item {
@@ -374,6 +404,13 @@ onMounted(fetchProducts);
         bottom: 10%;
         font-size: clamp(5px, 2vw, 12px);
         line-height: 1;
+    }
+
+    #SecondRange {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 32px 64px;
     }
 }
 
@@ -406,7 +443,7 @@ onMounted(fetchProducts);
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
-        margin-top: 50px;
+        margin-top: 0;
         gap: 20px;
         min-height: 100vh;
 

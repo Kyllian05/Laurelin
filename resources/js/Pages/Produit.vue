@@ -23,7 +23,7 @@
             <img :src="image.URL">
         </div>
 
-        <Splide :options="{ rewind: true }" aria-label="My Favorite Images" >
+        <Splide :options="{ rewind: true }" aria-label="My Favorite Images" class="slideImage">
             <SplideSlide v-for="(image, index) in images">
                 <img :src="image.URL">
             </SplideSlide>
@@ -48,6 +48,7 @@
 
         <div id="avis" class="font-subtitle-16">
             Les Avis de Nos Clients
+            <button class="avisButton font-body-l" > Donnez votre avis </button>
         </div>
     </div>
 
@@ -136,9 +137,13 @@ const handleClick = (produit) => {
     grid-template-rows: repeat(4, auto);
 }
 
+.slideImage {
+    display: none;
+}
+
 #produitEnVente {
     grid-column: 3 / 4;
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
     padding: 60px;
     border-spacing: 60px;
 }
@@ -224,7 +229,9 @@ const handleClick = (produit) => {
     font-size: 10px;
 }
 
-
+#description {
+    text-align: justify;
+}
 
 #img1 {
     grid-column: 1 / 3;
@@ -266,7 +273,7 @@ img {
     grid-row: 3;
     text-align: center;
     display: block;
-    margin-top: 160px;
+    margin-top: 250px;
 }
 
 #prodCreaAssocier {
@@ -276,8 +283,8 @@ img {
     grid-template-columns: 1fr 1fr 1fr;
     margin: 20px 20px 80px;
     gap: 32px;
-    margin-top: 200px;
-    min-height: 100vh;
+    margin-top: 300px;
+    height: auto;
 }
 
 
@@ -372,6 +379,29 @@ img {
     font-size: clamp(12px, 2vw, 14px);
 }
 
+#avis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#avis .avisButton {
+    width: 200px;
+    height: clamp(45px, 3vw, 65px);
+    margin-bottom: 45px;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+    border: 1px solid;
+    cursor: pointer;
+    transition: color 0.5s ease, background-color 0.5s ease, transform 0.1s ease;
+}
+
+#avis .avisButton:hover {
+    background-color: white;
+    color: black;
+}
+
 
 /* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
@@ -405,15 +435,18 @@ img {
 /* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
 
-
 @media (max-width: 800px) {
+    #produitEnVente {
+        padding: 70px;
+    }
+
     #prodCreaAssocier {
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
-        margin-top: 200px;
+        margin-top: 300px;
         gap: 20px;
-        min-height: 100vh;
+        height: auto;
     }
 
     #prodCreaAssocier .item {
@@ -446,6 +479,10 @@ img {
 
 
 @media (max-width: 650px) {
+    #produitEnVente {
+        padding: 25px;
+    }
+
     #prodCreaAssocier .item .item-text {
         bottom: 12%;
     }
@@ -470,10 +507,9 @@ img {
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
-        margin-top: 200px;
+        margin-top: 300px;
         gap: 20px;
-        min-height: 100vh;
-
+        height: auto;
     }
 
     #prodCreaAssocier .item {
@@ -540,11 +576,55 @@ img {
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
+
+    #page {
+        display: flex;
+        flex-direction: column;
+    }
+
     .produitImage {
-        width: 100vw;
-        padding: 0px;
         display: none;
+    }
+
+    .slideImage{
+        display: block;
+        order: 1;
+    }
+
+    .slideImage img {
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        object-position: top;
+    }
+
+    img {
+        width: 100vw;
+        margin-left: 0px;
+        padding: 0px;
+    }
+
+    #produitEnVente {
+        order: 2;
+    }
+
+
+    #description {
+        text-align: justify;
+    }
+
+    #creaAssocier {
+        order: 3;
+        margin-top: 80px;
+    }
+
+    #prodCreaAssocier {
+        order: 4;
+        margin-top: 40px;
+    }
+
+    #avis {
+        order: 5;
     }
 }
 
