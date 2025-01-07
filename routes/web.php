@@ -8,6 +8,7 @@ use App\Http\Controllers\ListeProduitController;
 use \App\Http\Controllers\FavorisController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PanierController;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
@@ -75,3 +76,10 @@ Route::get("/contact", [ContactController::class, "index"]);
 // ---
 Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
 Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
+
+
+// ---
+// Panier
+// ---
+Route::get("/panier", [PanierController::class, "index"]);
+
