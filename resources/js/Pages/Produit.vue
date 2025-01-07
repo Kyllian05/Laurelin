@@ -8,6 +8,7 @@
             <div id="annee" class="font-body-s"> Année création: {{produit.ANNEE_CREATION}} </div>
             <select id="taille">
                 <option name="selcetionner" class="font-body-m">Séléctionner une taille</option>
+                <!-- TODO : mettre les tailles -->
             </select>
             <div id="prixDiv">
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
