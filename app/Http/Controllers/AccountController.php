@@ -49,6 +49,17 @@ class AccountController extends Controller
                 ];
             }
 
+            $adresses = [];
+            foreach(\App\Models\Adresse::getAllUserAdresse($user) as $adresse){
+                $adresses[] = array(
+                    "Numéro" => $adresse["NUM_RUE"],
+                    "Rue" => $adresse["NOM_RUE"],
+                    "Code Postal" => $adresse["CODE_POSTAL"],
+                    "Ville" => \App\Models\Ville::getByCodePostal($adresse["CODE_POSTAL"])["NOM"],
+                    "ID" => $adresse["ID"],
+                );
+            }
+
             return Inertia::render("Account",[
                 "page"=>$page,
                 "info"=>[
@@ -59,6 +70,7 @@ class AccountController extends Controller
                 ],
                 "commandes"=>$commandesData,
                 "favoris"=>$favoris,
+                "adresses" => $adresses,
             ]);
         }catch (\Exception $e){
             if($e->getCode() == 518){

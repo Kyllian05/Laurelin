@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AdresseController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
 use App\Http\Controllers\ListeProduitController;
@@ -68,3 +69,9 @@ Route::get("/histoire", [HistoireController::class, "index"]);
 // Contact
 // ---
 Route::get("/contact", [ContactController::class, "index"]);
+
+// ---
+// Adresse
+// ---
+Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
+Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);

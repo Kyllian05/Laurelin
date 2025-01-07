@@ -17,5 +17,15 @@ class VilleSeeder extends Seeder
             "NOM"=>"Paris",
             "CODE_POSTAL" => 75116
         ]);
+
+        DB::table('Ville')->insert([
+            "NOM"=>"Nantes",
+            "CODE_POSTAL" => 44700
+        ]);
+
+        DB::table('Ville')->insert([
+            "NOM"=>"Nantes",
+            "CODE_POSTAL" => 44200
+        ]);
     }
 }
