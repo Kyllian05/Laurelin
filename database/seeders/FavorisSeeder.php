@@ -13,15 +13,15 @@ class FavorisSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('favoris')->insert([
+        DB::table('Favoris')->insert([
             "ID_PRODUIT" => 18,
             "ID_UTILISATEUR" => 1,
         ]);
-        DB::table('favoris')->insert([
+        DB::table('Favoris')->insert([
             "ID_PRODUIT" => 1,
             "ID_UTILISATEUR" => 1,
         ]);
-        DB::table('favoris')->insert([
+        DB::table('Favoris')->insert([
             "ID_PRODUIT" => 11,
             "ID_UTILISATEUR" => 1,
         ]);
