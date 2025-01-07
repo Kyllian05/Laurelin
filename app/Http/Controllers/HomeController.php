@@ -18,6 +18,7 @@ class HomeController extends Controller
 
     public function search(string $query, Request $request)
     {
+        // A modifier
         $products = DB::select("SELECT ID, NOM FROM Produit WHERE NOM LIKE '%$query%'");
 
         return response()->json($products);

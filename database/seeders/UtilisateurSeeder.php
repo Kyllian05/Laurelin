@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Produit\Repositories\ProduitRepository;
+use App\Domain\Utilisateur\Repositories\FavorisRepository;
 use App\Domain\Utilisateur\Repositories\UtilisateurRepository;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -15,7 +17,7 @@ class UtilisateurSeeder extends Seeder
      */
     public function run(): void
     {
-        $service = new UtilisateurService(new UtilisateurRepository());
+        $service = new UtilisateurService(new UtilisateurRepository(), new FavorisRepository(new ProduitRepository()));
 
         DB::table('Utilisateur')->insert([
             'EMAIL' => "admin@admin.com",

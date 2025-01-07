@@ -9,7 +9,7 @@
         {{produit}}
     </pre>
     <h3>Images :</h3>
-    <img v-for="img in images" :key="img.URL" :src="img.URL">
+    <img v-for="img in produit.images" :src="img">
 <Footer></Footer>
 </template>
 
@@ -20,7 +20,6 @@ import {ref} from "vue";
 
 const props = defineProps({
     "produit" : Object,
-    "images" : String,
     "isFavorite" : Boolean,
 })
 
@@ -34,7 +33,7 @@ function favorisAction(){
     fetch(destination,{
         method : "POST",
         body : JSON.stringify({
-            produit : props.produit["ID"]
+            produit : props.produit.id
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

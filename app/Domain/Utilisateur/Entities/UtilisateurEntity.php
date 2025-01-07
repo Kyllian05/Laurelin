@@ -2,6 +2,7 @@
 
 namespace App\Domain\Utilisateur\Entities;
 
+use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Role;
 
 abstract class UtilisateurEntity
@@ -16,6 +17,7 @@ abstract class UtilisateurEntity
     private string $tokenGen;
     private ?string $code;
     private ?string $codeGen;
+    private ?array $favoris = null;
 
     public function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen) {
         $this->setId($id);
@@ -116,11 +118,27 @@ abstract class UtilisateurEntity
         return $this->codeGen;
     }
 
+    /**
+     * @throws \Exception : Si l'attribut favori n'a pas été initialisé
+     */
+    public function getFavoris(): array {
+        if (is_null($this->favoris)) {
+            throw new \Exception("Get must be called from UtilisateurService");
+        }
+        return $this->favoris;
+    }
+
     abstract public function getRole(): Role;
 
     // ---
     // Setters
     // ---
+    /**
+     * @param string $password : Le mot de passe en clair
+     * @return void
+     */
+    abstract public function setPassword(string $password): void;
+
     public function setId(int $id): void
     {
         $this->id = $id;
@@ -134,12 +152,6 @@ abstract class UtilisateurEntity
         }
         $this->email = $email;
     }
-
-    /**
-     * @param string $password : Le mot de passe en clair
-     * @return void
-     */
-    abstract public function setPassword(string $password): void;
 
     public function setPrenom(string $prenom): void
     {
@@ -190,6 +202,16 @@ abstract class UtilisateurEntity
         $this->codeGen = $codeGen;
     }
 
+    public function setFavoris(array $favoris): void
+    {
+        foreach ($favoris as $favori) {
+            if (!($favori instanceof ProduitEntity)) {
+                throw new \InvalidArgumentException("Le favori n'est pas un produit valide");
+            }
+        }
+        $this->favoris = $favoris;
+    }
+
     // Autres fonctions
 
     /**
@@ -198,6 +220,14 @@ abstract class UtilisateurEntity
      */
     public function checkTokenDate(): bool {
         return time() > strtotime($this->tokenGen)+2629800;
+    }
+
+    public function isFavorite(ProduitEntity $produit): bool
+    {
+        if (is_null($this->favoris)) {
+            throw new \Exception("Set must be called before from UtilisateurService");
+        }
+        return in_array($produit, $this->favoris);
     }
 
     // Static

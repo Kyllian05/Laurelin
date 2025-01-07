@@ -2,7 +2,9 @@
 
 namespace App\Domain\Utilisateur\Services;
 
+use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
+use App\Domain\Utilisateur\Repositories\FavorisRepository;
 use App\Domain\Utilisateur\Repositories\UtilisateurRepository;
 use App\Domain\Shared\Exceptions as CustomExceptions;
 use Illuminate\Http\Request;
@@ -11,7 +13,8 @@ use Illuminate\Support\Facades\Mail;
 class UtilisateurService
 {
     public function __construct(
-        private UtilisateurRepository $userRepository
+        private UtilisateurRepository $userRepository,
+        private FavorisRepository $favorisRepository,
     ) {}
 
     public function getRepository(): UtilisateurRepository
@@ -147,5 +150,29 @@ class UtilisateurService
             return;
         }
         throw CustomExceptions::createError(530);
+    }
+
+    // --- Favoris ---
+    public function getFavoris(UtilisateurEntity $utilisateurEntity): array
+    {
+        $this->favorisRepository->getFavoris($utilisateurEntity);
+        return $utilisateurEntity->getFavoris();
+    }
+
+    public function isFavorite(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): bool
+    {
+        // Update les favoris
+        $this->getFavoris($utilisateurEntity);
+        return $utilisateurEntity->isFavorite($produitEntity);
+    }
+
+    public function addFavoris(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): void
+    {
+        $this->favorisRepository->addFavoris($utilisateurEntity, $produitEntity);
+    }
+
+    public function deleteFavoris(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): void
+    {
+        $this->favorisRepository->deleteFavoris($utilisateurEntity, $produitEntity);
     }
 }

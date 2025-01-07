@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AccountController extends Controller
 {
-    public function __construct(private UtilisateurService $userService) {}
+    public function __construct(
+        private UtilisateurService $userService,
+        private ProduitService $produitService
+    ) {}
 
     function index(Request $request,string $page = "info"){
         try{
@@ -31,9 +35,9 @@ class AccountController extends Controller
                 ];
 
                 foreach(\App\Models\Produit_Commande::getAllProducts($commande["ID"]) as $produit){
-                    $produitEntity = \App\Models\Produit::getProduct($produit["ID_PRODUIT"]);
+                    $produitEntity = $this->produitService->findById($produit["ID_PRODUIT"]);
                     $temp["Produits"][] = [
-                        "Nom" => $produitEntity["NOM"],
+                        "Nom" => $produitEntity->nom,
                         "Quantité" => $produit["QUANTITE"],
                         "Prix" => $produit["PRIX"],
                     ];
