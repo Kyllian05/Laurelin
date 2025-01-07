@@ -79,10 +79,20 @@ class AuthController extends Controller
     }
 
     public function verifyEmail(string $rawID, string $rawCode, Request $request){
-        $ID = intval($rawID);
-        $CODE = intval($rawCode);
-
-        \App\Models\Code::verifyCode($ID,$CODE);
+        try {
+            $id = intval($rawID);
+            $code = intval($rawCode);
+            $this->userService->verifyCode($id,$code);
+        } catch (\Exception $e){
+            $class = explode("\\",get_class($e));
+            $class = $class[sizeof($class)-1];
+            if($class == "CustomExceptions"){
+                return response($e->getMessage(),$e->getCode());
+            }else{
+                \Log::info($e);
+                return response("Erreur inconnue",500);
+            }
+        }
 
         return redirect("/account");
     }

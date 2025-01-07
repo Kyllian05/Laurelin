@@ -89,13 +89,6 @@ return new class extends Migration
         ");
 
         DB::statement("
-            ALTER TABLE Code
-                ADD CONSTRAINT fk_code_utilisateur
-                    FOREIGN KEY (UTILISATEUR) REFERENCES Utilisateur(ID)
-            ON DELETE CASCADE
-        ");
-
-        DB::statement("
             ALTER TABLE Favoris
                 ADD CONSTRAINT fk_favoris_utilisateur
                     FOREIGN KEY (ID_UTILISATEUR) REFERENCES Utilisateur(ID)

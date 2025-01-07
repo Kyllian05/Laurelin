@@ -21,7 +21,9 @@ return new class extends Migration
                 TELEPHONE VARCHAR(255) UNIQUE,
                 PRIVILEGE INT DEFAULT 0,
                 TOKEN VARCHAR(32) UNIQUE,
-                TOKENGEN DATETIME
+                TOKENGEN DATETIME,
+                CODE INT UNIQUE,
+                CODEGEN DATETIME
                 )
         ");
     }

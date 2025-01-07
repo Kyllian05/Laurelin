@@ -14,8 +14,10 @@ abstract class UtilisateurEntity
     private ?string $telephone;
     private string $token;
     private string $tokenGen;
+    private ?string $code;
+    private ?string $codeGen;
 
-    public function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen) {
+    public function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen) {
         $this->setId($id);
         $this->setEmail($email);
         $this->password = $password;
@@ -24,6 +26,8 @@ abstract class UtilisateurEntity
         $this->telephone = $telephone;
         $this->setToken($token);
         $this->setTokenGen($tokenGen);
+        $this->setCode($code);
+        $this->setCodeGen($codeGen);
     }
 
     /**
@@ -38,22 +42,22 @@ abstract class UtilisateurEntity
      * @param int $privilege
      * @return ?UtilisateurEntity
      */
-    public static function utilisateurFactory(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege): ?UtilisateurEntity {
+    public static function utilisateurFactory(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege, ?string $code, ?string $codeGen): ?UtilisateurEntity {
         if ($privilege == 0) {
-            return new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            return new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen);
         } elseif ($privilege == 1) {
-            return new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            return new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen);
         }
         return null;
     }
 
     public static function createNewUser(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege): ?UtilisateurEntity {
         if ($privilege == 0) {
-            $entity = new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            $entity = new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null);
             $entity->setPassword($password);
             return $entity;
         } elseif ($privilege == 1) {
-            $entity = new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            $entity = new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null);
             $entity->setPassword($password);
             return $entity;
         }
@@ -100,6 +104,16 @@ abstract class UtilisateurEntity
     public function getTokenGen(): string
     {
         return $this->tokenGen;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getCodegen(): ?string
+    {
+        return $this->codeGen;
     }
 
     abstract public function getRole(): Role;
@@ -166,12 +180,36 @@ abstract class UtilisateurEntity
         $this->tokenGen = $tokenGen;
     }
 
+    public function setCode(?string $code): void
+    {
+        $this->code = $code;
+    }
+
+    public function setCodeGen(?string $codeGen): void
+    {
+        $this->codeGen = $codeGen;
+    }
+
+    // Autres fonctions
+
     /**
      * Vérifie s'il faut régénérer un nouveau token
      * @return void
      */
     public function checkTokenDate(): bool {
         return time() > strtotime($this->tokenGen)+2629800;
+    }
+
+    // Static
+
+    public function isUserVerified(): bool
+    {
+        if ($this->code == null) {
+            return true;
+        } elseif (empty($this->code)) {
+            return true;
+        }
+        return false;
     }
 
     public static function generateRandomString($length) : string {
