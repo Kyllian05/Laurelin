@@ -60,6 +60,8 @@ import Footer from "./Components/Footer.vue";
 import {onMounted, ref} from "vue";
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
+import {router} from "@inertiajs/vue3";
+
 
 const props = defineProps({
     "produit" : Object,
@@ -119,8 +121,9 @@ onMounted(() => {
 });
 
 const handleClick = (produit) => {
-    console.log("Produit acheté:", produit);
+    router.visit(`/produit/${produit.ID}`);
 };
+
 
 </script>
 
