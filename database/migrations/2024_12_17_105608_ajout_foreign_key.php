@@ -104,7 +104,7 @@ return new class extends Migration
         DB::statement("
             ALTER TABLE Favoris
                 ADD CONSTRAINT fk_favoris_produit
-                    FOREIGN KEY (ID_PRODUIT) REFERENCES PROduit(ID)
+                    FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
         ");
     }
 

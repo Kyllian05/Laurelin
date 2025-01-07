@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Utilisateur\Entities\UtilisateurEntity;
 use Illuminate\Database\Eloquent\Model;
 
 class Commande extends Model
@@ -26,7 +27,7 @@ class Commande extends Model
         'ID_ADRESSE',
     ];
 
-    static function getAllCommandes(Utilisateur $utilisateur){
-        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->get();
+    static function getAllCommandes(UtilisateurEntity $utilisateur){
+        return self::where(["ID_UTILISATEUR" => $utilisateur->getId()])->get();
     }
 }

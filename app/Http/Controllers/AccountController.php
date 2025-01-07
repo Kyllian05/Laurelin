@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AccountController extends Controller
 {
+    public function __construct(private UtilisateurService $userService) {}
+
     function index(Request $request,string $page = "info"){
         try{
-            $user = \App\Models\Utilisateur::getLoggedUser($request);
-            if($user == null){
-                return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false);
+            $user = $this->userService->getAuthenticatedUser($request);
+
+            if (!$user) {
+                throw new \Exception("User not found");
             }
 
             $commandes = \App\Models\Commande::getAllCommandes($user);
@@ -41,10 +45,10 @@ class AccountController extends Controller
             return Inertia::render("Account",[
                 "page"=>$page,
                 "info"=>[
-                    "Prénom"=>$user["PRENOM"],
-                    "Nom"=>$user["NOM"],
-                    "Téléphone"=>$user["TELEPHONE"],
-                    "Adresse mail"=>$user["EMAIL"],
+                    "Prénom"=>$user->getPrenom(),
+                    "Nom"=>$user->getNom(),
+                    "Téléphone"=>$user->getTelephone(),
+                    "Adresse mail"=>$user->getEmail(),
                 ],
                 "commandes"=>$commandesData
             ]);
@@ -52,14 +56,29 @@ class AccountController extends Controller
             if($e->getCode() == 518){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
             }
+            return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false);
         }
     }
 
-    function update(Request $request){
+    function update(Request $request) {
         $data = $request->post();
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
-        if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
-            \App\Models\Utilisateur::where("ID",$user["ID"])->update(["NOM"=>$data["Nom"],"PRENOM"=>$data["Prénom"],"TELEPHONE"=>$data["Téléphone"]]);
+        $user = $this->userService->getAuthenticatedUser($request);
+        if($user && isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])) {
+            try {
+                $this->userService->getRepository()->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
+            } catch (\Exception $e) {
+                $class = explode("\\",get_class($e));
+                $class = $class[sizeof($class)-1];
+                if($class == "CustomExceptions"){
+                    return response($e->getMessage(),$e->getCode());
+                }else{
+                    \Log::info($e);
+                    return response("Erreur inconnue",500);
+                }
+            }
+            return response("success",200);
+        } else {
+            return response("Accès refusé",520);
         }
     }
 }
