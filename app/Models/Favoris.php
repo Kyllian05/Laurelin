@@ -23,4 +23,8 @@ class Favoris extends Model
     static function supprimerDesFavoris(\App\Models\Produit $produit,UtilisateurEntity $user){
         self::where(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user["ID"]])->delete();
     }
+
+    static function getAllFavoris(\App\Models\Utilisateur $user){
+        return self::where(["ID_UTILISATEUR"=>$user["ID"]])->get();
+    }
 }

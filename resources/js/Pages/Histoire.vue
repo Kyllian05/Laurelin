@@ -172,28 +172,33 @@
   .nos-creations,
   .localisation {
     position: relative;
-    height: 700px;
+    height: 300px;
     width: 100%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 32px;
+    margin-bottom: 5px;
   }
-  
+
   .background-blur {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    z-index: 1;
-    transition: filter 0.3s ease;
-    cursor: pointer;
-  }
-  
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+  transition: filter 0.3s ease;
+  cursor: pointer;
+}
+
+.section-content:hover .background-blur {
+  filter: blur(3px); 
+}
+
   .le-createur .background-blur {
     background-image: url('/public/images/createur.jpg');
   }
@@ -205,10 +210,7 @@
   .localisation .background-blur {
     background-image: url('/public/images/durabilite.jpg');
   }
-  
-  .section-content:hover .background-blur {
-    filter: blur(5px);
-  }
+
   
   .text-box {
     position: relative;
