@@ -70,9 +70,6 @@
                 <div v-for="adresse in dynamicAdresse" class="adresseWrappers">
                     <p>{{ adresse["Numéro"] }} {{ adresse["Rue"] }}, {{ adresse["Code Postal"] }} {{ adresse["Ville"] }}</p>
                     <div>
-                        <span class="material-symbols-outlined">
-                            edit_square
-                        </span>
                         <span class="material-symbols-outlined garbageIcon" @click="deleteAdresse(adresse['ID'])">
                             delete
                         </span>
