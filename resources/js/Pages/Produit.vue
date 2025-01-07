@@ -1,6 +1,5 @@
 <template>
     <Header current-page="Nos bijoux"></Header>
-
     <div id="page">
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
@@ -20,9 +19,15 @@
         </div>
 
 
-        <div v-for="(image, index) in images" :key="index" :id="'img' + (index + 1)">
+        <div v-for="(image, index) in images" :key="index" :id="'img' + (index + 1)" class="produitImage">
             <img :src="image.URL">
         </div>
+
+        <Splide :options="{ rewind: true }" aria-label="My Favorite Images" >
+            <SplideSlide v-for="(image, index) in images">
+                <img :src="image.URL">
+            </SplideSlide>
+        </Splide>
 
 
         <div id="creaAssocier" class="font-subtitle-16">
@@ -53,6 +58,8 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import {onMounted, ref} from "vue";
+import { Splide, SplideSlide } from '@splidejs/vue-splide';
+import '@splidejs/vue-splide/css';
 
 const props = defineProps({
     "produit" : Object,
@@ -531,9 +538,10 @@ img {
 }
 
 @media (max-width: 900px) {
-    #img1 {
+    .produitImage {
         width: 100vw;
         padding: 0px;
+        display: none;
     }
 }
 
