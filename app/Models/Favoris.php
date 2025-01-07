@@ -13,14 +13,14 @@ class Favoris extends Model
 
     static function isProduitInFavoris(\App\Models\Produit $produit,?UtilisateurEntity $user) : bool{
         if($user == null)return false;
-        return self::where(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user["ID"]])->exists() > 0;
+        return self::where(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user->getId()])->exists() > 0;
     }
 
     static function ajouterAuxFavoris(\App\Models\Produit $produit,UtilisateurEntity $user){
-        self::create(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user["ID"]]);
+        self::create(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user->getId()]);
     }
 
     static function supprimerDesFavoris(\App\Models\Produit $produit,UtilisateurEntity $user){
-        self::where(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user["ID"]])->delete();
+        self::where(["ID_PRODUIT"=>$produit["ID"], "ID_UTILISATEUR"=>$user->getId()])->delete();
     }
 }
