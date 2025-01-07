@@ -4,13 +4,13 @@
         <div class="leftWrapper">
         <h1>Panier</h1>
             <div class="panier">
-                <div class="panierproduit">
+                <div class="panierproduit" v-for="produit in panierData">
                     <img src="#" alt="Produit" />
                     <div class="panierproduitinfo">
-                        <h3>BAGUE ETINCELLE</h3>
-                        <p>Modèle Diamant, Or</p>
+                        <h3>{{ produit["NOM"] }}</h3>
+                        <p>{{ produit["MATERIAUX"] }}</p>
                         <a href="#">En ajouter un autre</a>
-                        <h2>2000€</h2>
+                        <h2>{{ produit["PRIX"] }}€</h2>
                     </div>
                     <button class="remove">×</button>
                 </div>
@@ -35,19 +35,30 @@
 <script setup>
 import Footer from "./Components/Footer.vue";
 import Header from "./Components/Header.vue";
+import {onMounted, ref} from "vue";
 
-fetch("/adresse/supprimer",{
-  method:"POST",
-  body: JSON.stringify({"ID":id}),
-  headers: {
-      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-      "Content-Type":"application/json"
-  },
-}).then(async response =>{
-  if(response.status == 200){
-      dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse["ID"] != id)
-  }
+let panierProduits = [1,7,9]
+
+let panierData = ref({})
+
+onMounted(()=>{
+    for(let i = 0;i<panierProduits.length;i++){
+        fetch("/produitData/"+panierProduits[i],{
+            method:"GET",
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response =>{
+            if(response.status == 200){
+                panierData.value[panierProduits[i]] = await response.json()
+            }
+        })
+    }
 })
+
+console.log(panierData)
+
 </script>
 
 <style scoped>

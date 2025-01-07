@@ -24,5 +24,7 @@ class ProduitController extends Controller
         return response("", 404);
     }
 
-
+    public function produitData(string $id){
+        return response(Produit::find($id));
+    }
 }
