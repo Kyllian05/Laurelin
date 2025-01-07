@@ -8,6 +8,10 @@ const props = defineProps({
     produits: {
         type: Array,
         required: true
+    },
+    categories: {
+        type: Number,
+        required: true
     }
 });
 
@@ -73,10 +77,11 @@ onMounted(fetchProducts);
     <Header current-page="Nos bijoux"></Header>
 
     <div id="page">
-        <div id="FirstRange" >
-    <span class="material-symbols-rounded">
-      arrow_back_ios
-    </span>
+        <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp')` }">
+            <span class="material-symbols-rounded">
+              arrow_back_ios
+            </span>
+
         </div>
 
         <div id="SecondRange">
@@ -159,7 +164,7 @@ onMounted(fetchProducts);
     width: 100%;
     height: 100vh;
     position: relative;
-    background: url("/public/images/imgProd/img_caté_bagues_finale.jpg") no-repeat center 30%/cover;
+    background: no-repeat center 30%/cover;
 }
 
 #FirstRange span {

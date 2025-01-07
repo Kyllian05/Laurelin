@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categorie;
 use App\Models\Favoris;
 use App\Models\Image;
 use App\Models\Produit;
@@ -13,12 +14,15 @@ class ProduitController extends Controller
     public function show(string $id, Request $request){
         if (ctype_digit($id)) {
             $user = \App\Models\Utilisateur::getLoggedUser($request);
-            $produit = Produit::find($id);
+            $produit = Produit::where("ID",$id)->firstOrFail();
+            $id_categorie = $produit["ID_CATEGORIE"];
+            $nom_categorie = Categorie::where("ID",$id_categorie)->firstOrFail()["NOM"];
 
             return Inertia::render("Produit",[
                 "produit" => $produit,
                 "images" => Image::get_all_images($id),
                 "isFavorite" => \App\Models\Favoris::isProduitInFavoris($produit,$user),
+                "autreProduits" => Categorie::get_products($nom_categorie),
             ]);
         }
         return response("", 404);

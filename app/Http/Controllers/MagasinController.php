@@ -18,8 +18,13 @@ class MagasinController extends Controller
     }
 
     public function list_categories(string $name, Request $request){
+        $categorie = Categorie::where("NOM",$name)->firstOrFail();
+        $IDCategorie = $categorie["ID"];
+
+
         return Inertia::render("ListeProduit", [
-            'produits' => Categorie::get_products($name)
+            'produits' => Categorie::get_products($name),
+            'categories' => $IDCategorie,
         ]);
     }
 

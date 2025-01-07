@@ -19,20 +19,26 @@
             <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded add-fav">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
         </div>
 
-        <div id="img1" v-if="images[0]">
-            <img :src="images[0].URL">
+
+        <div v-for="(image, index) in images" :key="index" :id="'img' + (index + 1)">
+            <img :src="image.URL">
         </div>
 
-        <div id="img2" v-if="images[1]">
-            <img :src="images[1].URL">
-        </div>
-
-        <div id="img3" v-if="images[2]">
-            <img :src="images[2].URL">
-        </div>
 
         <div id="creaAssocier" class="font-subtitle-16">
             Créations Associées
+        </div>
+
+        <div id="prodCreaAssocier">
+            <div v-for="produit in prodAssocier" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
+                <!-- TODO : faire le backend du btn favoris -->
+                <span class="material-symbols-rounded add-fav">favorite</span>
+                <!-- - - - - - - - - - - - - -  -->
+                <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+                <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
+                <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+                <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+            </div>
         </div>
 
         <div id="avis" class="font-subtitle-16">
@@ -46,15 +52,28 @@
 <script setup>
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const props = defineProps({
     "produit" : Object,
     "images" : Array,
     "isFavorite" : Boolean,
+    "autreProduits" : Array
 })
 
 const dynamicFavorite = ref(props.isFavorite)
+
+/* Gère l'espace du prix */
+const formatPrix = (prix) => {
+    return new Intl.NumberFormat("fr-FR", {
+        style: "decimal",
+        maximumFractionDigits: 0, // Pas de décimales
+    }).format(prix);
+};
+
+
+const produits = ref([]);
+const prodAssocier = ref([]);
 
 function favorisAction(){
     let destination = "/ajouterFavoris"
@@ -77,12 +96,23 @@ function favorisAction(){
     })
 }
 
-/* Gère l'espace du prix */
-const formatPrix = (prix) => {
-    return new Intl.NumberFormat("fr-FR", {
-        style: "decimal",
-        maximumFractionDigits: 0, // Pas de décimales
-    }).format(prix);
+
+const choisirProduitsAleatoires = () => {
+    if (props.autreProduits.length > 3) {
+        const produitsMelanges = [...props.autreProduits].sort(() => Math.random() - 0.5);
+        prodAssocier.value = produitsMelanges.slice(0, 3);
+    } else {
+        prodAssocier.value = produits.value;
+    }
+};
+
+// Initialisation des produits associés au montage
+onMounted(() => {
+    choisirProduitsAleatoires();
+});
+
+const handleClick = (produit) => {
+    console.log("Produit acheté:", produit);
 };
 
 </script>
@@ -190,7 +220,13 @@ const formatPrix = (prix) => {
     grid-column: 1 / 3;
     grid-row: 1;
     width: 100%;
-    height: auto;
+    aspect-ratio: 1;
+}
+
+#img1 img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: top;
 }
 
 #img2 {
@@ -211,13 +247,269 @@ img {
     width: 100%;
     height: auto;
     display: block;
+    padding: 10px;
+    margin-left: 10px;
 }
 
 #creaAssocier {
     grid-column: 1 / 4;
     grid-row: 3;
     text-align: center;
-    margin-top: 50px;
+    display: block;
+    margin-top: 160px;
+}
+
+#prodCreaAssocier {
+    grid-row: 3;
+    grid-column: 1 /4;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin: 20px 20px 80px;
+    gap: 32px;
+    margin-top: 200px;
+    min-height: 100vh;
+}
+
+
+#prodCreaAssocier .boutton_acheter {
+    position: absolute;
+    width: 70%;
+    height: clamp(50px, 2vw, 65px);
+    left: 50%;
+    border-width: 0;
+    font-size: clamp(10px, 2vw, 22px);
+    bottom: 1%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.3s ease, background-color 0.5s ease, color 0.5s ease;
+}
+
+
+#prodCreaAssocier .item {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    transition: box-shadow 0.5s ease;
+}
+
+#prodCreaAssocier .item:hover {
+    box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+#prodCreaAssocier .item:hover .boutton_acheter{
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+    cursor: pointer;
+}
+
+#prodCreaAssocier .item:hover .add-fav {
+    opacity: 1;
+}
+
+#prodCreaAssocier .item:hover .materiaux-text {
+    display: none;
+}
+
+#prodCreaAssocier .item:hover .prix {
+    display: none;
+}
+
+
+#prodCreaAssocier .item .boutton_acheter:hover {
+    background-color: transparent;
+    border: 2px solid black;
+    color: black;
+}
+
+#prodCreaAssocier .item .boutton_acheter:active {
+    transform: translateX(-50%) translateY(-10px) scale(0.98);
+}
+
+#prodCreaAssocier .item .item-text {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 90%;
+    font-weight: bolder;
+    font-size: clamp(10px, 2vw, 18px);
+}
+
+#prodCreaAssocier .item .prix {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: clamp(14px, 2vw, 18px);
+}
+
+#prodCreaAssocier .item .materiaux-text {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 90%;
+    font-size: clamp(12px, 2vw, 14px);
+}
+
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
+@media (min-width: 1050px) and (max-width: 1500px) {
+    #prodCreaAssocier .item .item-text {
+        font-size: clamp(10px, 2vw, 14px);
+        line-height: 1;
+        bottom: 17%;
+    }
+
+    #prodCreaAssocier .item .prix {
+        bottom: 3%;
+        font-size: clamp(10px, 2vw, 16px);
+    }
+
+    #prodCreaAssocier .item .materiaux-text {
+        font-size: clamp(10px, 2vw, 12px);
+        line-height: 1;
+        bottom: 10%;
+    }
+
+    #prodCreaAssocier .boutton_acheter {
+        font-size: clamp(16px, 2vw, 18px);
+        height: clamp(40px, 2vw, 60px);
+    }
+
+}
+
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
+
+@media (max-width: 800px) {
+    #prodCreaAssocier {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin: 20px;
+        margin-top: 200px;
+        gap: 20px;
+        min-height: 100vh;
+    }
+
+    #prodCreaAssocier .item {
+        aspect-ratio: 4/5;
+    }
+
+
+    #prodCreaAssocier .item .item-text {
+        bottom: 18%;
+        width: 90%;
+        font-size: clamp(8px, 2vw, 20px);
+        line-height: 1;
+    }
+
+    #prodCreaAssocier .item .prix {
+        bottom: 1%;
+        font-size: clamp(8px, 2vw, 20px);
+    }
+
+    #prodCreaAssocier .item .materiaux-text {
+        position: absolute;
+        bottom: 10%;
+        font-size: clamp(5px, 2vw, 12px);
+        line-height: 1;
+    }
+}
+
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
+@media (max-width: 650px) {
+    #prodCreaAssocier .item .item-text {
+        bottom: 12%;
+    }
+
+    #prodCreaAssocier .item .materiaux-text {
+        display: none;
+    }
+
+    #prodCreaAssocier .boutton_acheter {
+        font-size: clamp(12px, 2vw, 16px);
+        height: clamp(25px, 2vw, 45px);
+    }
+
+}
+
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+
+@media (min-width: 800px) and (max-width: 1050px) {
+    #prodCreaAssocier {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin: 20px;
+        margin-top: 200px;
+        gap: 20px;
+        min-height: 100vh;
+
+    }
+
+    #prodCreaAssocier .item {
+        aspect-ratio: 1 / 1;
+    }
+
+    #prodCreaAssocier .item .item-text {
+        bottom: 18%;
+        width: 90%;
+        font-size: clamp(8px, 2vw, 20px);
+        line-height: 1;
+    }
+
+    #prodCreaAssocier .item .prix {
+        bottom: 1%;
+        font-size: clamp(8px, 2vw, 20px);
+    }
+
+    #prodCreaAssocier .item .materiaux-text {
+        position: absolute;
+        bottom: 10%;
+        font-size: clamp(5px, 2vw, 12px);
+        line-height: 1;
+    }
+
+    #prodCreaAssocier .boutton_acheter {
+        font-size: clamp(18px, 2vw, 20px);
+        height: clamp(40px, 5vw, 50px);
+    }
+}
+
+.add-fav {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    cursor: pointer;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    padding: 8px 8px 7px 8px;
+    border-radius: 50px;
+    opacity: 0;
+    transition: all .3s;
+}
+.add-fav:hover {
+    background: #000;
+    color: #ffffff;
 }
 
 #avis {
@@ -235,6 +527,13 @@ img {
 
     #favoriteButton {
         top: 144px;
+    }
+}
+
+@media (max-width: 900px) {
+    #img1 {
+        width: 100vw;
+        padding: 0px;
     }
 }
 
