@@ -13,10 +13,7 @@
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
-            <button class="boutton_acheter font-body-m" @click="ajoutAuPanier()">
-                <span class="material-symbols-rounded">shopping_bag</span>
-                Ajouter au panier
-            </button>
+            <ButtonAcheter :white-border="true" :id="props.produit['ID']"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded add-fav">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
         </div>
@@ -61,6 +58,7 @@
 <script setup>
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
+import ButtonAcheter from "./Components/ButtonAcheter.vue";
 import {onMounted, ref} from "vue";
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
@@ -105,23 +103,6 @@ function favorisAction(){
     }).then(async response => {
         if(response.status == 200){
             alert("ajouté au panier")
-        }
-    })
-}
-
-function ajoutAuPanier(){
-    fetch("/panier/ajout",{
-        method : "POST",
-        body : JSON.stringify({
-            produit : props.produit["ID"]
-        }),
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            "Content-Type":"application/json"
-        },
-    }).then(async response => {
-        if(response.status == 200){
-            dynamicFavorite.value = !dynamicFavorite.value
         }
     })
 }

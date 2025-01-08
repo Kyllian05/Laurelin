@@ -38,18 +38,23 @@
                 <div v-if="favorisImagesCount < dynamicFavoris.length">
                     Loading
                 </div>
-                <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
-                    <div style="position: relative;width: fit-content">
-                        <a :href="'/produit/'+favori['ID']" target="_blank">
-                            <img :src="favori['Image']['URL']" class="favorisImage" @load="favorisImageLoaded()">
-                        </a>
-                        <span class="material-symbols-outlined favoriteRemoveSymbol" @click="supprimerFavoris(favori['ID'])">
-                            remove
-                        </span>
+                    <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
+                        <div style="position: relative;width: fit-content" class="imageWrapper">
+                            <div>
+                                <a :href="'/produit/'+favori['ID']" target="_blank">
+                                    <img :src="favori['Image']['URL']" class="favorisImage" @load="favorisImageLoaded()">
+                                </a>
+                                <span class="material-symbols-outlined favoriteRemoveSymbol displayHover" @click="supprimerFavoris(favori['ID'])">
+                                remove
+                                </span>
+                                <div class="buttonAcheter displayHover">
+                                    <ButtonAcheter white-border="false" :id="favori['ID']"></ButtonAcheter>
+                                </div>
+                            </div>
+                        </div>
+                        <p>{{ favori.Nom }}</p>
+                        <p>{{ favori.Prix }}€</p>
                     </div>
-                    <p>{{ favori.Nom }}</p>
-                    <p>{{ favori.Prix }}€</p>
-                </div>
             </div>
             <div v-else>
                 <div v-if="ajoutAdresseState" id="ajoutAdresseWrapper">
@@ -86,6 +91,7 @@ import {defineProps, ref, watch} from "vue"
 import Form from "./Components/Form.vue"
 import Header from "./Components/Header.vue"
 import Footer from "./Components/Footer.vue"
+import ButtonAcheter from "./Components/ButtonAcheter.vue";
 
 let props = defineProps(
     {
@@ -186,6 +192,18 @@ let props = defineProps(
 </script>
 
 <style scoped>
+    .displayHover{
+        opacity: 0;
+        transition-duration: .25s;
+    }
+    .buttonAcheter{
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        margin-left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+    }
     #ajoutAdresseContent p{
         text-align: center;
         font-size: 19px;
@@ -271,15 +289,15 @@ let props = defineProps(
         position: absolute;
         right: 0.5vw;
         top: 0.5vw;
-        display: none;
         background-color: white;
         border-radius: 50%;
         box-shadow: 0 0 8px rgba(0,0,0,20%);
     }
-    .favorisWrappers a:hover + .favoriteRemoveSymbol{
-        display: inline!important;
+
+    .favorisWrappers div:hover .displayHover{
+        opacity: 1;
     }
-    .favorisImage:hover{
+    .favorisWrappers div:hover img{
         filter: brightness(70%);
     }
     .favorisWrappers{
@@ -288,6 +306,7 @@ let props = defineProps(
     #favorisWrapper{
         display: grid;
         grid-template-columns: repeat(3,1fr);
+        height: max-content;
     }
     .favorisImage{
         width: 15vw;
@@ -360,7 +379,8 @@ let props = defineProps(
         width: fit-content;
         padding-left: 10vw;
         padding-top: 119px;
-        height: 100vh;
+        height: fit-content;
+        min-height: 100vh;
     }
     .currentNav{
         background-color: black;
@@ -391,6 +411,7 @@ let props = defineProps(
     #contentWrapper{
         width: 50vw;
         margin-bottom: 5vh;
+        height: fit-content;
     }
     #formWrapper2{
         margin-top: 5vh;

@@ -29,7 +29,7 @@ class Commande extends Model
     public $timestamps = false;
 
     static function getAllCommandes(Utilisateur $utilisateur){
-        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->get();
+        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->where("ETAT","!=","panier")->get();
     }
 
     static function createPanier(Utilisateur $utilisateur){
