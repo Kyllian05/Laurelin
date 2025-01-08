@@ -10,6 +10,7 @@ use \App\Http\Controllers\FavorisController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PanierController;
+use App\Http\Controllers\CarteController;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
@@ -94,3 +95,7 @@ Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"])
 Route::get("/checkout", [CheckOutController::class, "index"]);
 
 
+// ---
+// Carte
+// ---
+Route::get("/carte", [CarteController::class, "index"]);

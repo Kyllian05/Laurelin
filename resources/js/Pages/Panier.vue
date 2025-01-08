@@ -31,6 +31,7 @@
             <a href="#" class="legal">MENTIONS LÉGALES</a>
             </div>
         </div>
+
     </div>
     <Footer></Footer>
 </template>

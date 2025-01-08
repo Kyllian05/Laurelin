@@ -19,7 +19,7 @@
         </div>
     </div>
     <div id="btn-wrapper">
-        <a class="btn-side">
+        <a href="/carte" class="btn-side">
             <span class="material-symbols-rounded">location_on</span>
         </a>
         <a href="/account" class="btn-side">
@@ -43,7 +43,7 @@
             <span class="material-symbols-rounded">search</span>
             Rechercher
         </a>
-        <a class="item">
+        <a href="/carte"  class="item">
             <span class="material-symbols-rounded">location_on</span>
             Nos boutiques
         </a>
