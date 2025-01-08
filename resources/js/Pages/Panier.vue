@@ -5,7 +5,7 @@
         <h1>Panier</h1>
             <div class="panier">
                 <div class="panierproduit" v-for="produit in panierData">
-                    <img alt="Produit" :src="produit['image']"/>
+                    <img alt="Produit" :src="produit['IMAGE'][0]['URL']"/>
                     <div class="panierproduitinfo">
                         <h3>{{ produit["NOM"] }}</h3>
                         <p>{{ produit["MATERIAUX"] }}</p>
@@ -21,7 +21,7 @@
             <div class="panierresume">
             <h2>SOUS TOTAL</h2>
             <p class="incl">INCL. TVA</p>
-            <h1>6000€</h1>
+            <h1>{{ somme }}€</h1>
             <button>Poursuivre ma commande</button>
             <p class="secure">PAIEMENT SÉCURISÉ</p>
             <p class="returns">RETOURS ET ÉCHANGES SOUS 30 JOURS</p>
@@ -35,13 +35,23 @@
 <script setup>
 import Footer from "./Components/Footer.vue";
 import Header from "./Components/Header.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 const props = defineProps({
     "produits":Array
 })
 
-let panierData = ref({})
+let panierData = ref(props.produits)
+
+let somme = ref(0)
+
+function updatePanierSomme(){
+    let temp = 0
+    for(let i = 0;i<panierData.value.length;i++){
+        temp += panierData.value[i]["PRIX"]
+    }
+    somme.value = temp
+}
 
 function supprimerDuPanier(id){
     fetch("/panier/supprimer",{
@@ -53,34 +63,14 @@ function supprimerDuPanier(id){
         },
     }).then(async response => {
         if(response.status == 200) {
-            delete panierData.value[id]
+            panierData.value = panierData.value.filter(produit => produit["ID"] != id)
         }
     })
 }
 
-onMounted(()=>{
-    for(let i = 0;i<props.produits.length;i++){
-        fetch("/produitData/"+props.produits[i]["ID_PRODUIT"],{
-            method:"GET",
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                "Content-Type":"application/json"
-            },
-        }).then(async response =>{
-            if(response.status == 200){
-                panierData.value[props.produits[i]["ID_PRODUIT"]] = await response.json()
-                fetch("/getProduitPicture/"+props.produits[i]["ID_PRODUIT"],{
-                    method:"GET",
-                    headers:{
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        "Content-Type":"application/json"
-                    }
-                }).then(async response =>{
-                    panierData.value[props.produits[i]["ID_PRODUIT"]]["image"] = (await response.json())[0]["URL"]
-                })
-            }
-        })
-    }
+updatePanierSomme()
+watch(panierData,async newvalue => {
+    updatePanierSomme()
 })
 </script>
 

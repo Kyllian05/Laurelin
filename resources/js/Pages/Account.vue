@@ -145,7 +145,7 @@ let props = defineProps(
     }
 
     function deleteAdresse(id){
-        fetch("/produit/supprimer",{
+        fetch("/adresse/supprimer",{
             method:"POST",
             body: JSON.stringify({"ID":id}),
             headers: {

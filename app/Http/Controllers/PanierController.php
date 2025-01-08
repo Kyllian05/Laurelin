@@ -27,7 +27,8 @@ class PanierController extends Controller
         $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"]);
 
         for ($i=0; $i < sizeof($produits); $i++) {
-            unset($produits[$i]["ID_COMMANDE"]);
+            $produits[$i] = \App\Models\Produit::getProduct($produits[$i]["ID_PRODUIT"]);
+            $produits[$i]["IMAGE"] = \App\Models\Image::get_one_image($produits[$i]["ID"]);
         }
 
         return Inertia::render("Panier",[
