@@ -15,7 +15,7 @@
             </div>
             <ButtonAcheter :white-border="true" :id="props.produit['ID']"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
-            <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded add-fav">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
+            <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
         </div>
 
 
@@ -142,6 +142,7 @@ const handleClick = (produit) => {
 }
 
 #produitEnVente {
+    position: relative;
     grid-column: 3 / 4;
     grid-row: 1 / 4;
     padding: 60px;
@@ -193,7 +194,7 @@ const handleClick = (produit) => {
 #favoriteButton {
     position: absolute;
     right: 60px;
-    top: 179px;
+    top: 60px;
     cursor: pointer;
 }
 

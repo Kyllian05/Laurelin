@@ -16,21 +16,31 @@
                 <div id="adresseWrapper">
                     <div id="adresse" class="font-subtitle-16">2 - Adresse de livraison</div>
                     <div id="contenuAdresse">
-                        <!---
-                        <div id="adresseChoiceWrapper">
-                            <button :class="{autChoiceActive :  authMethod === 'domicile'}" @click="changeAuthMethod()" class="font-subtitle-16"></button>
-                            <button :class="{autChoiceActive :  authMethod === ''}" @click="changeAuthMethod()" class="font-subtitle-16"></button>
-                        </div>
-                        <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick" succeed-message="Vous êtes connecté"></Form>
 
-                        <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit"></Form>
-                        --->
-                        <div id="newAdresse" class="font-subtitle-16">Nouvelle adresse</div>
-                        <div id="Retirer" class="font-subtitle-16">retirer en magasin</div>
-                        <select id="selectVille" class="font-subtitle-16">
-                            <option value="">Choisir une ville</option>
-                            <!---mettre les villes de la base de dounées-->
-                        </select>
+                        <div id="adresseChoiceWrapper">
+                            <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
+                            <button :class="{adresseChoiceActive :  adresseMethod === 'retirer'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
+                        </div>
+
+                        <div v-if="adresseMethod === 'domicile'">
+                            <div id="adresseUser">
+                                <!--TODO: met ton vfor avec les adresse des users  -->
+                                <input id="radButton" type="radio" name="radio" value="option1">
+                                <div id="adresseUserr">
+                                    <div id="adresse" class="font-subtitle-16">adresse</div>
+                                    <div id="codePostale" class="font-subtitle-16">code postale</div>
+                                    <div id="ville" class="font-subtitle-16">ville</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else>
+                            <select id="selectVille" class="font-subtitle-16">
+                                <option value="">Choisir une ville</option>
+                                <!---TODO: mettre les villes de la base de dounées-->
+                            </select>
+                        </div>
+
                     </div>
                 </div>
 
@@ -49,7 +59,7 @@
                 <div id="modif" class="font-body-m">Modifier</div>
                 <div id="nbArticles" class="font-body-s">articles</div>
                 <div id="produitComander" class="font-subtitle-16">
-                    <!----met ton vfor laaa pooool-->
+                    <!----TODO: met ton vfor laaa pooool-->
                 </div>
                 <div id="sousTot">
                     <div id="soustotal" class="font-subtitle-16">sous-total</div>
@@ -71,6 +81,18 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import Form from "./Components/Form.vue";
+import {defineProps, ref} from "vue";
+
+const props = defineProps(["authMethod"])
+
+let adresseMethod = ref(props.adresseMethod)
+
+
+function changeadresseMethod(){
+    if(adresseMethod.value === "domicile")adresseMethod.value = "retirer"
+    else adresseMethod.value = "domicile"
+}
+
 </script>
 
 
@@ -126,13 +148,68 @@ import Form from "./Components/Form.vue";
     color: black;
 }
 
+#contenuAdresse{
+    display: none;
+}
+
+
 #adresseWrapper {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
 
-#contenuAdresse {
-    display: none;
+#adresseChoiceWrapper button{
+    background: none;
+    border: none;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+
+#adresseChoiceWrapper{
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    border-bottom: solid 1px #E9E9E9;
+    justify-content: space-around;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.adresseChoiceActive{
+    border-bottom: solid 2px black !important;
+}
+
+#selectVille {
+    margin-left: 50%;
+    transform: translateX(-50%);
+    border-bottom: solid 2px black !important;
+    padding: 2px;
+    justify-content: space-around;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 230px;
+}
+
+#adresseUser {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0px 0 20px 50px;
+    width: 200px;
+
+}
+
+#radButton {
+    grid-column: 1;
+    width: 20px;
+    margin: 25px;
+}
+
+#adresseUserr {
+    grid-column: 2;
+    width: 300px;
 }
 
 #livraison {
