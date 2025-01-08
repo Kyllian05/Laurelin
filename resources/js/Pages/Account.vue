@@ -34,13 +34,55 @@
                     </div>
                 </div>
             </div>
+            <div v-else-if="dynamicPage == 'favoris'" id="favorisWrapper">
+                <div v-if="favorisImagesCount < dynamicFavoris.length">
+                    Loading
+                </div>
+                <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
+                    <div style="position: relative;width: fit-content">
+                        <a :href="'/produit/'+favori.ID" target="_blank">
+                            <img :src="favori.IMAGES[0]" class="favorisImage" @load="favorisImageLoaded()">
+                        </a>
+                        <span class="material-symbols-outlined favoriteRemoveSymbol" @click="supprimerFavoris(favori.ID)">
+                            remove
+                        </span>
+                    </div>
+                    <p>{{ favori.NOM }}</p>
+                    <p>{{ favori.PRIX }}€</p>
+                </div>
+            </div>
+            <div v-else>
+                <div v-if="ajoutAdresseState" id="ajoutAdresseWrapper">
+                    <div id="ajoutAdresseContent">
+                        <span class="material-symbols-rounded" @click="ajoutAdresseState = false" id="ajoutAdresseClose">close</span>
+                        <p class="font-body-s">AJOUTER UNE NOUVELLE ADRESSE</p>
+                        <div style="width: 70%;margin-left: 50%;transform: translateX(-50%)">
+                            <Form :fields="[{name:'Numéro'},{name:'Nom de rue'},{name:'Code Postale'}]" button-text="Enregistrer cette adresse" dest="/adresse/ajout" :check-boxs="[]" succeed-message="L'adresse a bien étée ajoutée" @formSubmitSuccessfully="(response)=>{closeAddAdresse(response)}"></Form>
+                        </div>
+                    </div>
+                </div>
+                <button id="addAdressButton" @click="ajoutAdresseState = true">
+                    <span class="material-symbols-outlined">
+                        add
+                    </span>
+                    <p class="font-body-s">AJouter une adresse</p>
+                </button>
+                <div v-for="adresse in dynamicAdresse" class="adresseWrappers">
+                    <p>{{ adresse["Numéro"] }} {{ adresse["Rue"] }}, {{ adresse["Code Postal"] }} {{ adresse["Ville"] }}</p>
+                    <div>
+                        <span class="material-symbols-outlined garbageIcon" @click="deleteAdresse(adresse['ID'])">
+                            delete
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <Footer></Footer>
 </template>
 
 <script setup>
-import {defineProps, ref} from "vue"
+import {defineProps, ref, watch} from "vue"
 import Form from "./Components/Form.vue"
 import Header from "./Components/Header.vue"
 import Footer from "./Components/Footer.vue"
@@ -49,17 +91,33 @@ let props = defineProps(
     {
         "page":String,
         "info":Object,
-        "commandes":Object
+        "commandes":Object,
+        "favoris" : Object,
+        "adresses" : Array,
     })
 
-    console.log(props.commandes)
+    const favorisImagesCount = ref(0)
 
-    let dynamicPage = ref(props.page)
+    const dynamicFavoris = ref(props.favoris)
+
+    const dynamicPage = ref(props.page)
+
+    const dynamicAdresse = ref(props.adresses)
+
+    const ajoutAdresseState = ref(false)
+
+    watch(ajoutAdresseState,async (newState)=>{
+        if(newState){
+            document.body.style.overflowY = "hidden"
+        }else{
+            document.body.style.overflowY = "scroll"
+        }
+    })
 
     let navConv = {
         "info" : {text:"Informations personnelles",icon:"person"},
         "commandes" : {text: "Mes commandes",icon:"shopping_cart"},
-        "produits favoris" : {text:"Mes produits favoris",icon:"favorite"},
+        "favoris" : {text:"Mes produits favoris",icon:"favorite"},
         "adresses" : {text:"Mes adresses",icon:"home"}
     }
 
@@ -77,6 +135,30 @@ let props = defineProps(
 
     infoFields[1].push({"name":Object.keys(props.info)[3],"value":props.info[Object.keys(props.info)[3]],"required":false})
 
+    function closeAddAdresse(response){
+        dynamicAdresse.value.push(response)
+        ajoutAdresseState.value = false
+    }
+
+    function favorisImageLoaded(){
+        favorisImagesCount.value++
+    }
+
+    function deleteAdresse(id){
+        fetch("/adresse/supprimer",{
+            method:"POST",
+            body: JSON.stringify({"ID":id}),
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response =>{
+            if(response.status == 200){
+                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse["ID"] != id)
+            }
+        })
+    }
+
     function getCommandeSum(commande){
         let sum = 0
         commande["Produits"].forEach((produit)=>{
@@ -84,9 +166,137 @@ let props = defineProps(
         })
         return sum
     }
+
+    function supprimerFavoris(id){
+        fetch("/supprimerFavoris",{
+            method : "POST",
+            body : JSON.stringify({
+                produit : id
+            }),
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response => {
+            if(response.status == 200){
+                dynamicFavoris.value = dynamicFavoris.value.filter((favori) => favori["ID"] != id)
+            }
+        })
+    }
 </script>
 
 <style scoped>
+    #ajoutAdresseContent p{
+        text-align: center;
+        font-size: 19px;
+        position: relative;
+        letter-spacing: 1px;
+        margin-top: 5vh;
+        margin-bottom: 5vh;
+        margin-top: 0px;
+    }
+    #ajoutAdresseClose:hover{
+        background-color: rgba(0,0,0,20%);
+        border-radius: 50%;
+    }
+    #ajoutAdresseClose{
+        cursor: pointer;
+        font-size: 3vw;
+        position: absolute;
+        margin-top: -9vh;
+        margin-left: 1vh;
+    }
+    #ajoutAdresseContent{
+        width: 50vw;
+        background-color: white;
+        margin-left: 50vw;
+        margin-top: 50vh;
+        transform: translate(-50%,-50%);
+        border-radius: 20px;
+        overflow: hidden;
+        padding-bottom: 10vh;
+        padding-top: 10vh;
+    }
+    #ajoutAdresseWrapper{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0,0,0,20%);
+        z-index: 1000;
+    }
+    #addAdressButton p{
+        letter-spacing: 1px;
+    }
+    #addAdressButton{
+        background-color: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 1vw;
+        gap: 1vw;
+    }
+    .adresseWrappers div span{
+        padding: 0.5vw;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(0,0,0,20%);
+        cursor: pointer;
+    }
+    .adresseWrappers div{
+        display: flex;
+        flex-direction: row;
+        gap: 1vw;
+        height: fit-content;
+    }
+    .adresseWrappers{
+        display: flex;
+        flex-direction: row;
+        position: relative;
+        justify-content: space-between;
+        height: 10vh;
+        align-items: center;
+        border-bottom: solid 1px black;
+    }
+    .garbageIcon{
+        color: rgb(200,0,0);
+        background-color: rgba(255,0,0,0.1);
+
+    }
+    .favoriteRemoveSymbol{
+        position: absolute;
+        right: 0.5vw;
+        top: 0.5vw;
+        display: none;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(0,0,0,20%);
+    }
+    .favorisWrappers a:hover + .favoriteRemoveSymbol{
+        display: inline!important;
+    }
+    .favorisImage:hover{
+        filter: brightness(70%);
+    }
+    .favorisWrappers{
+        text-align: center;
+    }
+    #favorisWrapper{
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+    }
+    .favorisImage{
+        width: 15vw;
+        cursor: pointer;
+        transition-duration: .25s;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        object-position: top;
+    }
     .commandSideWrapper p{
         margin-top: 2vh;
     }
@@ -148,9 +358,9 @@ let props = defineProps(
         flex-direction: row;
         gap: 10vw;
         width: fit-content;
-        margin-left: 50%;
-        transform: translateX(-50%);
-        margin-top: 11vh;
+        padding-left: 10vw;
+        padding-top: 119px;
+        height: 100vh;
     }
     .currentNav{
         background-color: black;

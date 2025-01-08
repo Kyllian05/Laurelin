@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AdresseController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
-use App\Http\Controllers\ListeProduitController;
+use \App\Http\Controllers\FavorisController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PanierController;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
@@ -51,8 +53,12 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // Produit
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
-Route::post("/produit/ajouterFavoris", [ProduitController::class, "ajoutFavoris"]);
-Route::post("/produit/supprimerFavoris", [ProduitController::class, "supprimerFavoris"]);
+
+// ---
+// Favoris
+// ---
+Route::post("/ajouterFavoris", [FavorisController::class, "ajoutFavoris"]);
+Route::post("/supprimerFavoris", [FavorisController::class, "supprimerFavoris"]);
 
 // ---
 // Histoire
@@ -63,3 +69,16 @@ Route::get("/histoire", [HistoireController::class, "index"]);
 // Contact
 // ---
 Route::get("/contact", [ContactController::class, "index"]);
+
+// ---
+// Adresse
+// ---
+Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
+Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
+
+
+// ---
+// Panier
+// ---
+Route::get("/panier", [PanierController::class, "index"]);
+

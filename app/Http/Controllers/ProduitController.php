@@ -32,29 +32,4 @@ class ProduitController extends Controller
         }
         return response("", 404);
     }
-
-    public function ajoutFavoris(Request $request)
-    {
-        $data = $request->post();
-        $user = $this->userService->getAuthenticatedUser($request);
-        if($user == null){
-            return response("", 404);
-        }
-        $produit = $this->produitService->findById($data['produit']);
-        $this->userService->addFavoris($user,$produit);
-        return response("", 200);
-    }
-
-    public function supprimerFavoris(Request $request)
-    {
-        $data = $request->post();
-        $user = $this->userService->getAuthenticatedUser($request);
-        if($user == null){
-            return response("", 404);
-        }
-
-        $produit = $this->produitService->findById($data['produit']);
-        $this->userService->deleteFavoris($user,$produit);
-        return response("", 200);
-    }
 }

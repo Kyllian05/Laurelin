@@ -46,6 +46,22 @@ class AccountController extends Controller
                 $commandesData[] = $temp;
             }
 
+            $favoris = [];
+            foreach($this->userService->getFavoris($user) as $favori) {
+                $favoris[] = $this->produitService->serialize($favori);
+            }
+
+            $adresses = [];
+            foreach(\App\Models\Adresse::getAllUserAdresse($user) as $adresse){
+                $adresses[] = array(
+                    "Numéro" => $adresse["NUM_RUE"],
+                    "Rue" => $adresse["NOM_RUE"],
+                    "Code Postal" => $adresse["CODE_POSTAL"],
+                    "Ville" => \App\Models\Ville::getByCodePostal($adresse["CODE_POSTAL"])["NOM"],
+                    "ID" => $adresse["ID"],
+                );
+            }
+
             return Inertia::render("Account",[
                 "page"=>$page,
                 "info"=>[
@@ -54,7 +70,9 @@ class AccountController extends Controller
                     "Téléphone"=>$user->getTelephone(),
                     "Adresse mail"=>$user->getEmail(),
                 ],
-                "commandes"=>$commandesData
+                "commandes"=>$commandesData,
+                "favoris"=>$favoris,
+                "adresses" => $adresses,
             ]);
         }catch (\Exception $e){
             if($e->getCode() == 518){

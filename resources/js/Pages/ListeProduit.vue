@@ -2,7 +2,7 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import { router } from '@inertiajs/vue3';
-import { reactive, computed } from "vue";
+import {reactive, computed, onMounted} from "vue";
 
 const props = defineProps({
     produits: {
@@ -35,42 +35,75 @@ const trierProduits = (critere) => {
         produitsAffiches.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
     }
 };
+
+const itemsPerPage = 6;
+let currentPage = 1;
+
+// Charger les produits initialement avec limitation
+const fetchProducts = () => {
+    produitsAffiches.splice(0, produitsAffiches.length, ...props.produits.slice(0, itemsPerPage));
+};
+
+
+const loadMoreProducts = () => {
+    const start = currentPage * itemsPerPage;
+    const nextProducts = props.produits.slice(start, start + itemsPerPage);
+
+    if (nextProducts.length > 0) {
+        produitsAffiches.push(...nextProducts);
+        currentPage++;
+    }
+};
+
+
+// Vérifie s'il reste des produits à charger
+const hasMoreProducts = computed(() => {
+    return produitsAffiches.length < props.produits.length;
+});
+
+// Appeler lors du montage
+onMounted(fetchProducts);
+
+
 </script>
 
 /* -----------------------HTML----------------------- */
 
 <template>
     <Header current-page="Nos bijoux"></Header>
-    <div id="FirstRange" >
+
+    <div id="page">
+        <div id="FirstRange" >
     <span class="material-symbols-rounded">
       arrow_back_ios
     </span>
-    </div>
+        </div>
 
-    <div id="SecondRange">
-        <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
-            <option value="">Trier par</option>
-            <option value="croiss">Prix croissant</option>
-            <option value="decroiss">Prix décroissant</option>
-            <option value="recent">Les plus récents</option>
-        </select>
-    </div>
-
-
-
-    <div id="ProduitRange">
-        <div class="container">
-            <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }">
-                <!-- TODO : faire le backend du btn favoris -->
-                <span class="material-symbols-rounded add-fav">favorite</span>
-                <!-- - - - - - - - - - - - - -  -->
-                <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
-                <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
-                <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
-                <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+        <div id="SecondRange">
+            <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
+                <option value="">Trier par</option>
+                <option value="croiss">Prix croissant</option>
+                <option value="decroiss">Prix décroissant</option>
+                <option value="recent">Les plus récents</option>
+            </select>
+        </div>
+        <div id="ProduitRange">
+            <div class="container">
+                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }">
+                    <!-- TODO : faire le backend du btn favoris -->
+                    <span class="material-symbols-rounded add-fav">favorite</span>
+                    <!-- - - - - - - - - - - - - -  -->
+                    <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+                    <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
+                    <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+                    <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+                </div>
             </div>
         </div>
+        <img id="logo" src="/public/images/logo-simple.png" alt="logo laurelin">
+        <button id="plusProd" v-if="hasMoreProducts" @click="loadMoreProducts" class="font-subtitle-16">Charger plus</button>
     </div>
+
 <Footer></Footer>
 </template>
 
@@ -90,6 +123,33 @@ const trierProduits = (critere) => {
 .add-fav:hover {
     background: #000;
     color: #ffffff;
+}
+
+
+#logo {
+    display: block;
+    text-align: center;
+    position: relative;
+    width: 50px;
+    filter: brightness(0%) grayscale(100%);
+    margin: 20px auto;
+}
+
+#plusProd {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#plusProd:hover {
+    background-color: #333;
 }
 
 #FirstRange {

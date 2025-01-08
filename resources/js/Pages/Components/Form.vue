@@ -17,7 +17,7 @@ import {defineEmits, defineProps, onMounted} from 'vue';
 import ButtonSubmit from "./ButtonSubmit.vue";
 import Field from "./Field.vue"
 
-const emit = defineEmits(["textClicked"])
+const emit = defineEmits(["textClicked","formSubmitSuccessfully"])
 
 let props = defineProps({
     "fields":Array[Object],
@@ -58,6 +58,7 @@ async function sendData(){
                 window.location = redirectCookie.replace("%2F","/")
             }else{
                 alert(props.succeedMessage);
+                emit("formSubmitSuccessfully",await response.json())
             }
         }else{
             const reader = response.body.getReader()
