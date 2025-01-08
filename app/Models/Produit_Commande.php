@@ -41,4 +41,11 @@ class Produit_Commande extends Model
             "PRIX"=>null
         ]);
     }
+
+    static function supprimerProduit(\App\Models\Commande $commande, \App\Models\Produit $produit){
+        if($commande["ETAT"] != "panier"){
+            throw \App\Models\Exceptions::createError(519);
+        }
+        self::where(["ID_COMMANDE"=>$commande["ID"],"ID_PRODUIT"=>$produit["ID"]])->delete();
+    }
 }

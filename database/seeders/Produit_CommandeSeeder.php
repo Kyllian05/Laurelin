@@ -44,5 +44,11 @@ class Produit_CommandeSeeder extends Seeder
             "ID_COMMANDE" => 3,
             "PRIX" => \App\Models\Produit::getProduct(1)["PRIX"]
         ]);
+        DB::table('Produit_Commande')->insert([
+            "QUANTITE" => 1,
+            "TAILLE" => 0,
+            "ID_PRODUIT" => 17,
+            "ID_COMMANDE" => 4,
+        ]);
     }
 }

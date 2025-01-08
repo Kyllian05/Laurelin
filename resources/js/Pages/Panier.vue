@@ -12,7 +12,7 @@
                         <a href="#">En ajouter un autre</a>
                         <h2>{{ produit["PRIX"] }}€</h2>
                     </div>
-                    <span id="closeButton" class="material-symbols-rounded">close</span>
+                    <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produit['ID'])">close</span>
                 </div>
                 <a href="#" class="continue">← Continuer ma visite</a>
                 </div>
@@ -41,9 +41,22 @@ const props = defineProps({
     "produits":Array
 })
 
-let panierProduits = [1,7,9]
-
 let panierData = ref({})
+
+function supprimerDuPanier(id){
+    fetch("/panier/supprimer",{
+        method:"POST",
+        body:JSON.stringify({"produit" : id}),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200) {
+            delete panierData.value[id]
+        }
+    })
+}
 
 onMounted(()=>{
     for(let i = 0;i<props.produits.length;i++){

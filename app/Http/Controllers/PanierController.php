@@ -31,4 +31,11 @@ class PanierController extends Controller
         $panier = \App\Models\Commande::getPanier($user);
         \App\Models\Produit_Commande::ajoutProduit($panier,\App\Models\Produit::getProduct($data["produit"]));
     }
+
+    public function supprimerDuPanier(Request $request){
+        $data = $request->post();
+        $user = \App\Models\Utilisateur::getLoggedUser($request);
+        $panier = \App\Models\Commande::getPanier($user);
+        \App\Models\Produit_Commande::supprimerProduit($panier,\App\Models\Produit::getProduct($data["produit"]));
+    }
 }
