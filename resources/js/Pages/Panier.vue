@@ -4,7 +4,9 @@
         <div class="leftWrapper">
         <h1>Panier</h1>
             <div class="panier">
-                <div class="panierproduit" v-for="produit in panierData">
+
+
+                <div class="panierproduit" v-for="produit in panierData" :style="{backgroundImage: `url(${produit.URL})`}">
                     <img src="#" alt="Produit" />
                     <div class="panierproduitinfo">
                         <h3>{{ produit["NOM"] }}</h3>
@@ -12,7 +14,7 @@
                         <a href="#">En ajouter un autre</a>
                         <h2>{{ produit["PRIX"] }}€</h2>
                     </div>
-                    <button class="remove">×</button>
+                    <span id="closeButton" class="material-symbols-rounded">close</span>
                 </div>
                 <a href="#" class="continue">← Continuer ma visite</a>
                 </div>
@@ -77,10 +79,10 @@ margin-top: 64px;
 display: flex;
 align-items: center;
 justify-content: space-between;
-background-color: #f1f1f1;
+background-color: transparent;
 margin: 10px 0;
 padding: 10px;
-border-radius: 8px;
+    border-bottom: 1px solid #000;
 }
 
 .panierproduit img {
@@ -127,7 +129,7 @@ color: #000;
 
 }
 
-.remove {
+#closeButton {
 background: none;
 border: none;
 font-size: 20px;
@@ -136,7 +138,7 @@ justify-content: right;
 margin-bottom: 16%;
 }
 
-.remove:hover {
+#closeButton:hover {
 background: none;
 border: none;
 font-size: 20px;
@@ -217,4 +219,22 @@ margin: 10px 0;
 text-decoration: underline;
 cursor: pointer;
 }
+
+@media (max-width: 800px) {
+    .globalWrapper{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .leftWrapper {
+        width: 90%;
+    }
+
+    .rightWrapper {
+        width: 90%;
+    }
+
+}
+
 </style>
