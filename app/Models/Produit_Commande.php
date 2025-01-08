@@ -22,9 +22,23 @@ class Produit_Commande extends Model
         'QUANTITE',
         'ID_PRODUIT',
         'ID_COMMANDE',
+        "TAILLE",
+        "PRIX",
     ];
+
+    public $timestamps = false;
 
     static function getAllProducts(int $commande_id){
         return self::where("ID_COMMANDE", $commande_id)->get();
+    }
+
+    static function ajoutProduit(\App\Models\Commande $commande, \App\Models\Produit $produit){
+        self::create([
+            "QUANTITE"=>1,
+            "TAILLE"=>0,
+            "ID_PRODUIT"=>$produit["ID"],
+            "ID_COMMANDE"=>$commande["ID"],
+            "PRIX"=>null
+        ]);
     }
 }

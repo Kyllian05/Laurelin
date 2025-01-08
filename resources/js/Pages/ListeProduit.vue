@@ -1,6 +1,44 @@
+<template>
+    <Header current-page="Nos bijoux"></Header>
 
-/* -----------------------JS----------------------- */
+    <div id="page">
+        <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp')` }">
+            <span class="material-symbols-rounded">
+              arrow_back_ios
+            </span>
 
+        </div>
+
+        <div id="SecondRange">
+            <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
+                <option value="">Trier par</option>
+                <option value="croiss">Prix croissant</option>
+                <option value="decroiss">Prix décroissant</option>
+                <option value="recent">Les plus récents</option>
+            </select>
+        </div>
+
+
+
+        <div id="ProduitRange">
+            <div class="container">
+                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }">
+                    <!-- TODO : faire le backend du btn favoris -->
+                    <span class="material-symbols-rounded add-fav">favorite</span>
+                    <!-- - - - - - - - - - - - - -  -->
+                    <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+                    <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
+                    <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+                    <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+                </div>
+            </div>
+        </div>
+        <img id="logo" src="/public/images/logo-simple.png" alt="logo laurelin">
+        <button id="plusProd" v-if="hasMoreProducts" @click="loadMoreProducts" class="font-subtitle-16">Charger plus</button>
+    </div>
+
+<Footer></Footer>
+</template>
 
 <script setup>
 import Header from "./Components/Header.vue";
@@ -96,55 +134,6 @@ const handleTouchClick = (id) => {
 
 
 </script>
-
-
-/* -----------------------HTML----------------------- */
-
-<template>
-    <Header current-page="Nos bijoux"></Header>
-
-    <div id="page">
-        <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp')` }">
-            <span class="material-symbols-rounded">
-              arrow_back_ios
-            </span>
-
-        </div>
-
-        <div id="SecondRange">
-            <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
-                <option value="">Trier par</option>
-                <option value="croiss">Prix croissant</option>
-                <option value="decroiss">Prix décroissant</option>
-                <option value="recent">Les plus récents</option>
-            </select>
-        </div>
-
-
-
-        <div id="ProduitRange">
-            <div class="container">
-                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }">
-                    <!-- TODO : faire le backend du btn favoris -->
-                    <span class="material-symbols-rounded add-fav">favorite</span>
-                    <!-- - - - - - - - - - - - - -  -->
-                    <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
-                    <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
-                    <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
-                    <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
-                </div>
-            </div>
-        </div>
-        <img id="logo" src="/public/images/logo-simple.png" alt="logo laurelin">
-        <button id="plusProd" v-if="hasMoreProducts" @click="loadMoreProducts" class="font-subtitle-16">Charger plus</button>
-    </div>
-
-<Footer></Footer>
-</template>
-
-
-
-/* -----------------------CSS----------------------- */
 
 <style scoped>
 

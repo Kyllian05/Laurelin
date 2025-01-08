@@ -26,7 +26,22 @@ class Commande extends Model
         'ID_ADRESSE',
     ];
 
+    public $timestamps = false;
+
     static function getAllCommandes(Utilisateur $utilisateur){
         return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->get();
+    }
+
+    static function createPanier(Utilisateur $utilisateur){
+        self::create([
+            "DATE" => date ('Y-m-d H:i:s', time()),
+            "ETAT" => "panier",
+            "MODE_LIVRAISON"=>null,
+            "ID_UTILISATEUR" => $utilisateur["ID"],
+            "ID_ADRESSE" => null]);
+    }
+
+    static function getPanier(Utilisateur $utilisateur){
+        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"],"ETAT"=>"PANIER"])->firstOrFail();
     }
 }

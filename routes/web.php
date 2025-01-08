@@ -84,4 +84,4 @@ Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
 // Panier
 // ---
 Route::get("/panier", [PanierController::class, "index"]);
-
+Route::post("/panier/ajout", [PanierController::class, "ajouterAuPanier"]);

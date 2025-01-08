@@ -37,13 +37,17 @@ import Footer from "./Components/Footer.vue";
 import Header from "./Components/Header.vue";
 import {onMounted, ref} from "vue";
 
+const props = defineProps({
+    "produits":Array
+})
+
 let panierProduits = [1,7,9]
 
 let panierData = ref({})
 
 onMounted(()=>{
-    for(let i = 0;i<panierProduits.length;i++){
-        fetch("/produitData/"+panierProduits[i],{
+    for(let i = 0;i<props.produits.length;i++){
+        fetch("/produitData/"+props.produits[i]["ID_PRODUIT"],{
             method:"GET",
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -51,24 +55,20 @@ onMounted(()=>{
             },
         }).then(async response =>{
             if(response.status == 200){
-                panierData.value[panierProduits[i]] = await response.json()
-                fetch("/getProduitPicture/"+panierProduits[i],{
+                panierData.value[props.produits[i]["ID_PRODUIT"]] = await response.json()
+                fetch("/getProduitPicture/"+props.produits[i]["ID_PRODUIT"],{
                     method:"GET",
                     headers:{
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         "Content-Type":"application/json"
                     }
                 }).then(async response =>{
-                    panierData.value[panierProduits[i]]["image"] = (await response.json())[0]["URL"]
+                    panierData.value[props.produits[i]["ID_PRODUIT"]]["image"] = (await response.json())[0]["URL"]
                 })
             }
         })
     }
-    console.log(panierData)
 })
-
-console.log(panierData)
-
 </script>
 
 <style scoped>
@@ -97,6 +97,8 @@ padding: 10px;
 width: 150px;
 height: 150px;
 border-radius: 5px;
+object-fit: cover;
+object-position: top;
 }
 
 .panierproduitinfo {

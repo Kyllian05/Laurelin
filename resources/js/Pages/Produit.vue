@@ -13,7 +13,10 @@
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
-            <button class="boutton_acheter font-body-m" > <span class="material-symbols-rounded">shopping_bag</span> Ajouter au panier</button>
+            <button class="boutton_acheter font-body-m" @click="ajoutAuPanier()">
+                <span class="material-symbols-rounded">shopping_bag</span>
+                Ajouter au panier
+            </button>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded add-fav">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
         </div>
@@ -101,11 +104,27 @@ function favorisAction(){
         },
     }).then(async response => {
         if(response.status == 200){
-            dynamicFavorite.value = !dynamicFavorite.value
+            alert("ajouté au panier")
         }
     })
 }
 
+function ajoutAuPanier(){
+    fetch("/panier/ajout",{
+        method : "POST",
+        body : JSON.stringify({
+            produit : props.produit["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+            dynamicFavorite.value = !dynamicFavorite.value
+        }
+    })
+}
 
 const choisirProduitsAleatoires = () => {
     if (props.autreProduits.length > 3) {
