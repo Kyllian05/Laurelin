@@ -22,7 +22,7 @@
 
         <div id="ProduitRange">
             <div class="container">
-                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }">
+                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }" @click="redirectOnClick(produit.ID)">
                     <!-- TODO : faire le backend du btn favoris -->
                     <span class="material-symbols-rounded add-fav">favorite</span>
                     <!-- - - - - - - - - - - - - -  -->
@@ -107,10 +107,6 @@ const hasMoreProducts = computed(() => {
 
 onMounted(fetchProducts);
 
-
-//!!!!! VOIR LE TACTILE
-const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-
 const containers = document.querySelectorAll('.container .item');
 
 containers.forEach(container => {
@@ -132,7 +128,12 @@ const handleTouchClick = (id) => {
     router.visit(`/produit/${id}`);
 };
 
-
+function redirectOnClick(id){
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    if(isTouchDevice){
+        window.location = "/produit/"+id
+    }
+}
 </script>
 
 <style scoped>
