@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdresseController;
+use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
 use App\Http\Controllers\ListeProduitController;
@@ -86,3 +87,10 @@ Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
 Route::get("/panier", [PanierController::class, "index"]);
 Route::post("/panier/ajout", [PanierController::class, "ajouterAuPanier"]);
 Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"]);
+
+// ---
+// checkout
+// ---
+Route::get("/checkout", [CheckOutController::class, "index"]);
+
+
