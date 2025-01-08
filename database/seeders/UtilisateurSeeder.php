@@ -22,5 +22,15 @@ class UtilisateurSeeder extends Seeder
             "TOKEN"=>\App\Models\Utilisateur::generateToken(),
             "TOKENGEN"=>date ('Y-m-d H:i:s', time())
         ]);
+
+        DB::table('Utilisateur')->insert([
+            'EMAIL' => "jeffreyepstein@gmail.com",
+            'PASSWORD' => hash("sha256","jeffrey"),
+            "PRENOM" => "Jeffrey",
+            "NOM" => "Souchet",
+            "PRIVILEGE" => 0,
+            "TOKEN"=>\App\Models\Utilisateur::generateToken(),
+            "TOKENGEN"=>date ('Y-m-d H:i:s', time())
+        ]);
     }
 }
