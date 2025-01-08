@@ -4,10 +4,8 @@
         <div class="leftWrapper">
         <h1>Panier</h1>
             <div class="panier">
-
-
-                <div class="panierproduit" v-for="produit in panierData" :style="{backgroundImage: `url(${produit.URL})`}">
-                    <img src="#" alt="Produit" />
+                <div class="panierproduit" v-for="produit in panierData">
+                    <img alt="Produit" :src="produit['image']"/>
                     <div class="panierproduitinfo">
                         <h3>{{ produit["NOM"] }}</h3>
                         <p>{{ produit["MATERIAUX"] }}</p>
@@ -54,9 +52,19 @@ onMounted(()=>{
         }).then(async response =>{
             if(response.status == 200){
                 panierData.value[panierProduits[i]] = await response.json()
+                fetch("/getProduitPicture/"+panierProduits[i],{
+                    method:"GET",
+                    headers:{
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        "Content-Type":"application/json"
+                    }
+                }).then(async response =>{
+                    panierData.value[panierProduits[i]]["image"] = (await response.json())[0]["URL"]
+                })
             }
         })
     }
+    console.log(panierData)
 })
 
 console.log(panierData)

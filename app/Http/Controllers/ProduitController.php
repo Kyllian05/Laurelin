@@ -31,4 +31,8 @@ class ProduitController extends Controller
     public function produitData(string $id){
         return response(Produit::find($id));
     }
+
+    public function getProduitPicture(string $id,Request $request){
+        return response(\App\Models\Image::get_one_image($id));
+    }
 }

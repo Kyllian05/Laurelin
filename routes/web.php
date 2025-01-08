@@ -55,6 +55,7 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
 Route::get("/produitData/{id}", [ProduitController::class, "produitData"]);
+Route::get("/getProduitPicture/{id}", [ProduitController::class, "getProduitPicture"]);
 
 // ---
 // Favoris
