@@ -2,71 +2,83 @@
 <template>
     <Header current-page="CheckOut"></Header>
         <div id="Page">
-            <div id="Title" class="font-subtitle-16">Commande</div>
+            <p id="Title" class="font-subtitle-16">Commande</p>
             <div id="DonneeCommande">
                 <div id="infoWrapper">
-                    <div id="info" class="font-subtitle-16">1 - Informations Personnelles</div>
-                    <div id="contenuInfo">
-                        <div id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</div>
+                    <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
+                    <div id="contenuInfo" v-if="currentStep == 1">
+                        <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
                         <button class="font-body-l">Se connecter</button>
                         <button class="font-body-l">S'inscrire</button>
+                    </div>
+                    <div id="contenuInfo" v-else>
+                        <p>Vous commandez avec cette adresse mail : {{ user["EMAIL"] }} </p>
                     </div>
                 </div>
 
                 <div id="adresseWrapper">
-                    <div id="adresse" class="font-subtitle-16">2 - Adresse de livraison</div>
-                    <div id="contenuAdresse">
-
+                    <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
+                    <div id="contenuAdresse" v-if="currentStep == 2">
                         <div id="adresseChoiceWrapper">
                             <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
                             <button :class="{adresseChoiceActive :  adresseMethod === 'retirer'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
                         </div>
-
                         <div v-if="adresseMethod === 'domicile'">
-                            <div id="adresseUser">
-                                <!--TODO: met ton vfor avec les adresse des users  -->
-                                <input id="radButton" type="radio" name="radio" value="option1">
-                                <div id="adresseUserr">
-                                    <div id="adresse" class="font-subtitle-16">adresse</div>
-                                    <div id="codePostale" class="font-subtitle-16">code postale</div>
-                                    <div id="ville" class="font-subtitle-16">ville</div>
+                            <div class="adresseUser" v-for="(adresse,index) in adresses">
+                                <input class="radButton" type="radio" name="radio" :checked="index == currentAdresse" @click="changeLivraison(index)">
+                                <div class="adresseUserr">
+                                    <p class="font-subtitle-16 adresse">{{ adresse["NUM_RUE"] }} {{ adresse["NOM_RUE"] }}</p>
+                                    <p class="font-subtitle-16 codePostale">{{ adresse["CODE_POSTAL"] }}</p>
+                                    <p class="font-subtitle-16 ville">{{ adresse["VILLE"] }}</p>
                                 </div>
                             </div>
+                            <button id="adresseValidateButton" @click="validateLivraison()">
+                                <span class="material-symbols-rounded">
+                                    location_on
+                                </span>
+                                <p>Valider</p>
+                            </button>
                         </div>
-
                         <div v-else>
                             <select id="selectVille" class="font-subtitle-16">
                                 <option value="">Choisir une ville</option>
                                 <!---TODO: mettre les villes de la base de dounées-->
                             </select>
                         </div>
-
+                    </div>
+                    <div v-else-if="currentStep > 2">
+                        <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
+                        <p class="font-subtitle-16 codePostale">{{ data["adresse"]["CODE_POSTAL"] }}</p>
+                        <p class="font-subtitle-16 ville">{{ data["adresse"]["VILLE"] }}</p>
                     </div>
                 </div>
 
                 <div id="livraisonWrapper">
-                    <div id="livraison" class="font-subtitle-16">3 - Options de Livraison</div>
+                    <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
                 </div>
 
                 <div id="paiementWrapper">
-                    <div id="paiement" class="font-subtitle-16">4 - Options de paiement</div>
+                    <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
+                    <div v-if="currentStep == 4">
+                        <p>coucou</p>
+                    </div>
                 </div>
 
             </div>
 
             <div id="Recap">
-                <div id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</div>
-                <div id="modif" class="font-body-m">Modifier</div>
-                <div id="nbArticles" class="font-body-s">articles</div>
+                <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
+                <p id="modif" class="font-body-m">Modifier</p>
+                <p id="nbArticles" class="font-body-s">articles</p>
                 <div id="produitComander" class="font-subtitle-16">
                     <!----TODO: met ton vfor laaa pooool-->
                 </div>
                 <div id="sousTot">
-                    <div id="soustotal" class="font-subtitle-16">sous-total</div>
-                    <div id="tva" class="font-subtitle-16">tva</div>
+                    <p id="soustotal" class="font-subtitle-16">sous-total</p>
+                    <p id="tva" class="font-subtitle-16">tva</p>
                 </div>
                 <div id="Tot">
-                    <div id="total" class="font-subtitle-16">total</div>
+                    <p id="total" class="font-subtitle-16">total</p>
                 </div>
 
             </div>
@@ -74,30 +86,63 @@
     <Footer></Footer>
 </template>
 
-
-
 <script setup>
 
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import Form from "./Components/Form.vue";
-import {defineProps, ref} from "vue";
+import {ref, toRaw} from "vue";
 
-const props = defineProps(["authMethod"])
+let props = defineProps({
+    "user" : Object,
+    "adresses" : Array
+})
 
-let adresseMethod = ref(props.adresseMethod)
+let currentAdresse = ref(0)
 
+let data = {}
+
+let adresseMethod = ref("domicile")
+
+let currentStep = ref(2)
+
+function changeLivraison(index){
+    currentAdresse.value = index
+}
+
+function validateLivraison(){
+    data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
+    currentStep.value += 2
+}
 
 function changeadresseMethod(){
     if(adresseMethod.value === "domicile")adresseMethod.value = "retirer"
     else adresseMethod.value = "domicile"
 }
-
 </script>
 
-
 <style scoped>
-
+#adresseValidateButton:hover {
+    background-color: white;
+    color: black;
+}
+#adresseValidateButton{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: clamp(45px, 3vw, 65px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 45px;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+    border: 1px solid;
+    cursor: pointer;
+    gap: .25vw;
+    transition: color 0.5s ease, background-color 0.5s ease, transform 0.1s ease;
+}
 #Page{
     display: flex;
     flex-wrap: wrap;
@@ -105,7 +150,6 @@ function changeadresseMethod(){
     justify-content: center;
     margin-bottom: 100px;
 }
-
 #Title{
     width: 94%;
     padding: 40px;
@@ -114,24 +158,19 @@ function changeadresseMethod(){
     border-bottom: 1px solid black;
 
 }
-
 #DonneeCommande {
     flex: 1 1 40%;
     margin-left: 3%;
     padding-right: 3%;
 }
-
 #infoWrapper {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-
 #contenuInfo {
-    display: none;
     text-align: center;
     padding-top: 20px;
 }
-
 #contenuInfo button {
     margin: 10px;
     width: 200px;
@@ -142,29 +181,20 @@ function changeadresseMethod(){
     color: white;
     transition: 0.5s ease;
 }
-
 #contenuInfo button:hover {
     background-color: white;
     color: black;
 }
-
-#contenuAdresse{
-    display: none;
-}
-
-
 #adresseWrapper {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-
 #adresseChoiceWrapper button{
     background: none;
     border: none;
     padding-bottom: 8px;
     cursor: pointer;
 }
-
 #adresseChoiceWrapper{
     display: flex;
     flex-direction: row;
@@ -176,11 +206,9 @@ function changeadresseMethod(){
     margin-top: 20px;
     margin-bottom: 40px;
 }
-
 .adresseChoiceActive{
     border-bottom: solid 2px black !important;
 }
-
 #selectVille {
     margin-left: 50%;
     transform: translateX(-50%);
@@ -192,61 +220,48 @@ function changeadresseMethod(){
     cursor: pointer;
     width: 230px;
 }
-
-#adresseUser {
+.adresseUser {
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0px 0 20px 50px;
     width: 200px;
 
 }
-
-#radButton {
+.radButton {
     grid-column: 1;
     width: 20px;
     margin: 25px;
 }
-
-#adresseUserr {
+.adresseUserr {
     grid-column: 2;
     width: 300px;
 }
-
 #livraison {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-
 #paiement {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-
 #Recap{
     flex: 1 1 20%;
     padding: 25px;
     margin-right: 3%;
 }
-
 #produitComander{
     border-top: 1px solid black;
     margin-top: 30px;
 }
-
 #Tot {
     border-top: 1px solid black;
     width: 80%;
     margin: 30px auto 0;
 }
-
 #sousTot{
     padding: 10px 0 0 15px;
 }
-
 #total {
     padding: 10px 0 0 15px;
 }
-
-
-
 </style>
