@@ -2,13 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Exceptions;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PanierController extends Controller
 {
     public function index(Request $request){
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
+
+        try{
+            $user = \App\Models\Utilisateur::getLoggedUser($request);
+            if($user == null){
+                throw Exceptions::createError(518);
+            }
+        }catch(\Exception $e){
+            if($e->getCode() == 518){
+                return redirect("/auth")->cookie("redirect","/panier",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+            }else{
+                throw $e;
+            }
+        }
         $panier = \App\Models\Commande::getPanier($user);
 
         $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"]);

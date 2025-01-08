@@ -113,7 +113,7 @@ class Utilisateur extends Model
 
         self::loginWithToken($user["TOKEN"]);
 
-        return Utilisateur::where("EMAIL",$email)->where("PASSWORD",$password)->first();
+        return Utilisateur::where("EMAIL",$email)->where("PASSWORD",$password)->firstOrFail();
     }
 
     static function loginWithToken(string $token) : ?Utilisateur{
