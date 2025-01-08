@@ -9,7 +9,7 @@
         {{produit}}
     </pre>
     <h3>Images :</h3>
-    <img v-for="img in produit.images" :src="img">
+    <img v-for="img in produit.IMAGES" :src="img">
 <Footer></Footer>
 </template>
 

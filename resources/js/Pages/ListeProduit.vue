@@ -60,7 +60,7 @@ const trierProduits = (critere) => {
 
     <div id="ProduitRange">
         <div class="container">
-            <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
+            <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }">
                 <!-- TODO : faire le backend du btn favoris -->
                 <span class="material-symbols-rounded add-fav">favorite</span>
                 <!-- - - - - - - - - - - - - -  -->

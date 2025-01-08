@@ -10,7 +10,7 @@ class ProduitEntity
     public readonly string $nom;
     public readonly ?string $materiaux;
     public readonly string $description;
-    public readonly int $prix;
+    public readonly float $prix;
     public readonly int $anneeCreation;
     public readonly ProductState $etat;
     public readonly int $stock;
@@ -21,7 +21,7 @@ class ProduitEntity
         string $nom,
         ?string $materiaux,
         string $description,
-        int $prix,
+        float $prix,
         int $anneeCreation,
         ProductState $etat,
         int $stock,
@@ -58,5 +58,21 @@ class ProduitEntity
             }
         }
         $this->images = $images;
+    }
+
+    // Autres
+
+    public function serialize(): array
+    {
+        return [
+            "ID" => $this->id,
+            "NOM" => $this->nom,
+            "MATERIAUX" => $this->materiaux,
+            "DESCRIPTION" => $this->description,
+            "PRIX" => $this->prix,
+            "ANNEE_CREATION" => $this->anneeCreation,
+            "STOCK" => $this->stock,
+            "IMAGES" => $this->getImages()
+        ];
     }
 }

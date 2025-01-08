@@ -22,9 +22,4 @@ class Categorie extends Model
     protected $fillable = [
         'NOM',
     ];
-
-    public static function get_products($categorie_name) {
-        $name = addslashes($categorie_name);
-        return DB::select("call select_product_categories('$name')");
-    }
 }

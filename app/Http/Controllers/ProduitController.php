@@ -26,15 +26,7 @@ class ProduitController extends Controller
             }
 
             return Inertia::render("Produit",[
-                "produit" => [
-                    "id" => $produit->id,
-                    "nom" => $produit->nom,
-                    "description" => $produit->description,
-                    "prix" => $produit->prix,
-                    "materiaux" => $produit->materiaux,
-                    "annee_cration" => $produit->anneeCreation,
-                    "images" => $this->produitService->getImages($produit),
-                ],
+                "produit" => $this->produitService->serialize($produit),
                 "isFavorite" => $isFav
             ]);
         }
