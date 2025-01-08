@@ -24,15 +24,22 @@ class PanierController extends Controller
         }
         $panier = \App\Models\Commande::getPanier($user);
 
-        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"]);
+        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
+
+        $result = [];
 
         for ($i=0; $i < sizeof($produits); $i++) {
-            $produits[$i] = \App\Models\Produit::getProduct($produits[$i]["ID_PRODUIT"]);
-            $produits[$i]["IMAGE"] = \App\Models\Image::get_one_image($produits[$i]["ID"]);
+            $quantite = $produits[$i]["QUANTITE"];
+            while($produits[$i]["QUANTITE"] > 0){
+                $temp = \App\Models\Produit::getProduct($produits[$i]["ID_PRODUIT"]);
+                $temp["IMAGE"] = \App\Models\Image::get_one_image($produits[$i]["ID_PRODUIT"]);
+                $result[] = $temp;
+                $produits[$i]["QUANTITE"]--;
+            }
         }
 
         return Inertia::render("Panier",[
-            "produits"=>$produits,
+            "produits"=>$result,
         ]);
     }
 

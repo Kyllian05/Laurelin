@@ -4,7 +4,7 @@
         <div class="leftWrapper">
         <h1>Panier</h1>
             <div class="panier">
-                <div class="panierproduit" v-for="produit in panierData">
+                <div class="panierproduit" v-for="produit in panierData" v-if="panierData.length > 0">
                     <img alt="Produit" :src="produit['IMAGE'][0]['URL']"/>
                     <div class="panierproduitinfo">
                         <h3>{{ produit["NOM"] }}</h3>
@@ -13,6 +13,9 @@
                         <h2>{{ produit["PRIX"] }}€</h2>
                     </div>
                     <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produit['ID'])">close</span>
+                </div>
+                <div v-else>
+                    <p style="margin-top: 5vh; margin-bottom: 3vh">Votre panier est vide</p>
                 </div>
                 <a href="#" class="continue">← Continuer ma visite</a>
                 </div>
@@ -63,13 +66,18 @@ function supprimerDuPanier(id){
         },
     }).then(async response => {
         if(response.status == 200) {
-            panierData.value = panierData.value.filter(produit => produit["ID"] != id)
+            for(let i = 0;i<panierData.value.length;i++){
+                if(panierData.value[i]["ID"] == id){
+                    panierData.value.splice(i,1)
+                    break
+                }
+            }
         }
     })
 }
 
 updatePanierSomme()
-watch(panierData,async newvalue => {
+watch(panierData.value,async newvalue => {
     updatePanierSomme()
 })
 </script>
