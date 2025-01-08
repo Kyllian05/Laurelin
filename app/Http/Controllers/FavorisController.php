@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class FavorisController extends Controller{
 

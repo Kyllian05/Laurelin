@@ -4,6 +4,11 @@ namespace App\Domain\Utilisateur\Entities;
 
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Role;
+use App\Domain\Validators\AdminPasswordValidator;
+use App\Domain\Validators\CustomerPasswordValidator;
+use App\Domain\Validators\PasswordValidatorStrategy;
+use App\Domain\Validators\WeakPasswordValidator;
+use Illuminate\Support\Facades\App;
 
 abstract class UtilisateurEntity
 {
@@ -18,8 +23,9 @@ abstract class UtilisateurEntity
     private ?string $code;
     private ?string $codeGen;
     private ?array $favoris = null;
+    private PasswordValidatorStrategy $passwordValidator;
 
-    public function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen) {
+    protected function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen, PasswordValidatorStrategy $passwordValidator) {
         $this->setId($id);
         $this->setEmail($email);
         $this->password = $password;
@@ -30,6 +36,7 @@ abstract class UtilisateurEntity
         $this->setTokenGen($tokenGen);
         $this->setCode($code);
         $this->setCodeGen($codeGen);
+        $this->passwordValidator = $passwordValidator;
     }
 
     /**
@@ -46,20 +53,30 @@ abstract class UtilisateurEntity
      */
     public static function utilisateurFactory(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege, ?string $code, ?string $codeGen): ?UtilisateurEntity {
         if ($privilege == 0) {
-            return new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen);
+            return new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen, new CustomerPasswordValidator());
         } elseif ($privilege == 1) {
-            return new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen);
+            if (App::environment('local')) {
+                $validator = new WeakPasswordValidator();
+            } else {
+                $validator = new AdminPasswordValidator();
+            }
+            return new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen, $validator);
         }
         return null;
     }
 
     public static function createNewUser(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege): ?UtilisateurEntity {
         if ($privilege == 0) {
-            $entity = new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null);
+            $entity = new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null, new CustomerPasswordValidator());
             $entity->setPassword($password);
             return $entity;
         } elseif ($privilege == 1) {
-            $entity = new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null);
+            if (App::environment('local')) {
+                $validator = new WeakPasswordValidator();
+            } else {
+                $validator = new AdminPasswordValidator();
+            }
+            $entity = new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null, $validator);
             $entity->setPassword($password);
             return $entity;
         }
@@ -133,11 +150,20 @@ abstract class UtilisateurEntity
     // ---
     // Setters
     // ---
+
     /**
      * @param string $password : Le mot de passe en clair
      * @return void
+     * @throws \Exception : Si le mot de passe n'est pas valide
      */
-    abstract public function setPassword(string $password): void;
+    public function setPassword(string $password): void
+    {
+        if ($this->passwordValidator->validate($password, $this->nom, $this->prenom)) {
+            $this->password = hash("sha256", $password);
+            return;
+        }
+        throw new \Exception($this->passwordValidator->getErrorMessage());
+    }
 
     public function setId(int $id): void
     {

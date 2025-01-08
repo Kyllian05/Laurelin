@@ -83,7 +83,7 @@ class UtilisateurService
         $token = $this->generateToken();
         try {
             $user = $this->userRepository->create($email, $password, $firstName, $lastName, $token, time());
-        } catch (\InvalidArgumentException $exception) {
+        } catch (\Exception $exception) {
             throw CustomExceptions::createErrorWithMessage(519, $exception->getMessage());
         }
         // Envoi du code de vérification de l'email
