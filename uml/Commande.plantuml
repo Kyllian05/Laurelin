@@ -1,0 +1,63 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+interface CommandeSate {
+  + {abstract} setContext(newContext: CommandeEntity): void
+  + {abstract} modifyQuantity(produitCommandeEntity: ProduitCommandeEntity, newQuantity: int): void
+  + {abstract} modifyAdresse(adresseEntity: AdresseEntity): void
+  + {abstract} modifyLivraison(livraison: Livraison): void
+  + {abstract} addProduct(productCommandeEntity: ProduitCommandeEntity): void
+  + {abstract} removeProduct(productCommandeEntity: ProduitCommandeEntity): void
+}
+
+class CommandeEntity {
+  - id: int
+  - date: string
+  - livraison: Livraison
+  - adresse: AdresseEntity
+  - products: array
+  - state: CommandeSate
+  --
+  + <<create>> CommandeEntity(state: CommandeSate)
+  + getProducts(): array
+  + setId(id: int): void
+  + setDate(date: string): void
+  + setLivraison(livraison: Livraison): void
+  + setAdresse(adresse: AdresseEntity): void
+  + setProducts(products: array): void
+  .. Méthodes du pattern State ..
+  + changeSate(state: CommandeSate): void
+  + modifyQuantity(produitCommandeEntity: ProduitCommandeEntity, newQuantity: int): void
+  + modifyAdresse(adresseEntity: AdresseEntity): void
+  + modifyLivraison(livraison: Livraison): void
+  + addProduct(productCommandeEntity: ProduitCommandeEntity): void
+  + removeProduct(productCommandeEntity: ProduitCommandeEntity): void
+}
+
+class CartSate {
+  - context: CommandeEntity
+  + setContext(newContext: CommandeEntity): void
+  + modifyQuantity(produitCommandeEntity: ProduitCommandeEntity, newQuantity: int): void
+  + modifyAdresse(adresseEntity: AdresseEntity): void
+  + modifyLivraison(livraison: Livraison): void
+  + addProduct(productCommandeEntity: ProduitCommandeEntity): void
+  + removeProduct(productCommandeEntity: ProduitCommandeEntity): void
+}
+
+class OrderSate {
+  - context: CommandeEntity
+  + setContext(newContext: CommandeEntity): void
+  + modifyQuantity(produitCommandeEntity: ProduitCommandeEntity, newQuantity: int): void
+  + modifyAdresse(adresseEntity: AdresseEntity): void
+  + modifyLivraison(livraison: Livraison): void
+  + addProduct(productCommandeEntity: ProduitCommandeEntity): void
+  + removeProduct(productCommandeEntity: ProduitCommandeEntity): void
+}
+
+CommandeSate <|.. CartSate
+CommandeSate <|.. OrderSate
+CommandeEntity o-- CommandeSate
+
+@enduml
