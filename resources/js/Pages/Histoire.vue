@@ -192,12 +192,13 @@ height: 100%;
 background-size: cover;
 background-position: center;
 z-index: 1;
-transition: filter 0.3s ease;
+transition: 0.3s ease;
 cursor: pointer;
 }
 
 .section-content:hover .background-blur {
   filter: blur(4px); 
+  transform: scale(1.1);
 }
 .le-createur .background-blur {
   background-image: url('/public/images/createur.jpg');
