@@ -62,10 +62,10 @@
                         <span class="material-symbols-rounded" @click="ajoutAdresseState = false" id="ajoutAdresseClose">close</span>
                         <p class="font-body-s">AJOUTER UNE NOUVELLE ADRESSE</p>
                         <div style="width: 70%;margin-left: 50%;transform: translateX(-50%)">
-                            <!--<Form :fields="[{name:'Numéro'},{name:'Nom de rue'},{name:'Code Postale'}]" button-text="Enregistrer cette adresse" dest="/adresse/ajout" :check-boxs="[]" succeed-message="L'adresse a bien étée ajoutée" @formSubmitSuccessfully="(response)=>{closeAddAdresse(response)}"></Form> -->
                             <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
                             <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
                             <Field name="Code Postale" @input="value => searchVille(value)"></Field>
+                            <!-- TODO: UI-->
                             <select v-if="villesSuggest.length > 0" v-model="villeChoice">
                                 <option v-for="ville in villesSuggest" :value="{'Nom':ville['NOM'],'Code Postal':ville['CODE_POSTAL']}">{{ ville["NOM"] }} {{ ville["CODE_POSTAL"] }}</option>
                             </select>
@@ -164,7 +164,6 @@ let props = defineProps(
     }
 
     function newAdresseClicked(){
-        console.log(ajoutAdresseData.value)
         fetch("/adresse/ajout",{
             method : "POST",
             body : JSON.stringify({
@@ -176,6 +175,9 @@ let props = defineProps(
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 "Content-Type":"application/json"
             },
+        }).then(async response => {
+            dynamicAdresse.value.push(await response.json())
+            ajoutAdresseState.value = false
         })
     }
 
@@ -193,11 +195,6 @@ let props = defineProps(
                 villesSuggest.value = await response.json()
             })
         }
-    }
-
-    function closeAddAdresse(response){
-        dynamicAdresse.value.push(response)
-        ajoutAdresseState.value = false
     }
 
     function favorisImageLoaded(){
