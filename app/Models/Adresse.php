@@ -31,8 +31,9 @@ class Adresse extends Model
         return self::where("ID_UTILISATEUR",$utilisateur["ID"])->get();
     }
 
-    static function addAdresse(\App\Models\Utilisateur $utilisateur,String $numRue,String $nomRue,String $codePostal):self{
-        self::create(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"CODE_POSTAL"=>$codePostal,"ID_UTILISATEUR"=>$utilisateur["ID"]]);
-        return self::where(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"CODE_POSTAL"=>$codePostal,"ID_UTILISATEUR"=>$utilisateur["ID"]])->firstOrFail();
+    static function addAdresse(\App\Models\Utilisateur $utilisateur,String $numRue,String $nomRue,String $nomVille, String $codePostale):self{
+        $villeID = \App\Models\Ville::where(["CODE_POSTAL"=>$codePostale,"NOM"=>$nomVille])->firstOrFail()["ID"];
+        self::create(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"ID_UTILISATEUR"=>$utilisateur["ID"],"ID_VILLE"=>$villeID]);
+        return self::where(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"ID_UTILISATEUR"=>$utilisateur["ID"],"ID_VILLE"=>$villeID])->firstOrFail();
     }
 }

@@ -62,7 +62,14 @@
                         <span class="material-symbols-rounded" @click="ajoutAdresseState = false" id="ajoutAdresseClose">close</span>
                         <p class="font-body-s">AJOUTER UNE NOUVELLE ADRESSE</p>
                         <div style="width: 70%;margin-left: 50%;transform: translateX(-50%)">
-                            <Form :fields="[{name:'Numéro'},{name:'Nom de rue'},{name:'Code Postale'}]" button-text="Enregistrer cette adresse" dest="/adresse/ajout" :check-boxs="[]" succeed-message="L'adresse a bien étée ajoutée" @formSubmitSuccessfully="(response)=>{closeAddAdresse(response)}"></Form>
+                            <!--<Form :fields="[{name:'Numéro'},{name:'Nom de rue'},{name:'Code Postale'}]" button-text="Enregistrer cette adresse" dest="/adresse/ajout" :check-boxs="[]" succeed-message="L'adresse a bien étée ajoutée" @formSubmitSuccessfully="(response)=>{closeAddAdresse(response)}"></Form> -->
+                            <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
+                            <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
+                            <Field name="Code Postale" @input="value => searchVille(value)"></Field>
+                            <select v-if="villesSuggest.length > 0" v-model="villeChoice">
+                                <option v-for="ville in villesSuggest" :value="{'Nom':ville['NOM'],'Code Postal':ville['CODE_POSTAL']}">{{ ville["NOM"] }} {{ ville["CODE_POSTAL"] }}</option>
+                            </select>
+                            <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
                         </div>
                     </div>
                 </div>
@@ -92,6 +99,8 @@ import Form from "./Components/Form.vue"
 import Header from "./Components/Header.vue"
 import Footer from "./Components/Footer.vue"
 import ButtonAcheter from "./Components/ButtonAcheter.vue";
+import Field from "./Components/Field.vue";
+import ButtonSubmit from "./Components/ButtonSubmit.vue";
 
 let props = defineProps(
     {
@@ -111,6 +120,15 @@ let props = defineProps(
     const dynamicAdresse = ref(props.adresses)
 
     const ajoutAdresseState = ref(false)
+
+    const villesSuggest = ref([]);
+
+    const villeChoice = ref()
+
+    const ajoutAdresseData = ref({
+        "Numéro":"",
+        "Nom de rue":""
+    })
 
     watch(ajoutAdresseState,async (newState)=>{
         if(newState){
@@ -140,6 +158,42 @@ let props = defineProps(
     }
 
     infoFields[1].push({"name":Object.keys(props.info)[3],"value":props.info[Object.keys(props.info)[3]],"required":false})
+
+    function updateNewAdresseValue(field,value){
+        ajoutAdresseData.value[field] = value
+    }
+
+    function newAdresseClicked(){
+        console.log(ajoutAdresseData.value)
+        fetch("/adresse/ajout",{
+            method : "POST",
+            body : JSON.stringify({
+                "Numéro" : ajoutAdresseData.value["Numéro"],
+                "Nom de rue" : ajoutAdresseData.value["Nom de rue"],
+                "Ville" : villeChoice.value
+            }),
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        })
+    }
+
+    function searchVille(codePostal){
+        if(codePostal == ""){
+            villesSuggest.value = []
+        }else{
+            fetch("/adresse/getVilles/"+codePostal,{
+                method:"GET",
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    "Content-Type":"application/json"
+                },
+            }).then( async response =>{
+                villesSuggest.value = await response.json()
+            })
+        }
+    }
 
     function closeAddAdresse(response){
         dynamicAdresse.value.push(response)

@@ -22,4 +22,8 @@ class Ville extends Model
         'NOM',
         'CODE_POSTAL',
     ];
+
+    static function getByCodePostal($codePostal){
+        return self::where('CODE_POSTAL','LIKE', $codePostal."%")->take(10)->get();
+    }
 }
