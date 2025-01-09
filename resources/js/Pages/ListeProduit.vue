@@ -2,7 +2,7 @@
     <Header current-page="Nos bijoux"></Header>
 
     <div id="page">
-        <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp')` }">
+        <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp'), url('/pictures/collections/${collections}.jpg')` }">
             <span class="material-symbols-rounded">
               arrow_back_ios
             </span>
@@ -52,6 +52,10 @@ const props = defineProps({
         required: true
     },
     categories: {
+        type: Number,
+        required: true
+    },
+    collections: {
         type: Number,
         required: true
     }

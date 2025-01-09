@@ -21,7 +21,6 @@ class MagasinController extends Controller
         $categorie = Categorie::where("NOM",$name)->firstOrFail();
         $IDCategorie = $categorie["ID"];
 
-
         return Inertia::render("ListeProduit", [
             'produits' => Categorie::get_products($name),
             'categories' => $IDCategorie,
@@ -29,8 +28,12 @@ class MagasinController extends Controller
     }
 
     public function list_collections(string $name, Request $request){
+        $collections = Collection::where("NOM",$name)->firstOrFail();
+        $IDCollections = $collections["ID"];
+
         return Inertia::render("ListeProduit", [
-            'produits' => Collection::get_products($name)
+            'produits' => Collection::get_products($name),
+            'collections' => $IDCollections,
         ]);
     }
 }
