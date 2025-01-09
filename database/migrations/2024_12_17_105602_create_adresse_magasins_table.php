@@ -15,7 +15,7 @@ return new class extends Migration
             CREATE TABLE AdresseMagasins (
                 ID INT AUTO_INCREMENT PRIMARY KEY,
                 ID_VILLE INT,
-                ADRESSE VARCHAR(255),
+                ADRESSE VARCHAR(255)
             )
         ");
     }

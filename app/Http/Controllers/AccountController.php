@@ -49,13 +49,15 @@ class AccountController extends Controller
                 ];
             }
 
+
             $adresses = [];
             foreach(\App\Models\Adresse::getAllUserAdresse($user) as $adresse){
+                $ville = \App\Models\Ville::where("ID",$adresse["ID_VILLE"])->firstOrFail();
                 $adresses[] = array(
                     "Numéro" => $adresse["NUM_RUE"],
                     "Rue" => $adresse["NOM_RUE"],
-                    "Code Postal" => $adresse["CODE_POSTAL"],
-                    "Ville" => \App\Models\Ville::getByCodePostal($adresse["CODE_POSTAL"])["NOM"],
+                    "Code Postal" => $ville["CODE_POSTAL"],
+                    "Ville" => $ville["NOM"],
                     "ID" => $adresse["ID"],
                 );
             }
@@ -75,6 +77,8 @@ class AccountController extends Controller
         }catch (\Exception $e){
             if($e->getCode() == 518){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+            }else{
+                throw $e;
             }
         }
     }

@@ -17,24 +17,21 @@ class AdresseSeeder extends Seeder
         "NUM_RUE" => 22,
         "NOM_RUE" => "avenue Foch",
         "ID_UTILISATEUR" => 1,
-        "ID_VILLE" => 75116,
-        "CODE_POSTAL" => 75116
+        "ID_VILLE" => 75116
         ]);
 
         DB::table('Adresse')->insert([
             "NUM_RUE" => 47,
             "NOM_RUE" => "Route de Rennes",
             "ID_UTILISATEUR" => 1,
-            "ID_VILLE" => 44114,
-            "CODE_POSTAL" => 44700
+            "ID_VILLE" => 44114
         ]);
 
         DB::table('Adresse')->insert([
             "NUM_RUE" => 31,
             "NOM_RUE" => "Allée de la Civelière",
             "ID_UTILISATEUR" => 1,
-            "ID_VILLE" => 44109,
-            "CODE_POSTAL" => 44200
+            "ID_VILLE" => 44109
         ]);
     }
 }

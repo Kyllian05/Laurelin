@@ -22,8 +22,4 @@ class Ville extends Model
         'NOM',
         'CODE_POSTAL',
     ];
-
-    static function getByCodePostal($codePostal) : self{
-        return self::where('CODE_POSTAL',$codePostal)->firstOrFail();
-    }
 }

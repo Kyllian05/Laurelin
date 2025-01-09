@@ -22,7 +22,7 @@ class Adresse extends Model
         'NUM_RUE',
         'NOM_RUE',
         'ID_UTILISATEUR',
-        'CODE_POSTAL',
+        "ID_VILLE"
     ];
 
     public $timestamps = false;

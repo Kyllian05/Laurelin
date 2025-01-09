@@ -31,7 +31,9 @@ class CheckOutController extends Controller
         $adresses = \App\Models\Adresse::getAllUserAdresse($user)->toArray();
 
         for($i = 0; $i < count($adresses); $i++){
-            $adresses[$i]["VILLE"] = \App\Models\Ville::getByCodePostal($adresses[$i]["CODE_POSTAL"])["NOM"];
+            $ville = \App\Models\Ville::where("ID",$adresses[$i]["ID_VILLE"])->firstOrFail();
+            $adresses[$i]["VILLE"] = $ville["NOM"];
+            $adresses[$i]["CODE_POSTAL"] = $ville["CODE_POSTAL"];
         }
 
         return Inertia::render("CheckOut",[
