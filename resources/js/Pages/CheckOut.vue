@@ -78,17 +78,15 @@
 
             <div id="Recap">
                 <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
-                <p id="modif" class="font-body-m">Modifier</p>
-                <p id="nbArticles" class="font-body-s">articles</p>
-                <div id="produitComander" class="font-subtitle-16">
-                    <!----TODO: met ton vfor laaa pooool-->
+                <div id="produitComander" class="font-subtitle-16" v-for="produit in produits">
+                    <p>{{ produit["NOM"] }} x{{ produit["QUANTITE"] }} <b>{{ produit["PRIX"] * produit["QUANTITE"] }} €</b></p>
                 </div>
                 <div id="sousTot">
-                    <p id="soustotal" class="font-subtitle-16">sous-total</p>
-                    <p id="tva" class="font-subtitle-16">tva</p>
+                    <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
+                    <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
                 </div>
                 <div id="Tot">
-                    <p id="total" class="font-subtitle-16">total</p>
+                    <p id="total" class="font-subtitle-16">total <b>{{ sum}} €</b></p>
                 </div>
 
             </div>
@@ -106,10 +104,17 @@ import ButtonSubmit from "./Components/ButtonSubmit.vue";
 
 let props = defineProps({
     "user" : Object,
-    "adresses" : Array
+    "adresses" : Array,
+    "produits":Array
 })
 
 let currentAdresse = ref(0)
+
+let sum = 0
+
+for(let i = 0;i<props.produits.length;i++){
+    sum += props.produits[i]["PRIX"] * props.produits[i]["QUANTITE"]
+}
 
 let data = {}
 

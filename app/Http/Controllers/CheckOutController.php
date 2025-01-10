@@ -38,9 +38,21 @@ class CheckOutController extends Controller
             $adresses[$i]["CODE_POSTAL"] = $ville["CODE_POSTAL"];
         }
 
+        $panier = \App\Models\Commande::getPanier($user);
+        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
+
+        $result = [];
+
+        foreach($produits as $produit){
+            $temp = \App\Models\Produit::where("ID",$produit["ID_PRODUIT"])->firstOrFail();
+            $temp["QUANTITE"] = $produit["QUANTITE"];
+            $result[] = $temp;
+        }
+
         return Inertia::render("CheckOut",[
             "user" => $userData,
             "adresses" => $adresses,
+            "produits" => $result,
         ]);
     }
 
