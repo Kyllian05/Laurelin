@@ -58,6 +58,8 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
 Route::get("/produitData/{id}", [ProduitController::class, "produitData"]);
 Route::get("/getProduitPicture/{id}", [ProduitController::class, "getProduitPicture"]);
+Route::post("/nouveauCommentaire",[ProduitController::class, "createCommentaire"]);
+Route::post("/supprimerCommentaire",[ProduitController::class, "supprimerCommentaire"]);
 
 // ---
 // Favoris

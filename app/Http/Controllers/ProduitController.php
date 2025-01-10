@@ -29,11 +29,10 @@ class ProduitController extends Controller
                 $utilisateur = Utilisateur::select('NOM', 'PRENOM')->where("ID", $comment["ID_UTILISATEUR"])->first();
                 $donneescommantaire[] = [
                     'CONTENU' => $comment["CONTENU"],
-                    'ID_UTILISATEUR' => $comment["ID_UTILISATEUR"],
-                    'ID_PRODUIT' => $comment["ID_PRODUIT"],
                     'NOM' => $utilisateur ? $utilisateur->NOM : 'Non trouvé',
                     'PRENOM' => $utilisateur ? $utilisateur->PRENOM : 'Non trouvé',
                     'DATE' => $comment["DATE"],
+                    "DELETABLE" => $comment["ID_UTILISATEUR"] == $user["ID"],
                 ];
             }
 
@@ -55,5 +54,29 @@ class ProduitController extends Controller
 
     public function getProduitPicture(string $id,Request $request){
         return response(\App\Models\Image::get_one_image($id));
+    }
+
+    public function createCommentaire(Request $request){
+        $user = \App\Models\Utilisateur::getLoggedUser($request);
+
+        $data = $request->post();
+
+        $commentaire = \App\Models\Commentaire::create(["CONTENU"=>$data["contenu"],"ID_UTILISATEUR"=>$user["ID"],"ID_PRODUIT"=>$data["produit"],"DATE"=>date('Y-m-d', time())]);
+        $response = $commentaire->toArray();
+        unset($response["ID_UTILISATEUR"]);
+        unset($response["ID_PRODUIT"]);
+        unset($response["id"]);
+        $response["PRENOM"] = $user["PRENOM"];
+        $response["NOM"] = $user["NOM"];
+        $response["DELETABLE"] = true;
+        return response($response,200);
+    }
+
+    public function supprimerCommentaire(Request $request){
+        $user = \App\Models\Utilisateur::getLoggedUser($request);
+
+        $data = $request->post();
+
+        \App\Models\Commentaire::where(["ID_PRODUIT"=>$data["produit"],"ID_UTILISATEUR"=>$user["ID"]])->delete();
     }
 }

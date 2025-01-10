@@ -48,15 +48,17 @@
 
         <div id="avis">
             <p class="font-subtitle-16"> Les Avis de Nos Clients </p>
-                <div v-for="comm in donneesCommentaires" class="commentaire">
+                <textarea class="font-body-m" v-model="commentaireInput"></textarea>
+                <button class="avisButton font-body-l" @click="sendCommentaire()"> Donnez votre avis </button>
+                <div v-for="comm in dynamicCommentaire" class="commentaire">
                     <div  class="nom-prenom">
                         <span class="prenom font-body-l">{{comm.PRENOM}}</span>
                         <span class="nom font-body-l">{{comm.NOM}}</span>
                     </div>
                     <span class="date font-body-s">{{comm.DATE}}</span>
                     <span class="contenu font-body-m">{{comm.CONTENU}}</span>
+                    <span class="material-symbols-rounded" id="deleteComment" v-if="comm['DELETABLE']" alt="supprimer le commentaire" title="supprimer le commentaire"@click="deleteCommentaire()">remove</span>
                 </div>
-            <button class="avisButton font-body-l" > Donnez votre avis </button>
         </div>
     </div>
 
@@ -82,6 +84,45 @@ const props = defineProps({
 })
 
 const dynamicFavorite = ref(props.isFavorite)
+
+const dynamicCommentaire = ref(props.donneesCommentaires)
+
+const commentaireInput = ref("")
+
+function deleteCommentaire(){
+    fetch("/supprimerCommentaire",{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : props.produit["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => { commentaire["DELETABLE"] == false })
+        }
+    })
+}
+
+function sendCommentaire(){
+    fetch("/nouveauCommentaire",{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : props.produit["ID"],
+            "contenu" : commentaireInput.value
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+            dynamicCommentaire.value.push(await response.json())
+        }
+    })
+}
 
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
@@ -138,7 +179,28 @@ const handleClick = (produit) => {
 </script>
 
 <style scoped>
-
+#deleteComment:hover{
+    background-color: rgba(255,0,0,25%);
+}
+#deleteComment{
+    position: absolute;
+    cursor: pointer;
+    right: 0px;
+    font-size: 40px;
+    align-self: center;
+    border-radius: 50%;
+}
+textarea{
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    resize: none;
+    width: 25vw;
+    aspect-ratio: 15/5;
+    border-radius: 20px;
+    border:solid 1px black;
+    min-width: 450px;
+    padding: 0.5vw;
+}
 #page {
     display: grid;
     margin-top: 119px;
@@ -393,6 +455,7 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 2vh;
 }
 
 #avis .commentaire {
@@ -400,10 +463,12 @@ img {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(3, auto);
     width: 70%;
+    height: fit-content;
     text-align: left;
     margin-top: 20px;
     gap: 5px;
     border-bottom: 1px solid black;
+    position: relative;
 }
 
 #avis .commentaire .nom-prenom {
@@ -431,7 +496,6 @@ img {
     width: 200px;
     height: clamp(45px, 3vw, 65px);
     margin-bottom: 45px;
-    margin-top: 50px;
     border-radius: 10px;
     background-color: black;
     color: white;
