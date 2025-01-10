@@ -2,14 +2,14 @@
     <Header currentPage="Panier"></Header>
     <div class="globalWrapper">
         <div class="leftWrapper">
-        <h1>Panier</h1>
+            <h1>Panier</h1>
             <div class="panier">
                 <div class="panierproduit" v-for="produit in panierData" v-if="panierData.length > 0">
                     <img alt="Produit" :src="produit['IMAGE'][0]['URL']"/>
                     <div class="panierproduitinfo">
                         <h3>{{ produit["NOM"] }}</h3>
                         <p>{{ produit["MATERIAUX"] }}</p>
-                        <a href="#">En ajouter un autre</a>
+                        <p class="addOther" @click="addOtherProduct(produit['ID'])">En ajouter un autre</p>
                         <h2>{{ produit["PRIX"] }}€</h2>
                     </div>
                     <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produit['ID'])">close</span>
@@ -19,7 +19,7 @@
                 </div>
                 <a href="#" class="continue">← Continuer ma visite</a>
                 </div>
-            </div>
+        </div>
         <div class="rightWrapper">
             <div class="panierresume">
             <h2>SOUS TOTAL</h2>
@@ -48,6 +48,23 @@ const props = defineProps({
 let panierData = ref(props.produits)
 
 let somme = ref(0)
+
+function addOtherProduct(id){
+    fetch("/panier/ajout",{
+        method : "POST",
+        body : JSON.stringify({
+            produit : id
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+
+        }
+    })
+}
 
 function updatePanierSomme(){
     let temp = 0
@@ -132,7 +149,7 @@ margin: 5px 0;
 padding-bottom: 10px;
 }
 
-.panierproduitinfo a {
+.addOther {
 font-size: 13px;
 color: #000;
 text-decoration: underline;
@@ -214,10 +231,10 @@ margin: 20px 0;
 .panierresume button{
 background-color: black;
 color: white;
+border: 1px solid black;
 width: 100%;
 padding: 10px;
 margin: 10px 0;
-border: none;
 border-radius: 10px;
 font-family: "Tenor Sans", serif;
 font-size: 14px;

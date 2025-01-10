@@ -93,7 +93,7 @@ Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"])
 // checkout
 // ---
 Route::get("/checkout", [CheckOutController::class, "index"]);
-
+Route::post("/checkout/valider", [CheckOutController::class, "valider"]);
 
 // ---
 // Carte

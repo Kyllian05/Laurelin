@@ -4,7 +4,7 @@
         <div id="Page">
             <p id="Title" class="font-subtitle-16">Commande</p>
             <div id="DonneeCommande">
-                <div id="infoWrapper">
+                <div id="infoWrapper" class="wrapper" :class="currentStep > 1 ? 'cursor' : '    '">
                     <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
                     <div id="contenuInfo" v-if="currentStep == 1">
                         <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
@@ -16,7 +16,7 @@
                     </div>
                 </div>
 
-                <div id="adresseWrapper">
+                <div id="adresseWrapper" class="wrapper" :class="currentStep > 2 ? 'cursor' : ''">
                     <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
                     <div id="contenuAdresse" v-if="currentStep == 2">
                         <div id="adresseChoiceWrapper">
@@ -25,7 +25,7 @@
                         </div>
                         <div v-if="adresseMethod === 'domicile'">
                             <div class="adresseUser" v-for="(adresse,index) in adresses">
-                                <input class="radButton" type="radio" name="radio" :checked="index == currentAdresse" @click="changeLivraison(index)">
+                                <input class="radButton" type="radio" :checked="index == currentAdresse" @click="changeLivraison(index)" style="cursor: pointer">
                                 <div class="adresseUserr">
                                     <p class="font-subtitle-16 adresse">{{ adresse["NUM_RUE"] }} {{ adresse["NOM_RUE"] }}</p>
                                     <p class="font-subtitle-16 codePostale">{{ adresse["CODE_POSTAL"] }}</p>
@@ -46,24 +46,34 @@
                             </select>
                         </div>
                     </div>
-                    <div v-else-if="currentStep > 2">
+                    <div v-else-if="currentStep > 2" @click="annuleLivraison()">
                         <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
                         <p class="font-subtitle-16 codePostale">{{ data["adresse"]["CODE_POSTAL"] }}</p>
                         <p class="font-subtitle-16 ville">{{ data["adresse"]["VILLE"] }}</p>
                     </div>
                 </div>
 
-                <div id="livraisonWrapper">
+                <div id="livraisonWrapper" class="wrapper" :class="currentStep > 3 ? 'cursor' : ''">
                     <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
                 </div>
 
-                <div id="paiementWrapper">
+                <div id="paiementWrapper" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
                     <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
-                    <div v-if="currentStep == 4">
-                        <p>coucou</p>
+                    <div v-if="currentStep == 4" id="paiementContent">
+                        <div class="paimentFieldWrapper" style="flex-direction: column">
+                            <input placeholder="PRENOM ET NOM" class="font-body-l paiementinput1">
+                            <input placeholder="NUMERO DE LA CARTE" class="font-body-l paiementinput1">
+                        </div>
+                        <div class="paimentFieldWrapper" style="flex-direction: row;gap: 5vw">
+                            <input placeholder="MOIS" class="font-body-l">
+                            <input placeholder="ANNEE" class="font-body-l">
+                        </div>
+                        <div class="paimentFieldWrapper" style="width: 20%">
+                            <input placeholder="CRYPTOGRAME" class="font-body-l">
+                        </div>
+                        <ButtonSubmit button-text="Payer" id="payButton" @click="paye()"></ButtonSubmit>
                     </div>
                 </div>
-
             </div>
 
             <div id="Recap">
@@ -92,6 +102,7 @@ import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import Form from "./Components/Form.vue";
 import {ref, toRaw} from "vue";
+import ButtonSubmit from "./Components/ButtonSubmit.vue";
 
 let props = defineProps({
     "user" : Object,
@@ -106,8 +117,28 @@ let adresseMethod = ref("domicile")
 
 let currentStep = ref(2)
 
+function paye(){
+    fetch("/checkout/valider",{
+        method : "POST",
+        body : JSON.stringify({
+            "adresse" : props.adresses[currentAdresse.value]["ID"],
+            "livraison" : adresseMethod.value
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    })
+}
+
 function changeLivraison(index){
     currentAdresse.value = index
+}
+
+function annuleLivraison() {
+    if(currentStep.value > 2){
+        currentStep.value = 2
+    }
 }
 
 function validateLivraison(){
@@ -122,6 +153,31 @@ function changeadresseMethod(){
 </script>
 
 <style scoped>
+.cursor{
+    cursor: pointer;
+}
+#payButton{
+    width: 50%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 0.8vw 0px;
+}
+.paimentFieldWrapper{
+    display: flex;
+    width: 50%;
+    margin-left: 2vw;
+}
+.wrapper{
+    background-color: rgb(225,225,225);
+    margin-top: 2.5vh;
+}
+#paiementWrapper input{
+    border: none;
+    border-bottom: solid 1px black;
+    background-color: transparent;
+    width: 100%;
+    margin-top: 3.5vh;
+}
 #adresseValidateButton:hover {
     background-color: white;
     color: black;

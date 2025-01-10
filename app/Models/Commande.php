@@ -29,7 +29,7 @@ class Commande extends Model
     public $timestamps = false;
 
     static function getAllCommandes(Utilisateur $utilisateur){
-        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->where("ETAT","!=","panier")->get();
+        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"]])->where("ETAT","!=","panier")->get()->sortByDesc("DATE");
     }
 
     static function createPanier(Utilisateur $utilisateur){
@@ -42,6 +42,11 @@ class Commande extends Model
     }
 
     static function getPanier(Utilisateur $utilisateur){
-        return self::where(["ID_UTILISATEUR" => $utilisateur["ID"],"ETAT"=>"PANIER"])->firstOrFail();
+        try{
+            return self::where(["ID_UTILISATEUR" => $utilisateur["ID"],"ETAT"=>"PANIER"])->firstOrFail();
+        }catch(\Exception $e){
+            self::createPanier($utilisateur);
+            return self::getPanier($utilisateur);
+        }
     }
 }
