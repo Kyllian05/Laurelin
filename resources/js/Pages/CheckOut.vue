@@ -1,6 +1,6 @@
 
 <template>
-    <Header current-page="CheckOut"></Header>
+    <Header current-page="panier"></Header>
         <div id="Page">
             <p id="Title" class="font-subtitle-16">Commande</p>
             <div id="DonneeCommande">
