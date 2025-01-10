@@ -59,6 +59,10 @@ class CheckOutController extends Controller
     public function valider(Request $request){
         $data = $request->post();
 
+        if($data["livraison"] != "domicile" && $data["livraison"] != "magasin"){
+            throw Exceptions::createError(520);
+        }
+
         try{
             $user = \App\Models\Utilisateur::getLoggedUser($request);
             if($user == null){

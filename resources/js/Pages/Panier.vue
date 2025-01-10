@@ -17,7 +17,7 @@
                 <div v-else>
                     <p style="margin-top: 5vh; margin-bottom: 3vh">Votre panier est vide</p>
                 </div>
-                <a href="#" class="continue">← Continuer ma visite</a>
+                <a href="/" class="continue">← Continuer ma visite</a>
                 </div>
         </div>
         <div class="rightWrapper">
@@ -25,7 +25,7 @@
             <h2>SOUS TOTAL</h2>
             <p class="incl">INCL. TVA</p>
             <h1>{{ somme }}€</h1>
-            <button>Poursuivre ma commande</button>
+            <button onclick="window.location='/checkout'">Poursuivre ma commande</button>
             <p class="secure">PAIEMENT SÉCURISÉ</p>
             <p class="returns">RETOURS ET ÉCHANGES SOUS 30 JOURS</p>
             <a href="#" class="legal">MENTIONS LÉGALES</a>
