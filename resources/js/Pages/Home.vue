@@ -3,7 +3,6 @@
     <div class="hero">
         <video autoplay muted loop class="background-video">
             <source src="/public/images/video1.mp4" type="video/mp4">
-            Your browser does not support the video tag.
         </video>
     </div>
     <Footer></Footer>
@@ -27,8 +26,8 @@ let compteur = ref(0)
 html, body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Désactive le défilement horizontal */
-    height: 100%; /* Assurez-vous que le corps prend toute la hauteur */
+    overflow-x: hidden;
+    height: 100%; /* Désactive le défilement horizontal */
 }
 
 .hero {
@@ -40,13 +39,12 @@ html, body {
 
 .background-video {
     position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    transform: translate(-50%, -50%);
     z-index: -1;
 }
 </style>
