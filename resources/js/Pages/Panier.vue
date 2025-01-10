@@ -1,5 +1,5 @@
 <template>
-    <Header currentPage="Panier"></Header>
+    <Header currentPage="panier"></Header>
     <div class="globalWrapper">
         <div class="leftWrapper">
             <h1>Panier</h1>

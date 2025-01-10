@@ -1,6 +1,6 @@
 <template>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <Header></Header>
+    <Header currentPage="account"></Header>
     <div id="mainWrapper">
         <div id="navWrapper">
             <div v-for="nav in Object.keys(navConv)" :class="dynamicPage == nav ? 'currentNav' : ''" @click="dynamicPage = nav">
