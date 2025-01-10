@@ -46,8 +46,8 @@
             </div>
         </div>
 
-        <div id="avis" class="font-subtitle-16">
-            Les Avis de Nos Clients
+        <div id="avis">
+            <p class="font-subtitle-16"> Les Avis de Nos Clients </p>
                 <div v-for="comm in donneesCommentaires" class="commentaire">
                     <div  class="nom-prenom">
                         <span class="prenom font-body-l">{{comm.PRENOM}}</span>

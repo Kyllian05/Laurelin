@@ -15,6 +15,7 @@ class CommentaireSeeder extends Seeder
     {
         DB::table('Commentaire')->insert([
             ["CONTENU" => "Ce bracelet en argent avec des diamants est magnifique, il attire tous les regards.", "ID_PRODUIT" => 18, "ID_UTILISATEUR" => 1, "DATE" => "24-02-2024"],
+            ["CONTENU" => "J'ai offerts ce bracelet a ma fille, depuis qu'elle le porte elle ne cesse de rayonner, je le recommande fortement ! Vous ferez des heuureuses !", "ID_PRODUIT" => 18, "ID_UTILISATEUR" => 2, "DATE" => "24-02-2024"],
             ["CONTENU" => "J'adore ce collier avec pendentif en forme rond, il est orné d'un plus gros diamant cela fait sensation. Bravo!!!", "ID_PRODUIT" => 1, "ID_UTILISATEUR" => 1, "DATE" => "24-02-2024"],
             ["CONTENU" => "Ce collier ornée d'emeraude verte a fait sensation quand je l’ai offerte.", "ID_PRODUIT" => 11, "ID_UTILISATEUR" => 2, "DATE" => "24-02-2024"],
             ["CONTENU" => "Ce collier dorées est superbe et très confortables à porter toute la journée.", "ID_PRODUIT" => 5, "ID_UTILISATEUR" => 2, "DATE" => "24-02-2024"],
