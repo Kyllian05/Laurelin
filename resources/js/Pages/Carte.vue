@@ -12,18 +12,18 @@ import Header from "./Components/Header.vue";
 <style scoped>
 .responsive-iframe {
 width: 100%;
-height: 60vh;
+height: 1080px;
 }
 
 @media (max-width: 768px) {
 .responsive-iframe {
-  height: 50vh; 
+  height: 768px; 
 }
 }
 
 @media (max-width: 480px) {
 .responsive-iframe {
-  height: 40vh; 
+  height:480px; 
 }
 }
 </style>
