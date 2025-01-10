@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Commentaire extends Model
 {
@@ -23,4 +24,5 @@ class Commentaire extends Model
         'ID_UTILISATEUR',
         'ID_PRODUIT',
     ];
+
 }

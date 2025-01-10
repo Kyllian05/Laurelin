@@ -48,6 +48,14 @@
 
         <div id="avis" class="font-subtitle-16">
             Les Avis de Nos Clients
+                <div v-for="comm in donneesCommentaires" class="commentaire">
+                    <div  class="nom-prenom">
+                        <span class="prenom font-body-l">{{comm.PRENOM}}</span>
+                        <span class="nom font-body-l">{{comm.NOM}}</span>
+                    </div>
+                    <span class="date font-body-s">{{comm.DATE}}</span>
+                    <span class="contenu font-body-m">{{comm.CONTENU}}</span>
+                </div>
             <button class="avisButton font-body-l" > Donnez votre avis </button>
         </div>
     </div>
@@ -69,7 +77,8 @@ const props = defineProps({
     "produit" : Object,
     "images" : Array,
     "isFavorite" : Boolean,
-    "autreProduits" : Array
+    "autreProduits" : Array,
+    "donneesCommentaires" : Array
 })
 
 const dynamicFavorite = ref(props.isFavorite)
@@ -386,10 +395,43 @@ img {
     align-items: center;
 }
 
+#avis .commentaire {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, auto);
+    width: 70%;
+    text-align: left;
+    margin-top: 20px;
+    gap: 5px;
+    border-bottom: 1px solid black;
+}
+
+#avis .commentaire .nom-prenom {
+    display: inline-flex;
+    grid-row: 1/2;
+    grid-column: 1/2;
+    gap: 5px;
+}
+
+#avis .commentaire .date {
+    grid-column: 1/2;
+    grid-row: 2/3;
+}
+
+
+#avis .commentaire .contenu {
+    grid-row: 3/4;
+    grid-column: 1/2;
+    overflow-wrap: anywhere;
+    margin-bottom: 10px;
+}
+
+
 #avis .avisButton {
     width: 200px;
     height: clamp(45px, 3vw, 65px);
     margin-bottom: 45px;
+    margin-top: 50px;
     border-radius: 10px;
     background-color: black;
     color: white;
