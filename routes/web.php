@@ -78,7 +78,7 @@ Route::get("/contact", [ContactController::class, "index"]);
 // ---
 Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
 Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
-Route::get("/adresse/getVilles/{codePostale}", [AdresseController::class, "getVilles"]);
+Route::get("/adresse/getVilles/{codePostal}", [AdresseController::class, "getVilles"]);
 
 // ---
 // Panier

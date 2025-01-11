@@ -1,40 +1,41 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Domain\Adresse\Services\AdresseService;
+use App\Domain\Adresse\Services\VilleService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 
 class AdresseController extends Controller{
 
-    public function __construct(private UtilisateurService $utilisateurService) {}
+    public function __construct(
+        private UtilisateurService $utilisateurService,
+        private AdresseService $adresseService,
+        private VilleService $villeService
+    ) {}
 
     function ajout(Request $request){
         $data = $request->post();
 
         $utilisateur = $this->utilisateurService->getAuthenticatedUser($request);
+        $ville = $this->villeService->findById(intval($data['Ville']['ID']));
+        $adresse = $this->adresseService->add(intval($data["Numéro"]), $data["Nom de rue"], $ville, $utilisateur);
 
-        \Log::info($data);
-
-        $adresse = \App\Models\Adresse::addAdresse($utilisateur,$data["Numéro"],$data["Nom de rue"],$data["Ville"]["Nom"],$data["Ville"]["Code Postal"]);
-
-        $resultadresse = [];
-        $resultadresse["Numéro"] = $adresse["NUM_RUE"];
-        $resultadresse["Rue"] = $adresse["NOM_RUE"];
-        $resultadresse["Code Postal"] = $data["Ville"]["Code Postal"];
-        $resultadresse["Ville"] = $data["Ville"]["Nom"];
-        $resultadresse["ID"] = $adresse["ID"];
-        return response($resultadresse);
+        return response($adresse->serialize());
     }
 
     function supprimer(Request $request){
         $data = $request->post();
-
-        $utilisateur = $this->utilisateurService->getAuthenticatedUser($request);
-
-        \App\Models\Adresse::where(["ID"=>$data["ID"],"ID_UTILISATEUR" => $utilisateur->getId()])->delete();
+        $this->utilisateurService->getAuthenticatedUser($request); // Sécurité
+        $this->adresseService->delete($this->adresseService->findById($data["ID"]));
     }
 
-    function getVilles(string $codepostale,Request $request){
-        return response(\App\Models\Ville::getByCodePostal($codepostale))->header('Content-Type', 'application/json');
+    function getVilles(string $codePostal, Request $request) {
+        $villes = $this->villeService->findByCodePostal($codePostal);
+        $villesSerialized = [];
+        foreach ($villes as $ville) {
+            $villesSerialized[] = $ville->serialize();
+        }
+        return response($villesSerialized)->header('Content-Type', 'application/json');
     }
 }

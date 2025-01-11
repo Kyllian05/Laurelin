@@ -2,6 +2,7 @@
 
 namespace App\Domain\Utilisateur\Entities;
 
+use App\Domain\Adresse\Entities\AdresseEntity;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Role;
 use App\Domain\Validators\AdminPasswordValidator;
@@ -23,6 +24,7 @@ abstract class UtilisateurEntity
     private ?string $code;
     private ?string $codeGen;
     private ?array $favoris = null;
+    private ?array $adresses = null;
     private PasswordValidatorStrategy $passwordValidator;
 
     protected function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen, PasswordValidatorStrategy $passwordValidator) {
@@ -145,6 +147,13 @@ abstract class UtilisateurEntity
         return $this->favoris;
     }
 
+    public function getAdresses(): array {
+        if (is_null($this->adresses)) {
+            throw new \Exception("Get must be called from UtilisateurService");
+        }
+        return $this->adresses;
+    }
+
     abstract public function getRole(): Role;
 
     // ---
@@ -236,6 +245,16 @@ abstract class UtilisateurEntity
             }
         }
         $this->favoris = $favoris;
+    }
+
+    public function setAdresses(array $adresses): void
+    {
+        foreach ($adresses as $adresse) {
+            if (!($adresse instanceof AdresseEntity)) {
+                throw new \InvalidArgumentException("L'adresse n'est pas une adresse valide");
+            }
+        }
+        $this->adresses = $adresses;
     }
 
     // Autres fonctions

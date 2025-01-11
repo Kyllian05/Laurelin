@@ -63,10 +63,10 @@
                         <div style="width: 70%;margin-left: 50%;transform: translateX(-50%)">
                             <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
                             <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
-                            <Field name="Code Postale" @input="value => searchVille(value)"></Field>
+                            <Field name="Code Postal" @input="value => searchVille(value)"></Field>
                             <!-- TODO: UI-->
                             <select v-if="villesSuggest.length > 0" v-model="villeChoice">
-                                <option v-for="ville in villesSuggest" :value="{'Nom':ville['NOM'],'Code Postal':ville['CODE_POSTAL']}">{{ ville["NOM"] }} {{ ville["CODE_POSTAL"] }}</option>
+                                <option v-for="ville in villesSuggest" :value="{'ID': ville.ID}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
                             </select>
                             <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
                         </div>
@@ -79,9 +79,9 @@
                     <p class="font-body-s">AJouter une adresse</p>
                 </button>
                 <div v-for="adresse in dynamicAdresse" class="adresseWrappers">
-                    <p>{{ adresse["Numéro"] }} {{ adresse["Rue"] }}, {{ adresse["Code Postal"] }} {{ adresse["Ville"] }}</p>
+                    <p>{{ adresse.NUM_RUE }} {{ adresse.NOM_RUE }}, {{ adresse.VILLE.CODE_POSTAL }} {{ adresse.VILLE.NOM }}</p>
                     <div>
-                        <span class="material-symbols-rounded garbageIcon" @click="deleteAdresse(adresse['ID'])">
+                        <span class="material-symbols-rounded garbageIcon" @click="deleteAdresse(adresse.ID)">
                             delete
                         </span>
                     </div>
@@ -181,7 +181,7 @@ let props = defineProps(
     }
 
     function searchVille(codePostal){
-        if(codePostal == ""){
+        if(codePostal === ""){
             villesSuggest.value = []
         }else{
             fetch("/adresse/getVilles/"+codePostal,{
@@ -196,10 +196,6 @@ let props = defineProps(
         }
     }
 
-    function favorisImageLoaded(){
-        favorisImagesCount.value++
-    }
-
     function deleteAdresse(id){
         fetch("/adresse/supprimer",{
             method:"POST",
@@ -209,10 +205,14 @@ let props = defineProps(
                 "Content-Type":"application/json"
             },
         }).then(async response =>{
-            if(response.status == 200){
-                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse["ID"] != id)
+            if(response.status === 200){
+                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse.ID != id)
             }
         })
+    }
+
+    function favorisImageLoaded(){
+        favorisImagesCount.value++
     }
 
     function getCommandeSum(commande){
@@ -248,8 +248,8 @@ let props = defineProps(
     }
     .buttonAcheter{
         position: absolute;
-        bottom: 0px;
-        left: 0px;
+        bottom: 0;
+        left: 0;
         margin-left: 50%;
         transform: translateX(-50%);
         width: max-content;
@@ -259,9 +259,8 @@ let props = defineProps(
         font-size: 19px;
         position: relative;
         letter-spacing: 1px;
-        margin-top: 5vh;
         margin-bottom: 5vh;
-        margin-top: 0px;
+        margin-top: 0;
     }
     #ajoutAdresseClose:hover{
         background-color: rgba(0,0,0,20%);
@@ -456,7 +455,6 @@ let props = defineProps(
         justify-content: left;
         gap: 1vw;
         align-items: center;
-        text-align: center;
     }
     #contentWrapper{
         width: 50vw;

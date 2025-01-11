@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class AccountController extends Controller
@@ -22,8 +23,9 @@ class AccountController extends Controller
                 throw new \Exception("User not found");
             }
 
-            $commandes = \App\Models\Commande::getAllCommandes($user);
+            // --- Commandes ---
 
+            $commandes = \App\Models\Commande::getAllCommandes($user);
             $commandesData = [];
 
             foreach($commandes as $commande){
@@ -46,23 +48,22 @@ class AccountController extends Controller
                 $commandesData[] = $temp;
             }
 
-            $favoris = [];
+            // --- Favoris ---
+
+            $favorisSerialized = [];
             foreach($this->userService->getFavoris($user) as $favori) {
-                $favoris[] = $this->produitService->serialize($favori);
+                $favorisSerialized[] = $this->produitService->serialize($favori);
             }
 
+            // --- Adresses ---
 
-            $adresses = [];
-            foreach(\App\Models\Adresse::getAllUserAdresse($user) as $adresse){
-                $ville = \App\Models\Ville::where("ID",$adresse["ID_VILLE"])->firstOrFail();
-                $adresses[] = array(
-                    "Numéro" => $adresse["NUM_RUE"],
-                    "Rue" => $adresse["NOM_RUE"],
-                    "Code Postal" => $ville["CODE_POSTAL"],
-                    "Ville" => $ville["NOM"],
-                    "ID" => $adresse["ID"],
-                );
+            $adresses = $this->userService->getAdresses($user);
+            $adressesSerialized = [];
+            foreach($adresses as $adresse){
+                $adressesSerialized[] = $adresse->serialize();
             }
+
+            // --- Render ---
 
             return Inertia::render("Account",[
                 "page"=>$page,
@@ -73,12 +74,12 @@ class AccountController extends Controller
                     "Adresse mail"=>$user->getEmail(),
                 ],
                 "commandes"=>$commandesData,
-                "favoris"=>$favoris,
-                "adresses" => $adresses,
+                "favoris"=>$favorisSerialized,
+                "adresses" => $adressesSerialized,
             ]);
         }catch (\Exception $e){
             if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+                return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }
             return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false);
         }

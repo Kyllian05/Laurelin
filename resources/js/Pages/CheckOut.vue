@@ -14,7 +14,7 @@
         <div id="DonneeCommande">
             <div id="infoWrapper" class="wrapper" :class="currentStep > 1 ? 'cursor' : '    '">
                 <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
-                <div id="contenuInfo" v-if="currentStep == 1">
+                <div id="contenuInfo" v-if="currentStep === 1">
                     <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
                     <button class="font-body-l">Se connecter</button>
                     <button class="font-body-l">S'inscrire</button>
@@ -26,18 +26,18 @@
 
             <div id="adresseWrapper" class="wrapper" :class="currentStep > 2 ? 'cursor' : ''">
                 <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
-                <div id="contenuAdresse" v-if="currentStep == 2">
+                <div id="contenuAdresse" v-if="currentStep === 2">
                     <div id="adresseChoiceWrapper">
                         <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
                         <button :class="{adresseChoiceActive :  adresseMethod === 'retirer'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
                     </div>
                     <div v-if="adresseMethod === 'domicile'">
                         <div class="adresseUser" v-for="(adresse,index) in adresses">
-                            <input class="radButton" type="radio" :checked="index == currentAdresse" @click="changeLivraison(index)" style="cursor: pointer">
+                            <input class="radButton" type="radio" :checked="index === currentAdresse" @click="changeLivraison(index)" style="cursor: pointer">
                             <div class="adresseUserr">
-                                <p class="font-subtitle-16 adresse">{{ adresse["NUM_RUE"] }} {{ adresse["NOM_RUE"] }}</p>
-                                <p class="font-subtitle-16 codePostale">{{ adresse["CODE_POSTAL"] }}</p>
-                                <p class="font-subtitle-16 ville">{{ adresse["VILLE"] }}</p>
+                                <p class="font-subtitle-16 adresse">{{ adresse.NUM_RUE }} {{ adresse.NOM_RUE }}</p>
+                                <p class="font-subtitle-16 codePostale">{{ adresse.VILLE.CODE_POSTAL }}</p>
+                                <p class="font-subtitle-16 ville">{{ adresse.VILLE.NOM }}</p>
                             </div>
                         </div>
                         <button id="adresseValidateButton" @click="validateLivraison()">
@@ -147,7 +147,7 @@ async function paye(){
     const response = await fetch("/checkout/valider",{
         method : "POST",
         body : JSON.stringify({
-            "adresse" : props.adresses[currentAdresse.value]["ID"],
+            "adresse" : props.adresses[currentAdresse.value].ID,
             "livraison" : adresseMethod.value
         }),
         headers: {
@@ -159,7 +159,7 @@ async function paye(){
     await sleep(0)
     document.getElementById("paimentBackground").style.top = window.scrollY+"px"
     await sleep(Math.random()*3000 + 3000)
-    if(response.status == 200){
+    if(response.status === 200){
         window.location="/account/commandes"
     }
     paiementState.value = false

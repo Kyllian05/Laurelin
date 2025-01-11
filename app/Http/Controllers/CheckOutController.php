@@ -2,28 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Adresse\Services\AdresseService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
-use App\Models\Adresse;
-use App\Models\Commande;
 use App\Models\Exceptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class CheckOutController extends Controller
 {
     public function __construct(
         private UtilisateurService $utilisateurService,
+        private AdresseService $adresseService,
     ) {}
 
     public function index(Request $request){
-        try{
+        // --- Utilisateur ---
+        try {
             $user = $this->utilisateurService->getAuthenticatedUser($request);
             if($user == null){
                 throw Exceptions::createError(518);
             }
-        }catch(\Exception $e){
+        } catch(\Exception $e) {
             if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;
             }
@@ -35,13 +37,15 @@ class CheckOutController extends Controller
             "PRENOM" => $user->getPrenom(),
         ];
 
-        $adresses = \App\Models\Adresse::getAllUserAdresse($user)->toArray();
+        // --- Adresses ---
 
-        for($i = 0; $i < count($adresses); $i++){
-            $ville = \App\Models\Ville::where("ID",$adresses[$i]["ID_VILLE"])->firstOrFail();
-            $adresses[$i]["VILLE"] = $ville["NOM"];
-            $adresses[$i]["CODE_POSTAL"] = $ville["CODE_POSTAL"];
+        $adresses = $this->utilisateurService->getAdresses($user);
+        $adressesSerialized = [];
+        foreach($adresses as $adresse){
+            $adressesSerialized[] = $adresse->serialize();
         }
+
+        // --- Panier
 
         $panier = \App\Models\Commande::getPanier($user);
         $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
@@ -54,9 +58,11 @@ class CheckOutController extends Controller
             $result[] = $temp;
         }
 
+        // --- Render ---
+
         return Inertia::render("CheckOut",[
             "user" => $userData,
-            "adresses" => $adresses,
+            "adresses" => $adressesSerialized,
             "produits" => $result,
         ]);
     }

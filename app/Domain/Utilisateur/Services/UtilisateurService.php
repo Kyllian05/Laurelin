@@ -2,6 +2,7 @@
 
 namespace App\Domain\Utilisateur\Services;
 
+use App\Domain\Adresse\Repositories\AdresseRepository;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
 use App\Domain\Utilisateur\Repositories\FavorisRepository;
@@ -15,6 +16,7 @@ class UtilisateurService
     public function __construct(
         private UtilisateurRepository $userRepository,
         private FavorisRepository $favorisRepository,
+        private AdresseRepository $adresseRepository,
     ) {}
 
     public function findById(int $id): ?UtilisateurEntity
@@ -184,5 +186,12 @@ class UtilisateurService
     public function deleteFavoris(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): void
     {
         $this->favorisRepository->deleteFavoris($utilisateurEntity, $produitEntity);
+    }
+
+    // --- Adresses ---
+    public function getAdresses(UtilisateurEntity $utilisateurEntity): array
+    {
+        $utilisateurEntity->setAdresses($this->adresseRepository->findByUser($utilisateurEntity));
+        return $utilisateurEntity->getAdresses();
     }
 }
