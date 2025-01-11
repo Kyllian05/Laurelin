@@ -18,6 +18,7 @@
                 <div id="formWrapper2">
                     <Form :fields="infoFields[1]" :check-boxs="[]" buttonText="Valider les modifications"  dest="/updateInfo" style="margin-top: 5vh"></Form>
                 </div>
+                <button id="buttonDeco" class="deco font-body-l" @click="logout"> Déconnexion </button>
             </div>
             <div v-else-if="dynamicPage == 'commandes'" id="commandsWrapper">
                 <div v-for="(commande,index) in commandes" class="commandWrapper" :class="index%2==1 ? 'grayBackground' :''">
@@ -240,6 +241,26 @@ let props = defineProps(
             }
         })
     }
+
+    function logout() {
+        fetch("/account", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/auth';
+                } else {
+                    console.error('Erreur lors de la déconnexion');
+                }
+            })
+            .catch(error => console.error('Erreur réseau :', error));
+    }
+
+
 </script>
 
 <style scoped>
@@ -467,4 +488,25 @@ let props = defineProps(
     #formWrapper2{
         margin-top: 5vh;
     }
+
+    #buttonDeco {
+
+        background-color: black;
+        width: 60%;
+        color: white;
+        margin-left: 50%;
+        transform: translate(-50%);
+        border: none;
+        border-radius: 10px;
+        margin-top: 32px;
+        padding: 18px 0;
+        cursor: pointer;
+        transition: background-color .2s;
+    }
+
+    #buttonDeco:hover {
+        background-color: #3a3a3a;
+    }
+
+
 </style>

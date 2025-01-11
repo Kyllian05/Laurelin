@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use http\Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 use \App\Models;
@@ -101,5 +103,15 @@ class AuthController extends Controller
         $data = $request->post();
         $user = \App\Models\Utilisateur::where("EMAIL",$data["Adresse mail"])->firstOrFail();
         Mail::to($user["EMAIL"])->send(new \App\Mail\PasswordRecovery($user["ID"],$user["TOKEN"]));
+    }
+
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        Session::invalidate();
+        $response = response()->json(['message' => 'Déconnexion réussie']);
+        $response->headers->clearCookie('TOKEN');
+        return $response;
     }
 }

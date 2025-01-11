@@ -36,9 +36,7 @@
 
         <div id="prodCreaAssocier">
             <div v-for="produit in prodAssocier" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
-                <!-- TODO : faire le backend du btn favoris -->
-                <span class="material-symbols-rounded add-fav">favorite</span>
-                <!-- - - - - - - - - - - - - -  -->
+                <span @click="favorisAction()" id="favoriteButton2" class="material-symbols-rounded">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
                 <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                 <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
                 <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
@@ -135,6 +133,7 @@ const formatPrix = (prix) => {
 
 const produits = ref([]);
 const prodAssocier = ref([]);
+
 
 function favorisAction(){
     let destination = "/ajouterFavoris"
@@ -398,7 +397,7 @@ img {
     cursor: pointer;
 }
 
-#prodCreaAssocier .item:hover .add-fav {
+#prodCreaAssocier .item:hover #favoriteButton2 {
     opacity: 1;
 }
 
@@ -648,7 +647,7 @@ img {
     }
 }
 
-.add-fav {
+#favoriteButton2 {
     position: absolute;
     right: 12px;
     top: 12px;
@@ -660,7 +659,7 @@ img {
     opacity: 0;
     transition: all .3s;
 }
-.add-fav:hover {
+#favoriteButton2:hover {
     background: #000;
     color: #ffffff;
 }

@@ -43,6 +43,7 @@ Route::get("/account/{page?}",[AccountController::class,"index"]);
 
 Route::post("/updateInfo", [AccountController::class, "update"]);
 
+Route::post('/account', [AuthController::class, 'logout'])->name('logout');
 // ---
 // Magasin
 // ---
