@@ -13,13 +13,15 @@ class AdresseController extends Controller{
 
         $utilisateur = $this->utilisateurService->getAuthenticatedUser($request);
 
-        $adresse = \App\Models\Adresse::addAdresse($utilisateur,$data["Numéro"],$data["Nom de rue"],$data["Code Postale"]);
+        \Log::info($data);
+
+        $adresse = \App\Models\Adresse::addAdresse($utilisateur,$data["Numéro"],$data["Nom de rue"],$data["Ville"]["Nom"],$data["Ville"]["Code Postal"]);
 
         $resultadresse = [];
         $resultadresse["Numéro"] = $adresse["NUM_RUE"];
         $resultadresse["Rue"] = $adresse["NOM_RUE"];
-        $resultadresse["Code Postal"] = $adresse["CODE_POSTAL"];
-        $resultadresse["Ville"] = \App\Models\Ville::getByCodePostal($adresse["CODE_POSTAL"])["NOM"];
+        $resultadresse["Code Postal"] = $data["Ville"]["Code Postal"];
+        $resultadresse["Ville"] = $data["Ville"]["Nom"];
         $resultadresse["ID"] = $adresse["ID"];
         return response($resultadresse);
     }
@@ -30,5 +32,9 @@ class AdresseController extends Controller{
         $utilisateur = $this->utilisateurService->getAuthenticatedUser($request);
 
         \App\Models\Adresse::where(["ID"=>$data["ID"],"ID_UTILISATEUR" => $utilisateur->getId()])->delete();
+    }
+
+    function getVilles(string $codepostale,Request $request){
+        return response(\App\Models\Ville::getByCodePostal($codepostale))->header('Content-Type', 'application/json');
     }
 }

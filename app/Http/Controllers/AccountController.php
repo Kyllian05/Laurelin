@@ -51,13 +51,15 @@ class AccountController extends Controller
                 $favoris[] = $this->produitService->serialize($favori);
             }
 
+
             $adresses = [];
             foreach(\App\Models\Adresse::getAllUserAdresse($user) as $adresse){
+                $ville = \App\Models\Ville::where("ID",$adresse["ID_VILLE"])->firstOrFail();
                 $adresses[] = array(
                     "Numéro" => $adresse["NUM_RUE"],
                     "Rue" => $adresse["NOM_RUE"],
-                    "Code Postal" => $adresse["CODE_POSTAL"],
-                    "Ville" => \App\Models\Ville::getByCodePostal($adresse["CODE_POSTAL"])["NOM"],
+                    "Code Postal" => $ville["CODE_POSTAL"],
+                    "Ville" => $ville["NOM"],
                     "ID" => $adresse["ID"],
                 );
             }
@@ -87,7 +89,7 @@ class AccountController extends Controller
         $user = $this->userService->getAuthenticatedUser($request);
         if($user && isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])) {
             try {
-                $this->userService->getRepository()->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
+                $this->userService->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
             } catch (\Exception $e) {
                 $class = explode("\\",get_class($e));
                 $class = $class[sizeof($class)-1];

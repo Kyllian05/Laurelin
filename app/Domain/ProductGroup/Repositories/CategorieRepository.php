@@ -3,6 +3,7 @@
 namespace App\Domain\ProductGroup\Repositories;
 
 use App\Domain\ProductGroup\Entities\CategorieEntity;
+use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Produit\Repositories\ProduitRepository;
 use App\Models\Categorie as CategorieModel;
 use App\Models\Produit as ProduitModel;
@@ -36,6 +37,18 @@ class CategorieRepository
         return null;
     }
 
+    public function findById(int $id): ?CategorieEntity
+    {
+        $categoriesModel =  CategorieModel::where('ID', $id)->first();
+        if ($categoriesModel) {
+            return new CategorieEntity(
+                $categoriesModel->ID,
+                $categoriesModel->NOM
+            );
+        }
+        return null;
+    }
+
     public function getProducts(CategorieEntity $category): void
     {
         $productsModel = ProduitModel::where("ID_CATEGORIE", $category->getId())->pluck("ID")->toArray();
@@ -44,5 +57,11 @@ class CategorieRepository
             $allProducts[] = $this->produitRepository->findById($product);
         }
         $category->setProductList($allProducts);
+    }
+
+    public function findByProduct(ProduitEntity $produitEntity): ?CategorieEntity
+    {
+        $produitModel = ProduitModel::find($produitEntity->id);
+        return $this->findById($produitModel->ID_CATEGORIE);
     }
 }

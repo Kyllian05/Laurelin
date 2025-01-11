@@ -15,13 +15,15 @@ class DatabaseSeeder extends Seeder
             CategorieSeeder::class,
             CollectionSeeder::class,
             ImportDonneeProduitSeeder::class,
+            ImportDonneeVilleFrance::class,
+            ImportDonneeAdresseMagasins::class,
             UtilisateurSeeder::class,
-            VilleSeeder::class,
             AdresseSeeder::class,
             CommandeSeeder::class,
             ImageSeeder::class,
             Produit_CommandeSeeder::class,
             FavorisSeeder::class,
+            CommentaireSeeder::class,
         ]);
     }
 }

@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdresseController;
+use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
 use \App\Http\Controllers\FavorisController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PanierController;
+use App\Http\Controllers\CarteController;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
@@ -53,6 +55,7 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // Produit
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
+Route::get("/produitData/{id}", [ProduitController::class, "produitData"]);
 
 // ---
 // Favoris
@@ -75,10 +78,22 @@ Route::get("/contact", [ContactController::class, "index"]);
 // ---
 Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
 Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
-
+Route::get("/adresse/getVilles/{codePostale}", [AdresseController::class, "getVilles"]);
 
 // ---
 // Panier
 // ---
 Route::get("/panier", [PanierController::class, "index"]);
+Route::post("/panier/ajout", [PanierController::class, "ajouterAuPanier"]);
+Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"]);
 
+// ---
+// checkout
+// ---
+Route::get("/checkout", [CheckOutController::class, "index"]);
+Route::post("/checkout/valider", [CheckOutController::class, "valider"]);
+
+// ---
+// Carte
+// ---
+Route::get("/carte", [CarteController::class, "index"]);

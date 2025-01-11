@@ -17,9 +17,19 @@ class UtilisateurService
         private FavorisRepository $favorisRepository,
     ) {}
 
-    public function getRepository(): UtilisateurRepository
+    public function findById(int $id): ?UtilisateurEntity
     {
-        return $this->userRepository;
+        return $this->userRepository->findByID($id);
+    }
+
+    public function findByEmail(string $email): ?UtilisateurEntity
+    {
+        return $this->userRepository->findByEmail($email);
+    }
+
+    public function updateInfo(UtilisateurEntity $utilisateurEntity, string $nom, string $prenom, string $telephone): void
+    {
+        $this->userRepository->updateInfo($utilisateurEntity, $nom, $prenom, $telephone);
     }
 
     /**

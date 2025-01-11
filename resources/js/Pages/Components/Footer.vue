@@ -168,6 +168,10 @@ const content = {
     .icon {
         width: 24px;
         height: 24px;
+        transition-duration: 0.25s;
+    }
+    .icon:hover {
+        transform: scale(1.2);
     }
 
     /* Media queries */

@@ -36,6 +36,7 @@ class MagasinController extends Controller
         }
         return Inertia::render("ListeProduit", [
             'produits' => $allSerializedProducts,
+            'categories' => $categorie->getId(),
         ]);
     }
 
@@ -50,7 +51,8 @@ class MagasinController extends Controller
             $allSerializedProducts[] = $this->produitService->serialize($product);
         }
         return Inertia::render("ListeProduit", [
-            'produits' => $allSerializedProducts
+            'produits' => $allSerializedProducts,
+            'collections' => $collection->getId(),
         ]);
     }
 }

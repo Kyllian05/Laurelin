@@ -121,7 +121,7 @@ class AuthController extends Controller
 
     public function sendRecoveryMail(Request $request){
         $data = $request->post();
-        $user = $this->userService->getRepository()->findByEmail($data["Adresse mail"]);
+        $user = $this->userService->findByEmail($data["Adresse mail"]);
         Mail::to($user->getEmail())->send(new \App\Mail\PasswordRecovery($user->getId(), $user->getToken()));
     }
 }

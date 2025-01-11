@@ -15,7 +15,8 @@ return new class extends Migration
             CREATE TABLE Commentaire (
                 CONTENU VARCHAR(255),
                 ID_UTILISATEUR INT NOT NULL,
-                ID_PRODUIT INT NOT NULL
+                ID_PRODUIT INT NOT NULL,
+                DATE DATE NOT NULL
             )
         ");
     }

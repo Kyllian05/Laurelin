@@ -23,7 +23,7 @@ class Adresse extends Model
         'NUM_RUE',
         'NOM_RUE',
         'ID_UTILISATEUR',
-        'CODE_POSTAL',
+        "ID_VILLE"
     ];
 
     public $timestamps = false;
@@ -33,9 +33,9 @@ class Adresse extends Model
         return self::where("ID_UTILISATEUR",$utilisateur->getId())->get();
     }
 
-    static function addAdresse(UtilisateurEntity $utilisateur,String $numRue,String $nomRue,String $codePostal):self
-    {
-        self::create(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"CODE_POSTAL"=>$codePostal,"ID_UTILISATEUR"=>$utilisateur->getId()]);
-        return self::where(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"CODE_POSTAL"=>$codePostal,"ID_UTILISATEUR"=>$utilisateur->getId()])->firstOrFail();
+    static function addAdresse(UtilisateurEntity $utilisateur,String $numRue,String $nomRue,String $nomVille, String $codePostale):self{
+        $villeID = \App\Models\Ville::where(["CODE_POSTAL"=>$codePostale,"NOM"=>$nomVille])->firstOrFail()["ID"];
+        self::create(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"ID_UTILISATEUR"=>$utilisateur->getId(),"ID_VILLE"=>$villeID]);
+        return self::where(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"ID_UTILISATEUR"=>$utilisateur->getId(),"ID_VILLE"=>$villeID])->firstOrFail();
     }
 }

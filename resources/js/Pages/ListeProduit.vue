@@ -1,3 +1,43 @@
+<template>
+    <Header current-page="Nos bijoux"></Header>
+
+    <div id="page">
+        <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp'), url('/pictures/collections/${collections}.jpg')` }">
+            <span class="material-symbols-rounded">
+              arrow_back_ios
+            </span>
+        </div>
+
+        <div id="SecondRange">
+            <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
+                <option value="">Trier par</option>
+                <option value="croiss">Prix croissant</option>
+                <option value="decroiss">Prix décroissant</option>
+                <option value="recent">Les plus récents</option>
+            </select>
+        </div>
+
+
+        <div id="ProduitRange">
+            <div class="container">
+                <div v-for="produit in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }" @click="redirectOnClick(produit.ID)">
+                    <!-- TODO : faire le backend du btn favoris -->
+                    <span class="material-symbols-rounded add-fav">favorite</span>
+                    <!-- - - - - - - - - - - - - -  -->
+                    <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
+                    <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
+                    <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
+                    <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+                </div>
+            </div>
+        </div>
+        <img id="logo" src="/public/images/logo-simple.png" alt="logo laurelin">
+        <button id="plusProd" v-if="hasMoreProducts" @click="loadMoreProducts" class="font-subtitle-16">Charger plus</button>
+    </div>
+
+<Footer></Footer>
+</template>
+
 <script setup>
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
@@ -8,10 +48,21 @@ const props = defineProps({
     produits: {
         type: Array,
         required: true
+    },
+    categories: {
+        type: Number,
+        required: true
+    },
+    collections: {
+        type: Number,
+        required: true
     }
 });
 
 const produitsAffiches = reactive([...props.produits]);
+const itemsPerPage = 6;
+let currentPage = 1;
+
 
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
@@ -21,9 +72,6 @@ const formatPrix = (prix) => {
     }).format(prix);
 };
 
-const handleClick = (produit) => {
-    router.visit(`/produit/${produit.ID}`);
-};
 
 // Fonction pour trier les produits
 const trierProduits = (critere) => {
@@ -36,8 +84,6 @@ const trierProduits = (critere) => {
     }
 };
 
-const itemsPerPage = 6;
-let currentPage = 1;
 
 // Charger les produits initialement avec limitation
 const fetchProducts = () => {
@@ -61,51 +107,36 @@ const hasMoreProducts = computed(() => {
     return produitsAffiches.length < props.produits.length;
 });
 
-// Appeler lors du montage
 onMounted(fetchProducts);
 
+const containers = document.querySelectorAll('.container .item');
 
+containers.forEach(container => {
+    if (isTouchDevice) {
+        container.style.pointerEvents = 'auto';
+        container.addEventListener('touchstart', () => handleTouchClick(container.dataset.id));
+    } else {
+        container.style.pointerEvents = 'none';
+    }
+});
+
+
+const handleClick = (produit) => {
+    router.visit(`/produit/${produit.ID}`);
+};
+
+
+const handleTouchClick = (id) => {
+    router.visit(`/produit/${id}`);
+};
+
+function redirectOnClick(id){
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    if(isTouchDevice){
+        window.location = "/produit/"+id
+    }
+}
 </script>
-
-/* -----------------------HTML----------------------- */
-
-<template>
-    <Header current-page="Nos bijoux"></Header>
-
-    <div id="page">
-        <div id="FirstRange" >
-    <span class="material-symbols-rounded">
-      arrow_back_ios
-    </span>
-        </div>
-
-        <div id="SecondRange">
-            <select name="trieur" id="Tri-produit" class="font-subtitle-16" @change="trierProduits($event.target.value)">
-                <option value="">Trier par</option>
-                <option value="croiss">Prix croissant</option>
-                <option value="decroiss">Prix décroissant</option>
-                <option value="recent">Les plus récents</option>
-            </select>
-        </div>
-        <div id="ProduitRange">
-            <div class="container">
-                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }">
-                    <!-- TODO : faire le backend du btn favoris -->
-                    <span class="material-symbols-rounded add-fav">favorite</span>
-                    <!-- - - - - - - - - - - - - -  -->
-                    <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
-                    <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
-                    <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
-                    <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
-                </div>
-            </div>
-        </div>
-        <img id="logo" src="/public/images/logo-simple.png" alt="logo laurelin">
-        <button id="plusProd" v-if="hasMoreProducts" @click="loadMoreProducts" class="font-subtitle-16">Charger plus</button>
-    </div>
-
-<Footer></Footer>
-</template>
 
 <style scoped>
 .add-fav {
@@ -156,7 +187,7 @@ onMounted(fetchProducts);
     width: 100%;
     height: 100vh;
     position: relative;
-    background: url("/public/images/imgProd/img_caté_bagues_finale.jpg") no-repeat center 30%/cover;
+    background: no-repeat center 30%/cover;
 }
 
 #FirstRange span {
@@ -196,7 +227,6 @@ onMounted(fetchProducts);
     grid-template-columns: 1fr 1fr 1fr;
     margin: 20px 20px 80px;
     gap: 32px;
-    min-height: 100vh;
 }
 
 #ProduitRange .container .boutton_acheter {
@@ -339,9 +369,8 @@ onMounted(fetchProducts);
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
-        margin-top: 50px;
+        margin-top: 0;
         gap: 20px;
-        min-height: 100vh;
     }
 
     #ProduitRange .container .item {
@@ -366,6 +395,13 @@ onMounted(fetchProducts);
         bottom: 10%;
         font-size: clamp(5px, 2vw, 12px);
         line-height: 1;
+    }
+
+    #SecondRange {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 32px 64px;
     }
 }
 
@@ -398,7 +434,7 @@ onMounted(fetchProducts);
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin: 20px;
-        margin-top: 50px;
+        margin-top: 0;
         gap: 20px;
         min-height: 100vh;
 

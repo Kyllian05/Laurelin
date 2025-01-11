@@ -4,6 +4,7 @@ namespace App\Domain\ProductGroup\Services;
 
 use App\Domain\ProductGroup\Entities\CollectionEntity;
 use App\Domain\ProductGroup\Repositories\CollectionRepository;
+use App\Domain\Produit\Entities\ProduitEntity;
 
 class CollectionService
 {
@@ -29,9 +30,19 @@ class CollectionService
         return $this->collectionRepository->findByName($name);
     }
 
+    public function findById(int $id): ?CollectionEntity
+    {
+        return $this->collectionRepository->findById($id);
+    }
+
     public function getProducts(CollectionEntity $collectionEntity): array
     {
         $this->collectionRepository->getProducts($collectionEntity);
         return $collectionEntity->getProductList();
+    }
+
+    public function findByProduct(ProduitEntity $product): ?CollectionEntity
+    {
+        return $this->collectionRepository->findByProduct($product);
     }
 }
