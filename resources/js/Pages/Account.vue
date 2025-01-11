@@ -3,9 +3,9 @@
     <Header currentPage="account"></Header>
     <div id="mainWrapper">
         <div id="navWrapper">
-            <div v-for="nav in Object.keys(navConv)" :class="dynamicPage == nav ? 'currentNav' : ''" @click="dynamicPage = nav">
+            <div id="elementsNav" v-for="nav in Object.keys(navConv)" :class="dynamicPage == nav ? 'currentNav' : ''" @click="dynamicPage = nav">
                 <span class="material-symbols-rounded">{{ navConv[nav].icon }}</span>
-                <p class="font-body-s">{{ navConv[nav].text }}</p>
+                <p id="pageTitre" class="font-body-s">{{ navConv[nav].text }}</p>
             </div>
         </div>
         <div id="contentWrapper">
@@ -18,7 +18,9 @@
                 <div id="formWrapper2">
                     <Form :fields="infoFields[1]" :check-boxs="[]" buttonText="Valider les modifications"  dest="/updateInfo" style="margin-top: 5vh"></Form>
                 </div>
-                <button id="buttonDeco" class="deco font-body-l" @click="logout"> Déconnexion </button>
+                <div id="logoutWrapper">
+                    <button id="buttonDeco" class="deco font-body-l" @click="logout"> Déconnexion </button>
+                </div>
             </div>
             <div v-else-if="dynamicPage == 'commandes'" id="commandsWrapper">
                 <div v-for="(commande,index) in commandes" class="commandWrapper" :class="index%2==1 ? 'grayBackground' :''">
@@ -31,7 +33,7 @@
                     </ul>
                     <div class="commandSideWrapper">
                         <button class="font-body-s" :class="commande['Etat'] == 2 ? 'commandFinished' : ''">{{ etatText[commande["Etat"]] }}</button>
-                        <p class="font-body-s">TOTAL : {{ getCommandeSum(commande) }}€</p>
+                        <p class="font-body-s">TOTAL : {{ formatPrix(getCommandeSum(commande)) }}€</p>
                     </div>
                 </div>
             </div>
@@ -54,7 +56,7 @@
                             </div>
                         </div>
                         <p>{{ favori.Nom }}</p>
-                        <p>{{ favori.Prix }}€</p>
+                        <p>{{ formatPrix(favori.Prix) }}€</p>
                     </div>
             </div>
             <div v-else>
@@ -260,6 +262,12 @@ let props = defineProps(
             .catch(error => console.error('Erreur réseau :', error));
     }
 
+    const formatPrix = (prix) => {
+        return new Intl.NumberFormat("fr-FR", {
+            style: "decimal",
+            maximumFractionDigits: 0, // Pas de décimales
+        }).format(prix);
+    };
 
 </script>
 
@@ -270,11 +278,11 @@ let props = defineProps(
     }
     .buttonAcheter{
         position: absolute;
-        bottom: 0px;
+        bottom: -25px;
         left: 0px;
         margin-left: 50%;
         transform: translateX(-50%);
-        width: max-content;
+        width: 90%;
     }
     #ajoutAdresseContent p{
         text-align: center;
@@ -377,11 +385,12 @@ let props = defineProps(
     }
     #favorisWrapper{
         display: grid;
+        gap: 10px;
         grid-template-columns: repeat(3,1fr);
         height: max-content;
     }
     .favorisImage{
-        width: 15vw;
+        width: 100%;
         cursor: pointer;
         transition-duration: .25s;
         aspect-ratio: 1/1;
@@ -395,14 +404,14 @@ let props = defineProps(
         position: absolute;
         right: 2vw;
         top: 2vw;
-        text-align: center;
+        text-align: right;
     }
     .commandFinished{
         color: white;
         background-color: black!important;
     }
     .commandWrapper button{
-        border: solid 2px black;
+        border: solid 1px black;
         border-radius: 25px;
         padding-top: 1vh;
         padding-bottom: 1vh;
@@ -412,9 +421,7 @@ let props = defineProps(
         font-size: 16px;
     }
     .commandWrapper{
-        padding-bottom: 2vh;
-        padding-top: 2vh;
-        padding-left: 1vw;
+        padding: 20px;
         position: relative;
     }
     .grayBackground{
@@ -431,6 +438,14 @@ let props = defineProps(
         font-size: 15px;
         font-weight: lighter;
     }
+
+    #commandsWrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+
     #pageInfo{
         font-size: 18px;
         margin-bottom: 1.5vh;
@@ -498,7 +513,7 @@ let props = defineProps(
         transform: translate(-50%);
         border: none;
         border-radius: 10px;
-        margin-top: 32px;
+        margin-top: 40px;
         padding: 18px 0;
         cursor: pointer;
         transition: background-color .2s;
@@ -508,5 +523,87 @@ let props = defineProps(
         background-color: #3a3a3a;
     }
 
+    #logoutWrapper {
+        border-top: 1px solid black;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 800px) {
+        #mainWrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding-left: 0;
+            align-items: center;
+            text-align: center;
+        }
+
+        #navWrapper {
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            grid-template-rows: 1fr;
+            border: 0px;
+            width: 80%;
+            align-items: center;
+        }
+
+
+        #elementsNav {
+            border-bottom: 1px solid black;
+        }
+
+        #elementsNav span {
+            margin-left: 50%;
+            transform: translate(-50%);
+        }
+
+        #pageTitre {
+            display: none;
+        }
+
+        #contentWrapper {
+            width: 80%;
+        }
+
+        #commandsWrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            text-align: left;
+        }
+
+
+    }
+
+    @media (max-width: 550px) {
+        #favorisWrapper {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 630px), (min-width: 800px) and (max-width: 1100px) {
+        .commandWrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .commandSideWrapper {
+            display: flex;
+            flex-direction: column ;
+            position: relative;
+            left: 50%;
+            transform: translate(-50%);
+            align-items: center;
+        }
+
+        .commandSideWrapper p{
+            text-align: center;
+        }
+
+        .commandSideWrapper button {
+            width: 80%;
+        }
+    }
 
 </style>
