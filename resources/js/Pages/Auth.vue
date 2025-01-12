@@ -1,7 +1,9 @@
 <template>
     <div id="globalWrapper">
         <div id="leftWrapper">
-            <img src="/public/images/login-bijoux.avif">
+            <img id="logo1" src="/public/images/logo-simple.png">
+            <img id="globalImage" src="/public/images/login-bijoux.avif">
+            <img id="logo2" src="/public/images/logo-simple.png">
         </div>
         <div id="rightWrapper">
             <div id="backWrapper" onclick="window.location = '/'">
@@ -103,8 +105,8 @@
     #formWrapper{
         width: 50%;
         margin-left: 50%;
-        margin-top: 10vh;
-        transform: translateX(-50%);
+        margin-top: 45vh;
+        transform: translate(-50%,-50%);
     }
     #logo{
         filter: brightness(0%) grayscale(100%);
@@ -125,7 +127,7 @@
     #backWrapper:hover p{
         text-decoration: underline;
     }
-    #leftWrapper img{
+    #globalImage {
         position: absolute;
         width: 80%;
         margin-left: 50%;
@@ -135,6 +137,12 @@
         object-fit: cover;
         box-shadow: 0 0 16px rgba(0, 0, 0, 0.40);
     }
+
+    #logo1, #logo2 {
+        display: none;
+        filter: brightness(0%) grayscale(100%);
+    }
+
     #leftWrapper{
         width: 50vw;
         float: left;
@@ -169,4 +177,51 @@
             align-items: center;
         }
     }
+
+    @media (min-height: 900px) and (max-width: 1600px) {
+
+
+        #logo1 {
+            display: block;
+            position: absolute;
+            margin-top: 5vh;
+            width: 80px;
+            margin-left: 50%;
+            transform: rotate(180deg) translate(50%);
+        }
+        #logo2 {
+            display: block;
+            position: absolute;
+            margin-top: 89vh;
+            width: 80px;
+            margin-left: 50%;
+            transform: translate(-50%);
+        }
+
+    }
+
+    @media (min-width: 1100px) and (max-width: 1250px) {
+        #formWrapper {
+            width: 60%;
+        }
+    }
+
+    @media (max-width: 750px) {
+        #formWrapper {
+            width: 80%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        #authChoiceWrapper {
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 0;
+        }
+
+        #authChoiceWrapper button {
+            border-bottom: solid 1px #E9E9E9;
+        }
+    }
+
 </style>
