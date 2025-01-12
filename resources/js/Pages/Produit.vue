@@ -151,7 +151,7 @@ function favorisAction(){
         },
     }).then(async response => {
         if(response.status == 200){
-            alert("ajouté au panier")
+            dynamicFavorite.value = !dynamicFavorite.value
         }
     })
 }
