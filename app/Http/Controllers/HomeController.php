@@ -18,8 +18,10 @@ class HomeController extends Controller
 
     public function search(string $query, Request $request)
     {
+        $escapedQuery = addslashes($query);
+
         // A modifier
-        $products = DB::select("SELECT ID, NOM FROM Produit WHERE NOM LIKE '%$query%'");
+        $products = DB::select("SELECT ID, NOM FROM Produit WHERE NOM LIKE '%$escapedQuery%'");
 
         return response()->json($products);
     }

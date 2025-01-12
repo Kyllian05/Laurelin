@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Adresse\Services\AdresseService;
+use App\Domain\Commande\Service\CartService;
+use App\Domain\Commande\Service\OrderService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use App\Models\Exceptions;
 use Illuminate\Http\Request;
@@ -11,8 +13,11 @@ use Inertia\Inertia;
 
 class CheckOutController extends Controller
 {
+    private ?CartService $cartService = null;
+
     public function __construct(
         private UtilisateurService $utilisateurService,
+        private OrderService $orderService,
         private AdresseService $adresseService,
     ) {}
 
@@ -30,6 +35,7 @@ class CheckOutController extends Controller
                 throw $e;
             }
         }
+        $this->cartService = new CartService($user);
 
         $userData = [
             "EMAIL" => $user->getEmail(),
@@ -47,23 +53,14 @@ class CheckOutController extends Controller
 
         // --- Panier
 
-        $panier = \App\Models\Commande::getPanier($user);
-        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
-
-        $result = [];
-
-        foreach($produits as $produit){
-            $temp = \App\Models\Produit::where("ID",$produit["ID_PRODUIT"])->firstOrFail();
-            $temp["QUANTITE"] = $produit["QUANTITE"];
-            $result[] = $temp;
-        }
+        $panierSerialized = $this->cartService->getCart($user)->serialize();
 
         // --- Render ---
 
         return Inertia::render("CheckOut",[
             "user" => $userData,
             "adresses" => $adressesSerialized,
-            "produits" => $result,
+            "produits" => $panierSerialized,
         ]);
     }
 
@@ -81,24 +78,18 @@ class CheckOutController extends Controller
             }
         }catch(\Exception $e){
             if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;
             }
         }
+        $this->cartService = new CartService($user);
 
-        $panier = \App\Models\Commande::getPanier($user);
-        $products = \App\Models\Produit_Commande::getAllProducts($panier["ID"]);
+        $commande = $this->cartService->getCart($user);
+        $this->orderService->toOrder($commande);
+        $this->utilisateurService->getAdresses($user); // Update les adresses
+        $adresseCommande = $this->adresseService->findById(intval($data["adresse"])); // Seulement pour le domicile
 
-        foreach($products as $product){
-            \App\Models\Produit_Commande::where([
-                "ID_PRODUIT"=>$product["ID_PRODUIT"],
-                "ID_COMMANDE"=>$panier["ID"]])
-                ->update(["PRIX"=>\App\Models\Produit::where("ID",$product["ID_PRODUIT"])->firstOrFail()["PRIX"]]);
-        }
-
-        if($data["livraison"] == "domicile"){
-            \App\Models\Commande::where(["ID_UTILISATEUR" => $user->getId(),"ETAT"=>"panier"])->update(["ETAT"=>0,"ID_ADRESSE"=>$data["adresse"],"MODE_LIVRAISON"=>$data["livraison"]]);
-        }
+        $this->orderService->order($commande, $data['livraison'], $adresseCommande, $user);
     }
 }

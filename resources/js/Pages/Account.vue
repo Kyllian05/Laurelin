@@ -20,15 +20,15 @@
             </div>
             <div v-else-if="dynamicPage == 'commandes'" id="commandsWrapper">
                 <div v-for="(commande,index) in commandes" class="commandWrapper" :class="index%2==1 ? 'grayBackground' :''">
-                    <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande["Date"]}}</p>
+                    <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande.DATE}}</p>
                     <p class="font-body-s" style="margin-bottom: 2vh">Produits :</p>
                     <ul>
-                        <li v-for="produit in commande['Produits']">
-                            <p class="font-body-s">{{ produit["Nom"] }} {{ produit["Quantité"] > 1 ? 'x'+produit["Quantité"] : '' }}</p>
+                        <li v-for="produit in commande.PRODUITS">
+                            <p class="font-body-s">{{ produit.PRODUIT.NOM }} {{ produit.QUANTITE > 1 ? 'x'+produit.QUANTITE : '' }}</p>
                         </li>
                     </ul>
                     <div class="commandSideWrapper">
-                        <button class="font-body-s" :class="commande['Etat'] == 2 ? 'commandFinished' : ''">{{ etatText[commande["Etat"]] }}</button>
+                        <button class="font-body-s" :class="commande.ETAT === 'Terminée' ? 'commandFinished' : ''">{{commande.ETAT}}</button>
                         <p class="font-body-s">TOTAL : {{ getCommandeSum(commande) }}€</p>
                     </div>
                 </div>
@@ -144,12 +144,6 @@ let props = defineProps(
         "adresses" : {text:"Mes adresses",icon:"home"}
     }
 
-    let etatText = {
-        "0" : "En cours de préparation",
-        "1" : "Expediée",
-        "2" : "Terminée"
-    }
-
     let infoFields = [[],[]]
 
     for(let i = 0;i<3;i++){
@@ -217,8 +211,8 @@ let props = defineProps(
 
     function getCommandeSum(commande){
         let sum = 0
-        commande["Produits"].forEach((produit)=>{
-            sum += produit["Prix"] * produit["Quantité"]
+        commande.PRODUITS.forEach((produit)=>{
+            sum += produit.PRIX * produit.QUANTITE
         })
         return sum
     }

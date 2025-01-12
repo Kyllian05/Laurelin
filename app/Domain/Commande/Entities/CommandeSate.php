@@ -18,4 +18,8 @@ interface CommandeSate
     public function addProduct(ProduitCommandeEntity $productCommandeEntity): void;
 
     public function removeProduct(ProduitCommandeEntity $productCommandeEntity): void;
+
+    public function toOrder(): void;
+
+    public function toClosed(): void;
 }

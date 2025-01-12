@@ -14,6 +14,8 @@ class Commande extends Model
      */
     protected $table = 'Commande';
 
+    protected $primaryKey = 'ID';
+
     /**
      * Les colonnes de la table qui peuvent être assignées en masse.
      *
@@ -28,26 +30,4 @@ class Commande extends Model
     ];
 
     public $timestamps = false;
-
-    static function getAllCommandes(UtilisateurEntity $utilisateur){
-        return self::where(["ID_UTILISATEUR" => $utilisateur->getId()])->where("ETAT","!=","panier")->get()->sortByDesc("DATE");
-    }
-
-    static function createPanier(UtilisateurEntity $utilisateur){
-        self::create([
-            "DATE" => date ('Y-m-d H:i:s', time()),
-            "ETAT" => "panier",
-            "MODE_LIVRAISON"=>null,
-            "ID_UTILISATEUR" => $utilisateur->getId(),
-            "ID_ADRESSE" => null]);
-    }
-
-    static function getPanier(UtilisateurEntity $utilisateur){
-        try{
-            return self::where(["ID_UTILISATEUR" => $utilisateur->getId(),"ETAT"=>"PANIER"])->firstOrFail();
-        }catch(\Exception $e){
-            self::createPanier($utilisateur);
-            return self::getPanier($utilisateur);
-        }
-    }
 }

@@ -5,7 +5,7 @@ namespace App\Domain\Commande\Entities;
 use App\Domain\Adresse\Entities\AdresseEntity;
 use App\Domain\Shared\Livraison;
 
-class CartSate implements CommandeSate
+class ClosedState implements CommandeSate
 {
     private CommandeEntity $context;
 
@@ -16,17 +16,20 @@ class CartSate implements CommandeSate
 
     public function toOrder(): void
     {
-        $this->context->changeSate(new OrderSate());
+        throw new \Exception("Impossible de changer d'état.");
     }
 
     public function toClosed(): void
     {
-        throw new \Exception("Impossible de changer pour cet état.");
+        throw new \Exception("La commande est déjà dans cet état.");
     }
 
+    /**
+     * @throws \Exception : La quantité ne peut plus être modifiée
+     */
     public function modifyQuantity(ProduitCommandeEntity $produitCommandeEntity, int $newQuantity): void
     {
-        $produitCommandeEntity->setQuantite($newQuantity);
+        throw new \Exception("La quantité du produit ne peut plus être modifiée à ce stade");
     }
 
     /**
@@ -45,21 +48,19 @@ class CartSate implements CommandeSate
         throw new \Exception("La livraison ne peut pas être modifiée à ce stade.");
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addProduct(ProduitCommandeEntity $productCommandeEntity): void
     {
-        $products = $this->context->getProducts();
-        $products[] = $productCommandeEntity;
-        $this->context->setProducts($products);
+        throw new \Exception("Il n'est plus possible d'ajouter un produit dans cette commande");
     }
 
+    /**
+     * @throws \Exception
+     */
     public function removeProduct(ProduitCommandeEntity $productCommandeEntity): void
     {
-        $products = $this->context->getProducts();
-        for ($i = 0; $i < count($products); $i++) {
-            if ($products[$i] == $productCommandeEntity) {
-                unset($products[$i]);
-            }
-        }
-        $this->context->setProducts($products);
+        throw new \Exception("Il n'est plus possible de supprimer un produit dans cette commande");
     }
 }

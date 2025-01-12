@@ -6,12 +6,12 @@ use App\Domain\Produit\Entities\ProduitEntity;
 
 class ProduitCommandeEntity
 {
-    private int $taille;
+    private ?int $taille;
     private int $quantite;
-    private int $prix;
+    private ?int $prix;
     private ProduitEntity $produit;
 
-    public function __construct(int $taille, int $quantite, int $prix, ProduitEntity $produit)
+    public function __construct(int $taille, int $quantite, ?int $prix, ProduitEntity $produit)
     {
         $this->taille = $taille;
         $this->quantite = $quantite;
@@ -21,7 +21,7 @@ class ProduitCommandeEntity
 
     // Getters
 
-    public function getTaille(): int
+    public function getTaille(): ?int
     {
         return $this->taille;
     }
@@ -31,7 +31,7 @@ class ProduitCommandeEntity
         return $this->quantite;
     }
 
-    public function getPrix(): int
+    public function getPrix(): ?int
     {
         return $this->prix;
     }
@@ -64,6 +64,16 @@ class ProduitCommandeEntity
     public function setProduit(ProduitEntity $produit): void
     {
         $this->produit = $produit;
+    }
+
+    public function serialize(): array
+    {
+        return [
+            'TAILLE' => $this->taille,
+            'QUANTITE' => $this->quantite,
+            'PRIX' => $this->prix,
+            'PRODUIT' => $this->produit->serialize(),
+        ];
     }
 
 }

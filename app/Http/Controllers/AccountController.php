@@ -24,28 +24,11 @@ class AccountController extends Controller
             }
 
             // --- Commandes ---
-
-            $commandes = \App\Models\Commande::getAllCommandes($user);
-            $commandesData = [];
+            $commandes = $this->userService->getCommandes($user);
+            $commandesSerialized = [];
 
             foreach($commandes as $commande){
-                $temp = [
-                    "Date" => $commande["DATE"],
-                    "Etat" => $commande["ETAT"],
-                    "Mode Livraison" => $commande["MODE_LIVRAISON"],
-                    "Produits" => []
-                ];
-
-                foreach(\App\Models\Produit_Commande::getAllProducts($commande["ID"]) as $produit){
-                    $produitEntity = $this->produitService->findById($produit["ID_PRODUIT"]);
-                    $temp["Produits"][] = [
-                        "Nom" => $produitEntity->nom,
-                        "Quantité" => $produit["QUANTITE"],
-                        "Prix" => $produit["PRIX"],
-                    ];
-                }
-
-                $commandesData[] = $temp;
+                $commandesSerialized[] = $commande->serialize();
             }
 
             // --- Favoris ---
@@ -73,8 +56,8 @@ class AccountController extends Controller
                     "Téléphone"=>$user->getTelephone(),
                     "Adresse mail"=>$user->getEmail(),
                 ],
-                "commandes"=>$commandesData,
-                "favoris"=>$favorisSerialized,
+                "commandes" => $commandesSerialized,
+                "favoris" => $favorisSerialized,
                 "adresses" => $adressesSerialized,
             ]);
         }catch (\Exception $e){

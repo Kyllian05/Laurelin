@@ -3,6 +3,7 @@
 namespace App\Domain\Utilisateur\Entities;
 
 use App\Domain\Adresse\Entities\AdresseEntity;
+use App\Domain\Commande\Entities\CommandeEntity;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Role;
 use App\Domain\Validators\AdminPasswordValidator;
@@ -25,6 +26,7 @@ abstract class UtilisateurEntity
     private ?string $codeGen;
     private ?array $favoris = null;
     private ?array $adresses = null;
+    private ?array $commandes = null;
     private PasswordValidatorStrategy $passwordValidator;
 
     protected function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen, PasswordValidatorStrategy $passwordValidator) {
@@ -147,11 +149,24 @@ abstract class UtilisateurEntity
         return $this->favoris;
     }
 
+    /**
+     * @throws \Exception : Si l'attribut adresses n'a pas été initialisé
+     */
     public function getAdresses(): array {
         if (is_null($this->adresses)) {
             throw new \Exception("Get must be called from UtilisateurService");
         }
         return $this->adresses;
+    }
+
+    /**
+     * @throws \Exception : Si l'attribut commandes n'a pas été initialisé
+     */
+    public function getCommandes(): array {
+        if (is_null($this->commandes)) {
+            throw new \Exception("Get must be called from UtilisateurService");
+        }
+        return $this->commandes;
     }
 
     abstract public function getRole(): Role;
@@ -255,6 +270,16 @@ abstract class UtilisateurEntity
             }
         }
         $this->adresses = $adresses;
+    }
+
+    public function setCommandes(array $commandes): void
+    {
+        foreach ($commandes as $commande) {
+            if (!($commande instanceof CommandeEntity)) {
+                throw new \InvalidArgumentException("La commande n'est pas une commande valide");
+            }
+        }
+        $this->commandes = $commandes;
     }
 
     // Autres fonctions

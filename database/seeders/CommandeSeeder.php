@@ -15,28 +15,28 @@ class CommandeSeeder extends Seeder
     {
         DB::table('Commande')->insert([
             "DATE" => date ('Y-m-d H:i:s', time()),
-            "ETAT" => 0,
+            "ETAT" => "Terminée",
             "MODE_LIVRAISON" => "domicile",
             "ID_UTILISATEUR" => 1,
             "ID_ADRESSE" => 1,
         ]);
         DB::table('Commande')->insert([
             "DATE" => date ('Y-m-d H:i:s', time()-1000),
-            "ETAT" => 1,
+            "ETAT" => "Expédiée",
             "MODE_LIVRAISON" => "domicile",
             "ID_UTILISATEUR" => 1,
             "ID_ADRESSE" => 1,
         ]);
         DB::table('Commande')->insert([
             "DATE" => date ('Y-m-d H:i:s', time()-100000),
-            "ETAT" => 2,
+            "ETAT" => "Terminée",
             "MODE_LIVRAISON" => "domicile",
             "ID_UTILISATEUR" => 1,
             "ID_ADRESSE" => 1,
         ]);
         DB::table('Commande')->insert([
             "DATE" => date ('Y-m-d H:i:s', time()),
-            "ETAT" => "panier",
+            "ETAT" => "Panier",
             "ID_UTILISATEUR" => 1,
         ]);
     }

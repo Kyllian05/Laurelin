@@ -4,21 +4,23 @@
         <div class="leftWrapper">
             <h1>Panier</h1>
             <div class="panier">
-                <div class="panierproduit" v-for="produit in panierData" v-if="panierData.length > 0">
-                    <img alt="Produit" :src="produit['IMAGE'][0]['URL']"/>
-                    <div class="panierproduitinfo">
-                        <h3>{{ produit["NOM"] }}</h3>
-                        <p>{{ produit["MATERIAUX"] }}</p>
-                        <p class="addOther" @click="addOtherProduct(produit['ID'])">En ajouter un autre</p>
-                        <h2>{{ produit["PRIX"] }}€</h2>
+                <div v-for="produitCmd in panierData.PRODUITS" v-if="panierData.PRODUITS.length > 0">
+                    <div class="panierproduit"  v-for="i in produitCmd.QUANTITE">
+                        <img alt="Produit" :src="produitCmd.PRODUIT.IMAGES[0]"/>
+                        <div class="panierproduitinfo">
+                            <h3>{{ produitCmd.PRODUIT.NOM }}</h3>
+                            <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
+                            <p class="addOther" @click="addOtherProduct(produitCmd.PRODUIT.ID)">En ajouter un autre</p>
+                            <h2>{{ produitCmd.PRODUIT.PRIX }}€</h2>
+                        </div>
+                        <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produitCmd.PRODUIT.ID)">close</span>
                     </div>
-                    <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produit['ID'])">close</span>
                 </div>
                 <div v-else>
                     <p style="margin-top: 5vh; margin-bottom: 3vh">Votre panier est vide</p>
                 </div>
                 <a href="/" class="continue">← Continuer ma visite</a>
-                </div>
+            </div>
         </div>
         <div class="rightWrapper">
             <div class="panierresume">
@@ -42,12 +44,20 @@ import Header from "./Components/Header.vue";
 import {ref, watch} from "vue";
 
 const props = defineProps({
-    "produits":Array
+    "panier": Object
 })
 
-let panierData = ref(props.produits)
+let panierData = ref(props.panier)
 
 let somme = ref(0)
+
+function updatePanierSomme(){
+    let temp = 0
+    for(let i = 0; i<panierData.value.PRODUITS.length ;i++){
+        temp += panierData.value.PRODUITS[i].PRODUIT.PRIX * panierData.value.PRODUITS[i].QUANTITE
+    }
+    somme.value = temp
+}
 
 function addOtherProduct(id){
     fetch("/panier/ajout",{
@@ -60,18 +70,12 @@ function addOtherProduct(id){
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200){
-
+        if(response.status === 200){
+            panierData.value = await response.json()
+        } else {
+            alert("Erreur lors de l'ajout du produit")
         }
     })
-}
-
-function updatePanierSomme(){
-    let temp = 0
-    for(let i = 0;i<panierData.value.length;i++){
-        temp += panierData.value[i]["PRIX"]
-    }
-    somme.value = temp
 }
 
 function supprimerDuPanier(id){
@@ -83,19 +87,14 @@ function supprimerDuPanier(id){
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200) {
-            for(let i = 0;i<panierData.value.length;i++){
-                if(panierData.value[i]["ID"] == id){
-                    panierData.value.splice(i,1)
-                    break
-                }
-            }
+        if(response.status === 200) {
+            panierData.value = await response.json()
         }
     })
 }
 
 updatePanierSomme()
-watch(panierData.value,async newvalue => {
+watch(panierData.value,async () => {
     updatePanierSomme()
 })
 </script>

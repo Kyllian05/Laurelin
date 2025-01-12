@@ -3,6 +3,8 @@
 namespace App\Domain\Utilisateur\Services;
 
 use App\Domain\Adresse\Repositories\AdresseRepository;
+use App\Domain\Commande\Entities\CommandeEntity;
+use App\Domain\Commande\Repositories\Database\CommandeRepository;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
 use App\Domain\Utilisateur\Repositories\FavorisRepository;
@@ -17,6 +19,7 @@ class UtilisateurService
         private UtilisateurRepository $userRepository,
         private FavorisRepository $favorisRepository,
         private AdresseRepository $adresseRepository,
+        private CommandeRepository $commandeRepository,
     ) {}
 
     public function findById(int $id): ?UtilisateurEntity
@@ -193,5 +196,12 @@ class UtilisateurService
     {
         $utilisateurEntity->setAdresses($this->adresseRepository->findByUser($utilisateurEntity));
         return $utilisateurEntity->getAdresses();
+    }
+
+    // --- Commandes ---
+    public function getCommandes(UtilisateurEntity $utilisateurEntity): array
+    {
+        $utilisateurEntity->setCommandes($this->commandeRepository->findByUser($utilisateurEntity));
+        return $utilisateurEntity->getCommandes();
     }
 }

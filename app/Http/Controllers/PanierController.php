@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Commande\Service\CartService;
+use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use App\Models\Exceptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class PanierController extends Controller
 {
+    private ?CartService $cartService = null;
+
     public function __construct(
         private UtilisateurService $utilisateurService,
+        private ProduitService $produitService,
     ) {}
 
     public function index(Request $request){
@@ -22,46 +28,49 @@ class PanierController extends Controller
             }
         }catch(\Exception $e){
             if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/panier",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+                return redirect("/auth")->cookie("redirect","/panier",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;
             }
         }
-        $panier = \App\Models\Commande::getPanier($user);
 
-        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
-
-        $result = [];
-
-        for ($i=0; $i < sizeof($produits); $i++) {
-            $quantite = $produits[$i]["QUANTITE"];
-            while($produits[$i]["QUANTITE"] > 0){
-                $temp = \App\Models\Produit::getProduct($produits[$i]["ID_PRODUIT"]);
-                $temp["IMAGE"] = \App\Models\Image::get_one_image($produits[$i]["ID_PRODUIT"]);
-                $result[] = $temp;
-                $produits[$i]["QUANTITE"]--;
-            }
-        }
+        $this->cartService = new CartService($user);
 
         return Inertia::render("Panier",[
-            "produits"=>$result,
+            "panier" => $this->cartService->getCart($user)->serialize(),
         ]);
     }
 
     public function ajouterAuPanier(Request $request){
         $data = $request->post();
+
         $user = $this->utilisateurService->getAuthenticatedUser($request);
-        if(!\App\Models\Commande::where(["ID_UTILISATEUR"=>$user->getId(),"ETAT"=>"panier"])->exists()){
-            \App\Models\Commande::createPanier($user);
-        }
-        $panier = \App\Models\Commande::getPanier($user);
-        \App\Models\Produit_Commande::ajoutProduit($panier,\App\Models\Produit::getProduct($data["produit"]));
+        $this->cartService = new CartService($user);
+        $panier = $this->cartService->getCart($user);
+
+        $this->cartService->addProduct(
+            $panier,
+            $this->produitService->findById($data["produit"]),
+        );
+
+        return response($panier->serialize(), 200)->header('Content-Type', 'application/json');
     }
 
     public function supprimerDuPanier(Request $request){
         $data = $request->post();
+
         $user = $this->utilisateurService->getAuthenticatedUser($request);
-        $panier = \App\Models\Commande::getPanier($user);
-        \App\Models\Produit_Commande::supprimerProduit($panier,\App\Models\Produit::getProduct($data["produit"]));
+        $this->cartService = new CartService($user);
+        $panier = $this->cartService->getCart($user);
+
+        try {
+            $this->cartService->removeProduct(
+                $panier,
+                $this->produitService->findById($data["produit"]),
+            );
+            return response($panier->serialize(), 200)->header('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            return response($e->getMessage(), 500);
+        }
     }
 }

@@ -14,6 +14,16 @@ class OrderSate implements CommandeSate
         $this->context = $newContext;
     }
 
+    public function toOrder(): void
+    {
+        throw new \Exception("La commande est déjà dans cet état.");
+    }
+
+    public function toClosed(): void
+    {
+        $this->context->changeSate(new ClosedState());
+    }
+
     /**
      * @throws \Exception : La quantité ne peut plus être modifiée
      */
