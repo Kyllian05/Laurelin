@@ -17,7 +17,7 @@
                 <div v-else>
                     <p style="margin-top: 5vh; margin-bottom: 3vh">Votre panier est vide</p>
                 </div>
-                <a href="/" class="continue">← Continuer ma visite</a>
+                <a href="/bijoux" class="continue">← Continuer ma visite</a>
                 </div>
         </div>
         <div class="rightWrapper">

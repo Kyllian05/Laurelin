@@ -4,10 +4,10 @@
     <div id="burgerMenu" class="btn-side p-side" @click="showMenu = true">
         <span class="material-symbols-rounded">menu</span>
     </div>
-    <div id="imgWrapper">
+    <a href="/" id="imgWrapper">
         <img src="/public/images/logo-simple.png" alt="Logo">
-        <a href="/">Laurelin</a>
-    </div>
+        <span>Laurelin</span>
+    </a>
     <div id="centerWrapper">
         <nav>
             <a v-for="page in Object.keys(allPages)" :class="{selected : currentPage === page}" :href="allPages[page]">
@@ -265,17 +265,18 @@
     }
 
     /* Logo left */
-    #imgWrapper a{
+    #imgWrapper span{
         font-family: "Parisienne", serif;
         font-size: 40px;
-        text-decoration: none;
         color: #000000;
     }
+    
     #imgWrapper{
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 16px;
+        text-decoration: none;
     }
     img{
         height: 48px;
