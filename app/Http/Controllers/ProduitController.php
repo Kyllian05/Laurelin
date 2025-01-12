@@ -32,7 +32,7 @@ class ProduitController extends Controller
                     'NOM' => $utilisateur ? $utilisateur->NOM : 'Non trouvé',
                     'PRENOM' => $utilisateur ? $utilisateur->PRENOM : 'Non trouvé',
                     'DATE' => $comment["DATE"],
-                    "DELETABLE" => $comment["ID_UTILISATEUR"] == $user["ID"],
+                    "DELETABLE" => $user != null ? $comment["ID_UTILISATEUR"] == $user["ID"] : false,
                 ];
             }
 
