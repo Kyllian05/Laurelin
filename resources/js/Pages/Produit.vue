@@ -1,5 +1,5 @@
 <template>
-    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
     <div id="page">
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
@@ -15,7 +15,7 @@
             </div>
             <ButtonAcheter :white-border="true" :id="props.produit['ID']" @ajout="eventPanier()"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
-            <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
+            <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
         </div>
 
 
@@ -184,6 +184,13 @@ const handleClick = (produit) => {
 </script>
 
 <style scoped>
+.material-symbols-outlined{
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+}
 #deleteComment:hover{
     background-color: rgba(255,0,0,25%);
 }

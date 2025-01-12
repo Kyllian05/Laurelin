@@ -1,4 +1,5 @@
 <template>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />
     <Header current-page="Nos bijoux"></Header>
 
     <div id="page">
@@ -24,7 +25,7 @@
             <div class="container">
                 <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }" @click="redirectOnClick(produit.ID)">
                     <!-- TODO : faire le backend du btn favoris -->
-                    <span class="material-symbols-rounded add-fav">favorite</span>
+                    <span class="add-fav" :class="produit['FAVORITE'] ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(produit['ID'])">favorite</span>
                     <!-- - - - - - - - - - - - - -  -->
                     <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                     <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
@@ -44,7 +45,7 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import { router } from '@inertiajs/vue3';
-import {reactive, computed, onMounted} from "vue";
+import {reactive, computed, onMounted, ref} from "vue";
 
 const props = defineProps({
     produits: {
@@ -61,10 +62,39 @@ const props = defineProps({
     }
 });
 
-const produitsAffiches = reactive([...props.produits]);
+const produitsAffiches = ref(props.produits);
 const itemsPerPage = 6;
 let currentPage = 1;
 
+function changeFavorite(id){
+    let index = -1
+
+    for(let i = 0;i<produitsAffiches.value.length;i++){
+        if(produitsAffiches.value[i]["ID"] == id){
+            index = i
+            break
+        }
+    }
+
+    let dest = "ajouterFavoris"
+    if(produitsAffiches.value[index]["FAVORITE"]){
+        dest = "supprimerFavoris"
+    }
+    fetch("/"+dest,{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : produitsAffiches.value[index]["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response=>{
+        if(response.status == 200){
+            produitsAffiches.value[index]["FAVORITE"] = !produitsAffiches.value[index]["FAVORITE"]
+        }
+    })
+}
 
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
@@ -78,18 +108,18 @@ const formatPrix = (prix) => {
 // Fonction pour trier les produits
 const trierProduits = (critere) => {
     if (critere === "croiss") {
-        produitsAffiches.sort((a, b) => a.PRIX - b.PRIX);
+        produitsAffiches.value.sort((a, b) => a.PRIX - b.PRIX);
     } else if (critere === "decroiss") {
-        produitsAffiches.sort((a, b) => b.PRIX - a.PRIX);
+        produitsAffiches.value.sort((a, b) => b.PRIX - a.PRIX);
     } else if (critere === "recent") {
-        produitsAffiches.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
+        produitsAffiches.value.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
     }
 };
 
 
 // Charger les produits initialement avec limitation
 const fetchProducts = () => {
-    produitsAffiches.splice(0, produitsAffiches.length, ...props.produits.slice(0, itemsPerPage));
+    produitsAffiches.value.splice(0, produitsAffiches.value.length, ...props.produits.slice(0, itemsPerPage));
 };
 
 
@@ -98,7 +128,7 @@ const loadMoreProducts = () => {
     const nextProducts = props.produits.slice(start, start + itemsPerPage);
 
     if (nextProducts.length > 0) {
-        produitsAffiches.push(...nextProducts);
+        produitsAffiches.value.push(...nextProducts);
         currentPage++;
     }
 };
@@ -106,7 +136,7 @@ const loadMoreProducts = () => {
 
 // Vérifie s'il reste des produits à charger
 const hasMoreProducts = computed(() => {
-    return produitsAffiches.length < props.produits.length;
+    return produitsAffiches.value.length < props.produits.length;
 });
 
 onMounted(fetchProducts);
@@ -141,7 +171,13 @@ function redirectOnClick(id){
 </script>
 
 <style scoped>
-
+.material-symbols-outlined {
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+}
 .add-fav {
     position: absolute;
     right: 12px;
