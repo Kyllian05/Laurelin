@@ -28,6 +28,7 @@
         <a href="/panier" class="p-side btn-side" :class="{selected : currentPage === 'panier'}">
             <span class="material-symbols-rounded">shopping_bag</span>
             <p>Panier</p>
+            <p id="panierNumber" v-if="numberInPanier > 0">{{ numberInPanier }}</p>
         </a>
     </div>
 </div>
@@ -72,7 +73,12 @@
 <script setup>
     import { ref, watch, nextTick } from 'vue'
 
-    defineProps(["currentPage"])
+    const props = defineProps({
+        "currentPage":String,
+        "updatePanier":Boolean
+    })
+
+    const emits = defineEmits(["panierUpdated"])
 
     let allPages = {
         "Accueil":"/",
@@ -83,10 +89,13 @@
 
     const showMenu = ref(false)
     const showSearch = ref(false)
-    const searchQuery = ref("");
-    const debouncedQuery = ref("Laurelin");
-    const results = ref([]);
-    const searchInput = ref(null);
+    const searchQuery = ref("")
+    const debouncedQuery = ref("Laurelin")
+    const results = ref([])
+    const searchInput = ref(null)
+    const numberInPanier = ref(0)
+
+    getNumberInPanier()
 
     function handleClick(id) {
         window.location.href = `/produit/${id}`
@@ -99,6 +108,30 @@
         return await response.json();
     };
 
+    function getNumberInPanier(){
+        fetch("/getNumberInPanier",{
+            method : "GET",
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response=> {
+            if(response.status == 200){
+                numberInPanier.value = await response.json()
+            }
+        })
+    }
+
+    watch(
+        () => props.updatePanier, // Utiliser une fonction pour observer la prop
+        () => {
+            if(props.updatePanier == true){
+                getNumberInPanier()
+                emits("panierUpdated")
+            }
+        }
+    )
+
     // Watcher pour appliquer un debounce à `searchQuery`
     let debounceTimeout = null;
     watch(
@@ -109,7 +142,7 @@
                 debouncedQuery.value = newQuery;
             }, 500); // Délai de debounce
         }
-    );
+    )
 
     // Watcher pour lancer la recherche lorsque `debouncedQuery` change
     watch(
@@ -135,6 +168,15 @@
 </script>
 
 <style scoped>
+    #panierNumber{
+        position: absolute;
+        bottom: -1vh;
+        left: 0px;
+        background-color: black;
+        color: white;
+        border-radius: 100%;
+        padding: 0.125vw 0.5vw;
+    }
     #header {
         position: fixed;
         display: flex;
@@ -279,6 +321,7 @@
     }
     .p-side {
         padding: 12px 22px;
+        position: relative;
     }
 
     /* Nav center */

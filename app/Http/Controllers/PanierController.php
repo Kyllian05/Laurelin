@@ -59,4 +59,30 @@ class PanierController extends Controller
         $panier = \App\Models\Commande::getPanier($user);
         \App\Models\Produit_Commande::supprimerProduit($panier,\App\Models\Produit::getProduct($data["produit"]));
     }
+
+    public function getNumberInPanier(Request $request){
+        try{
+            $user = \App\Models\Utilisateur::getLoggedUser($request);
+            if($user == null){
+                throw Exceptions::createError(518);
+            }
+        }catch(\Exception $e){
+            if($e->getCode() == 518){
+                return redirect("/auth")->cookie("redirect","/panier",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+            }else{
+                throw $e;
+            }
+        }
+        $panier = \App\Models\Commande::getPanier($user);
+
+        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
+
+        $result = 0;
+
+        foreach ($produits as $produit) {
+            $result += $produit["QUANTITE"];
+        }
+
+        return response($result,200)->header('Content-Type','application/json');
+    }
 }

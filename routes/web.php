@@ -91,6 +91,7 @@ Route::get("/adresse/getVilles/{codePostale}", [AdresseController::class, "getVi
 Route::get("/panier", [PanierController::class, "index"]);
 Route::post("/panier/ajout", [PanierController::class, "ajouterAuPanier"]);
 Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"]);
+Route::get("/getNumberInPanier", [PanierController::class, "getNumberInPanier"]);
 
 // ---
 // checkout

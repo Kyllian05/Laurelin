@@ -1,5 +1,5 @@
 <template>
-    <Header currentPage="panier"></Header>
+    <Header currentPage="panier" :update-panier="panierUpdate" @panierUpdated="() => {panierUpdate = false}"></Header>
     <div class="globalWrapper">
         <div class="leftWrapper">
             <h1>Panier</h1>
@@ -47,6 +47,10 @@ const props = defineProps({
 
 let panierData = ref(props.produits)
 
+console.log(panierData.value)
+
+const panierUpdate = ref(false)
+
 let somme = ref(0)
 
 function addOtherProduct(id){
@@ -61,7 +65,13 @@ function addOtherProduct(id){
         },
     }).then(async response => {
         if(response.status == 200){
-
+            panierUpdate.value = true
+            for(let i = 0;i<panierData.value.length;i++){
+                if(panierData.value[i]["ID"] == id){
+                    panierData.value.push(panierData.value[i])
+                    break
+                }
+            }
         }
     })
 }
@@ -84,6 +94,7 @@ function supprimerDuPanier(id){
         },
     }).then(async response => {
         if(response.status == 200) {
+            panierUpdate.value = true
             for(let i = 0;i<panierData.value.length;i++){
                 if(panierData.value[i]["ID"] == id){
                     panierData.value.splice(i,1)

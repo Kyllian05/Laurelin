@@ -1,5 +1,5 @@
 <template>
-    <Header current-page="Nos bijoux"></Header>
+    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
     <div id="page">
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
@@ -13,7 +13,7 @@
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
-            <ButtonAcheter :white-border="true" :id="props.produit['ID']"></ButtonAcheter>
+            <ButtonAcheter :white-border="true" :id="props.produit['ID']" @ajout="eventPanier()"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
         </div>
@@ -67,7 +67,7 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import ButtonAcheter from "./Components/ButtonAcheter.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
 import {router} from "@inertiajs/vue3";
@@ -86,6 +86,12 @@ const dynamicFavorite = ref(props.isFavorite)
 const dynamicCommentaire = ref(props.donneesCommentaires)
 
 const commentaireInput = ref("")
+
+const updatePanier = ref(false)
+
+function eventPanier(){
+    updatePanier.value = true
+}
 
 function deleteCommentaire(){
     fetch("/supprimerCommentaire",{
