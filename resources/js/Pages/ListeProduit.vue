@@ -3,6 +3,7 @@
     <Header current-page="Nos bijoux"></Header>
 
     <div id="page">
+        <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
         <div id="FirstRange" :style="{ backgroundImage: `url('/pictures/categories/${categories}.1.webp'), url('/pictures/collections/${collections}.jpg')` }">
             <span class="material-symbols-rounded">
               arrow_back_ios
@@ -46,6 +47,7 @@ import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import { router } from '@inertiajs/vue3';
 import {reactive, computed, onMounted, ref} from "vue";
+import Error from "./Components/Error.vue";
 
 const props = defineProps({
     produits: {
@@ -65,6 +67,7 @@ const props = defineProps({
 const produitsAffiches = ref(props.produits.slice(0,6));
 const itemsPerPage = 6;
 let currentPage = 1;
+const errorMesage = ref("")
 
 function changeFavorite(id){
     let index = -1
@@ -92,6 +95,10 @@ function changeFavorite(id){
     }).then(async response=>{
         if(response.status == 200){
             produitsAffiches.value[index]["FAVORITE"] = !produitsAffiches.value[index]["FAVORITE"]
+        }else{
+            const reader = response.body.getReader()
+            const text = new TextDecoder().decode((await reader.read()).value)
+            errorMesage.value = text
         }
     })
 }

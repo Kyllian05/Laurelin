@@ -79,6 +79,11 @@ class CheckOutController extends Controller
         $panier = \App\Models\Commande::getPanier($user);
         $products = \App\Models\Produit_Commande::getAllProducts($panier["ID"]);
 
+        if(!isset($data["paiement"]["nom"]) || !isset($data["paiement"]["numéro"]) || !isset($data["paiement"]["mois"]) || !isset($data["paiement"]["année"]) || !isset($data["paiement"]["cryptograme"])){
+            $e = \App\Models\Exceptions::createError(524);
+            return response($e->getMessage(),$e->getCode());
+        }
+
         foreach($products as $product){
             \App\Models\Produit_Commande::where([
                 "ID_PRODUIT"=>$product["ID_PRODUIT"],

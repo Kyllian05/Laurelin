@@ -1,7 +1,8 @@
 
 <template>
     <Header current-page="CheckOut"></Header>
-    <div v-if="paiementState" id="paimentBackground">
+    <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
+    <div v-if="paiementState && errorMesage == ''" id="paimentBackground">
         <div id="paiementPopupWrapper">
             <div id="paimentPopupContent">
                 <img src="/public/images/loading.gif">
@@ -69,15 +70,15 @@
                 <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
                 <div v-if="currentStep == 4" id="paiementContent">
                     <div class="paimentFieldWrapper" style="flex-direction: column">
-                        <input placeholder="PRENOM ET NOM" class="font-body-l paiementinput1">
-                        <input placeholder="NUMERO DE LA CARTE" class="font-body-l paiementinput1">
+                        <input placeholder="PRENOM ET NOM" class="font-body-l paiementinput1" v-model="paimentData['nom']">
+                        <input placeholder="NUMERO DE LA CARTE" class="font-body-l paiementinput1" v-model="paimentData['numéro']">
                     </div>
                     <div class="paimentFieldWrapper" style="flex-direction: row;gap: 5vw">
-                        <input placeholder="MOIS" class="font-body-l">
-                        <input placeholder="ANNEE" class="font-body-l">
+                        <input placeholder="MOIS" class="font-body-l" v-model="paimentData['mois']">
+                        <input placeholder="ANNEE" class="font-body-l" v-model="paimentData['année']">
                     </div>
                     <div class="paimentFieldWrapper" style="width: 20%">
-                        <input placeholder="CRYPTOGRAME" class="font-body-l">
+                        <input placeholder="CRYPTOGRAME" class="font-body-l" v-model="paimentData['cryptograme']">
                     </div>
                     <ButtonSubmit button-text="Payer" id="payButton" @click="paye()"></ButtonSubmit>
                 </div>
@@ -121,6 +122,7 @@ import Footer from "./Components/Footer.vue";
 import Form from "./Components/Form.vue";
 import {ref, toRaw, watch} from "vue";
 import ButtonSubmit from "./Components/ButtonSubmit.vue";
+import Error from "./Components/Error.vue";
 
 let props = defineProps({
     "user" : Object,
@@ -148,7 +150,11 @@ let data = {}
 
 let adresseMethod = ref("domicile")
 
+const paimentData = ref({})
+
 let currentStep = ref(2)
+
+const errorMesage = ref("")
 
 watch(paiementState,async value=>{
     if(value){
@@ -166,13 +172,20 @@ async function paye(){
         method : "POST",
         body : JSON.stringify({
             "adresse" : props.adresses[currentAdresse.value]["ID"],
-            "livraison" : adresseMethod.value
+            "livraison" : adresseMethod.value,
+            "paiement" : paimentData.value
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
         },
     })
+    if(response.status != 200){
+        const reader = response.body.getReader()
+        const text = new TextDecoder().decode((await reader.read()).value)
+        errorMesage.value = text
+        return
+    }
     paiementState.value = true
     await sleep(0)
     document.getElementById("paimentBackground").style.top = window.scrollY+"px"

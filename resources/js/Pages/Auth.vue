@@ -1,5 +1,6 @@
 <template>
     <div id="globalWrapper">
+        <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
         <div id="leftWrapper">
             <img id="globalImage" src="/public/images/login-bijoux.avif">
         </div>
@@ -16,9 +17,9 @@
                     <button :class="{autChoiceActive :  authMethod === 'login'}" @click="changeAuthMethod()" class="font-subtitle-16">Connexion</button>
                     <button :class="{autChoiceActive :  authMethod === 'register'}" @click="changeAuthMethod()" class="font-subtitle-16">Inscription</button>
                 </div>
-                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick" succeed-message="Vous êtes connecté"></Form>
+                <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick" succeed-message="Vous êtes connecté" @error-occured="message =>errorMesage = message"></Form>
 
-                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit"></Form>
+                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit" @error-occured="message =>errorMesage = message"></Form>
             </div>
         </div>
     </div>
@@ -34,7 +35,8 @@
 
 <script setup>
 import Form from "./Components/Form.vue"
-import {defineProps, ref} from "vue";
+import {defineProps, ref, watch} from "vue";
+    import Error from "./Components/Error.vue";
 
 const props = defineProps(["authMethod", "inputs"])
 
@@ -42,7 +44,11 @@ let authMethod = ref(props.authMethod)
 
 let recoverPassword = ref(false)
 
-function changeAuthMethod() {
+const errorMesage = ref("")
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }function changeAuthMethod() {
     if (authMethod.value === "login") authMethod.value = "register"
     else authMethod.value = "login"
 }
@@ -113,6 +119,7 @@ function handleClick(source) {
     margin-top: 45vh;
     transform: translate(-50%, -50%);
 }
+
 
 #logo {
     filter: brightness(0%) grayscale(100%);
