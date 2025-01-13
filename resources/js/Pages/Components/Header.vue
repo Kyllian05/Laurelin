@@ -168,14 +168,22 @@
 </script>
 
 <style scoped>
+  #panierNumber p{
+      margin: 0px;
+  }
     #panierNumber{
         position: absolute;
-        bottom: -1vh;
-        left: 0px;
+        top: -1vh;
+        right: -1vw;
         background-color: black;
         color: white;
         border-radius: 100%;
-        padding: 0.125vw 0.5vw;
+        aspect-ratio: 1/1;
+        width: 30px;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        display: flex;
     }
     #header {
         position: fixed;

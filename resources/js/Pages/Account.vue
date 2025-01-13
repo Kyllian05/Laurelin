@@ -36,6 +36,14 @@
                         <button class="font-body-s" :class="commande['Etat'] == 2 ? 'commandFinished' : ''">{{ etatText[commande["Etat"]] }}</button>
                         <p class="font-body-s">TOTAL : {{ formatPrix(getCommandeSum(commande)) }}€</p>
                     </div>
+                    <span class="material-symbols-rounded commandesDownArrow" @click="currentCommandDetail != commande['ID'] ? currentCommandDetail = commande['ID'] : currentCommandDetail = null" :style="currentCommandDetail != commande['ID'] ? 'rotate : 90deg' : 'rotate : 270deg'">
+                        arrow_forward_ios
+                    </span>
+                    <div v-if="currentCommandDetail == commande['ID']" class="commandsDetails font-body-l">
+                        <p>Méthode de livraison : {{ commande['Mode Livraison'] }}</p>
+                        <p v-if="commande['Mode Livraison'] == 'domicile'">{{commande['Adresse']['NUM_RUE']}} {{commande['Adresse']['NOM_RUE']}} {{commande['Adresse']['Ville']}} {{commande['Adresse']['CodePostal']}}</p>
+                        <p v-else>{{commande['Adresse']['ADRESSE']}} {{commande['Adresse']['Ville']}} {{commande['Adresse']['CodePostal']}}</p>
+                    </div>
                 </div>
             </div>
             <div v-else-if="dynamicPage == 'favoris'" id="favorisWrapper">
@@ -135,7 +143,13 @@ let props = defineProps(
         "Nom de rue":""
     })
 
+    const currentCommandDetail = ref(null)
+
     const errorMesage = ref("")
+
+    watch(dynamicPage, async (page)=>{
+        currentCommandDetail.value = null
+    })
 
     watch(ajoutAdresseState,async (newState)=>{
         if(newState){
@@ -280,6 +294,22 @@ let props = defineProps(
 </script>
 
 <style scoped>
+    .commandsDetails{
+        margin-top: 2vh;
+    }
+    .commandesDownArrow:hover{
+        background-color: lightgray;
+    }
+    .commandesDownArrow{
+        position: absolute;
+        font-size: 2vw;
+        cursor: pointer;
+        right: 4.5vw;
+        bottom: 1vh;
+        padding: 0.5vw;
+        transition-duration: .5s;
+        border-radius: 50%;
+    }
     .displayHover{
         opacity: 0;
         transition-duration: .25s;
@@ -431,6 +461,7 @@ let props = defineProps(
     .commandWrapper{
         padding: 20px;
         position: relative;
+        min-height: 20vh;
     }
     .grayBackground{
         background-color: #eee;

@@ -5,21 +5,21 @@
             <source src="/public/images/video1.mp4" type="video/mp4">
         </video>
         <div class="left">
-            
+
             <li class="font-title" id="titre">Illuminez vos journées</li>
             <li class="font-body-m">L'avenir ce dessine avec Laurelin, transformer vos rêves en réalité</li>
             <a href="/bijoux" class="btn-side">Découvrir nos bijoux</a>
         </div>
         <div class="right">
             <div class="first">
-                
+
                 <a href="/categories/Bagues">
                     <div class="text_fleche">
                         <li>Nouvelle Bague</li>
                         <img src="../../../public/images/fleche-pointant-vers-la-droite.png" id="fleche">
                     </div>
-                    
-                </a> 
+
+                </a>
             </div>
             <div class="second">
                 <li>une autre</li>
@@ -44,7 +44,7 @@
     </div>
     <div class="history">
         <div class="image">
-            <img src="/home/debian/eq_1-1_lamothe-pol_le-carluer-brieuc_destain-jauzua_arnaud-kyllian_souchet-thomas/public/images/history.png">
+            <img src="/public/images/history.png">
         </div>
         <div class="paragraphe">
             <li id="titre_histoire" class="font-title-24">Notre histoire</li>
@@ -54,7 +54,7 @@
                         <li>A propos de nous</li>
                         <img src="../../../public/images/fleche-pointant-vers-la-droite.png" id="fleche">
                     </div>
-                    
+
                 </a>
         </div>
     </div>
@@ -142,7 +142,7 @@ let last2 = props.collections.pop();
         user-select: none;
         width: 40%;
         /*la*/
-        position: relative; 
+        position: relative;
         z-index: 1;
     }
     .btn-side:hover{
@@ -157,14 +157,14 @@ let last2 = props.collections.pop();
         justify-content: space-between;
         margin-left: 3%;
         margin-bottom: 4%;
-        
+
     }
     .left > li{
         margin-bottom: 20px;
         list-style-type: none;
         color:#ffffff;
     }
-    
+
     li{
         list-style-type: none;
         text-decoration: none;
@@ -302,14 +302,14 @@ let last2 = props.collections.pop();
         justify-content: end;
         align-items: center;
     }
-    
+
     .item:hover {
         box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
         z-index: 10;
     }
 
     .item-text {
-    
+
     font-weight: bolder;
     font-size: clamp(10px, 2vw, 18px);
     }
@@ -335,17 +335,17 @@ let last2 = props.collections.pop();
         right: 0;
         bottom: 0;
         background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
-        pointer-events: none; 
+        pointer-events: none;
     }
     #name ,#description{
         color: #ffffff;
         margin-left: 20%;
         margin-bottom: 30px;
         margin-right: 20%;
-        position: relative; 
+        position: relative;
         z-index: 1;
     }
-    
+
     @media (max-width: 600px) {
         .hero{
             flex-direction: column;
@@ -370,7 +370,7 @@ let last2 = props.collections.pop();
         #titre{
             font-size: 200%;
         }
-        
+
         .text_fleche{
             height:100%;
             width:200px;
@@ -394,7 +394,7 @@ let last2 = props.collections.pop();
         .image > img{
             height: 600px;
             min-width: 1100px;
-            
+
         }
         .paragraphe > li{
             color:#ffffff

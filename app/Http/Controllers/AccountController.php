@@ -23,8 +23,20 @@ class AccountController extends Controller
                     "Date" => $commande["DATE"],
                     "Etat" => $commande["ETAT"],
                     "Mode Livraison" => $commande["MODE_LIVRAISON"],
-                    "Produits" => []
+                    "Produits" => [],
+                    "ID" => $commande["ID"],
                 ];
+
+                if($commande["MODE_LIVRAISON"] == "domicile"){
+                    $temp2 = \App\Models\Adresse::where("ID", $commande["ID_ADRESSE"])->firstOrFail();
+                }else{
+                    $temp2 = \App\Models\AdresseMagasins::where("ID", $commande["ID_MAGASIN"])->firstOrFail();
+                }
+                unset($temp2["ID"]);
+                $ville = \App\Models\Ville::where("ID", $temp2["ID_VILLE"])->firstOrFail();
+                $temp2["Ville"] = $ville["NOM"];
+                $temp2["CodePostal"] = $ville["CODE_POSTAL"];
+                $temp["Adresse"] = $temp2;
 
                 foreach(\App\Models\Produit_Commande::getAllProducts($commande["ID"]) as $produit){
                     $produitEntity = \App\Models\Produit::getProduct($produit["ID_PRODUIT"]);
