@@ -2,46 +2,31 @@
 
 namespace App\Domain\Produit\Services;
 
-use App\Domain\Shared\ProductState;
-use App\Domain\Utilisateur\Entities\UtilisateurEntity;
-use App\Models\Image;
-use App\Models\Produit;
-use App\Models\Favoris;
 use App\Domain\Produit\Entities\ProduitEntity;
-use http\Exception\InvalidArgumentException;
+use App\Domain\Produit\Repositories\ImageRepository;
+use App\Domain\Produit\Repositories\ProduitRepository;
 
 class ProduitService
 {
-    public function findProduit(int $id, UtilisateurEntity $user = null): ProduitEntity
+    public function __construct(
+        private ProduitRepository $produitRepository,
+        private ImageRepository $imageRepository,
+    ) {}
+
+    public function findById(int $id): ?ProduitEntity
     {
-        // Récupération dans la base via le modèle Eloquent
-        $eloquentProduit = Produit::find($id);
-        $eloquentImages = Image::get_all_images($eloquentProduit->ID);
-        $eloquentFavoris = false;
-        if ($user) {
-            $eloquentFavoris = Favoris::where(["ID_PRODUIT"=>$eloquentProduit->ID, "ID_UTILISATEUR"=>$user->id])->exists() > 0;
-        }
+        return $this->produitRepository->findById($id);
+    }
 
-        // Gestion de l'état du produit
-        if ($eloquentProduit->ETAT == "Disponible") {
-            $productState = ProductState::Disponible;
-        } elseif ($eloquentProduit->ETAT == "Produit indisponible") {
-            $productState = ProductState::Indisponible;
-        } else {
-            throw new InvalidArgumentException("L'état du produit est invalide");
-        }
+    public function getImages(ProduitEntity $produit): array
+    {
+        $this->imageRepository->getAllProductImages($produit);
+        return $produit->getImages();
+    }
 
-        // Retour d'une entité métier
-        return new ProduitEntity(
-            $eloquentProduit->ID,
-            $eloquentProduit->NOM,
-            $eloquentProduit->DESCRIPTION,
-            $eloquentProduit->PRIX,
-            $eloquentProduit->ANNEE_CREATION,
-            $productState,
-            $eloquentProduit->STOCK,
-            $eloquentImages,
-            $eloquentFavoris
-        );
+    public function serialize(ProduitEntity $produit): array
+    {
+        $this->imageRepository->getAllProductImages($produit);
+        return $produit->serialize();
     }
 }

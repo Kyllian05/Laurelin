@@ -2,29 +2,39 @@
 namespace App\Http\Controllers;
 
 
+use App\Domain\Produit\Services\ProduitService;
+use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class FavorisController extends Controller{
-    public function ajoutFavoris(Request $request){
+
+    public function __construct(
+        private UtilisateurService $userService,
+        private ProduitService $produitService,
+    ) {}
+
+    public function ajoutFavoris(Request $request)
+    {
         $data = $request->post();
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
+        $user = $this->userService->getAuthenticatedUser($request);
         if($user == null){
             return response("", 404);
         }
-        $produit = \App\Models\Produit::getProduct($data['produit']);
-        \App\Models\Favoris::ajouterAuxFavoris($produit,$user);
+        $produit = $this->produitService->findById($data['produit']);
+        $this->userService->addFavoris($user,$produit);
         return response("", 200);
     }
 
-    public function supprimerFavoris(Request $request){
+    public function supprimerFavoris(Request $request)
+    {
         $data = $request->post();
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
+        $user = $this->userService->getAuthenticatedUser($request);
         if($user == null){
             return response("", 404);
         }
-        $produit = \App\Models\Produit::getProduct($data['produit']);
-        \App\Models\Favoris::supprimerDesFavoris($produit,$user);
+
+        $produit = $this->produitService->findById($data['produit']);
+        $this->userService->deleteFavoris($user,$produit);
         return response("", 200);
     }
 }

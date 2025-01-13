@@ -2,20 +2,39 @@
 
 namespace App\Domain\Utilisateur\Services;
 
+use App\Domain\Adresse\Repositories\AdresseRepository;
+use App\Domain\Commande\Entities\CommandeEntity;
+use App\Domain\Commande\Repositories\Database\CommandeRepository;
+use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
+use App\Domain\Utilisateur\Repositories\FavorisRepository;
 use App\Domain\Utilisateur\Repositories\UtilisateurRepository;
 use App\Domain\Shared\Exceptions as CustomExceptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class UtilisateurService
 {
     public function __construct(
-        private UtilisateurRepository $userRepository
+        private UtilisateurRepository $userRepository,
+        private FavorisRepository $favorisRepository,
+        private AdresseRepository $adresseRepository,
+        private CommandeRepository $commandeRepository,
     ) {}
 
-    public function getRepository(): UtilisateurRepository
+    public function findById(int $id): ?UtilisateurEntity
     {
-        return $this->userRepository;
+        return $this->userRepository->findByID($id);
+    }
+
+    public function findByEmail(string $email): ?UtilisateurEntity
+    {
+        return $this->userRepository->findByEmail($email);
+    }
+
+    public function updateInfo(UtilisateurEntity $utilisateurEntity, string $nom, string $prenom, string $telephone): void
+    {
+        $this->userRepository->updateInfo($utilisateurEntity, $nom, $prenom, $telephone);
     }
 
     /**
@@ -47,12 +66,6 @@ class UtilisateurService
         if (!$user || $user->getPassword() != hash('sha256', $password)) {
             throw CustomExceptions::createError(515);
         }
-        // --- A changer ---
-        $verified = \App\Models\Code::isUserVerified($user->getId());
-        // ---
-        if (!$verified) {
-            throw CustomExceptions::createError(517);
-        }
         session(["TOKEN"=>$user->getToken()]);
         return $this->loginWithToken($user->getToken());
     }
@@ -71,10 +84,7 @@ class UtilisateurService
             $this->userRepository->updateToken($user, $newToken);
             throw CustomExceptions::createError(518);
         }
-        // --- A changer ---
-        $verified = \App\Models\Code::isUserVerified($user->getId());
-        // ---
-        if (!$verified) {
+        if (!$user->isUserVerified()) {
             throw CustomExceptions::createError(517);
         }
         return $user;
@@ -88,19 +98,11 @@ class UtilisateurService
         $token = $this->generateToken();
         try {
             $user = $this->userRepository->create($email, $password, $firstName, $lastName, $token, time());
-        } catch (\InvalidArgumentException $exception) {
+        } catch (\Exception $exception) {
             throw CustomExceptions::createErrorWithMessage(519, $exception->getMessage());
         }
-
-        try{
-            // --- A changer ---
-            \App\Models\Code::generateCode($user->getId());
-            // ---
-        }catch (\Exception $e){
-            $this->userRepository->delete($user);
-            throw CustomExceptions::createError(516);
-        }
-
+        // Envoi du code de vérification de l'email
+        $this->sendNewCode($user);
         session(["TOKEN"=>$user->getToken()]);
         return $user;
     }
@@ -115,6 +117,16 @@ class UtilisateurService
         return $currentToken;
     }
 
+    public function generateCode(): int
+    {
+        $allCodes = $this->userRepository->getAllCodes();
+        $currentCode = random_int(100000,999999);
+        while(in_array($currentCode, $allCodes)) {
+            $currentCode = random_int(100000,999999);
+        }
+        return $currentCode;
+    }
+
     public function changePassword(int $id, string $token, string $newPassword) {
         try {
             $user = $this->userRepository->updatePassword($id, $token, $newPassword);
@@ -126,5 +138,70 @@ class UtilisateurService
         }
         $newToken = $this->generateToken();
         $this->userRepository->updateToken($user, $newToken);
+    }
+
+    public function sendNewCode(UtilisateurEntity $utilisateurEntity): void
+    {
+        $code = $this->generateCode();
+        $this->userRepository->updateCode($utilisateurEntity, $code);
+        Mail::to($utilisateurEntity->getEmail())->send(new \App\Mail\EmailVerification($utilisateurEntity->getId(),$code));
+    }
+
+    /**
+     * @throws \App\Domain\Shared\CustomExceptions : Si le code n'est pas correct
+     */
+    public function verifyCode(int $id, string $code): void
+    {
+        $utilisateurEntity = $this->userRepository->findById($id);
+        if ($utilisateurEntity->getCode() == $code) {
+            $genTimestamp = strtotime($utilisateurEntity->getCodegen());
+            $currentTimestamp = strtotime(date ('Y-m-d H:i:s', time()));
+            // Si le code est dépassé de 10 minutes
+            if($currentTimestamp - $genTimestamp > 10*60) {
+                $this->sendNewCode($utilisateurEntity);
+                return;
+            }
+            $this->userRepository->updateCode($utilisateurEntity, null);
+            return;
+        }
+        throw CustomExceptions::createError(530);
+    }
+
+    // --- Favoris ---
+    public function getFavoris(UtilisateurEntity $utilisateurEntity): array
+    {
+        $this->favorisRepository->getFavoris($utilisateurEntity);
+        return $utilisateurEntity->getFavoris();
+    }
+
+    public function isFavorite(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): bool
+    {
+        // Update les favoris
+        $this->getFavoris($utilisateurEntity);
+        return $utilisateurEntity->isFavorite($produitEntity);
+    }
+
+    public function addFavoris(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): void
+    {
+        $this->favorisRepository->addFavoris($utilisateurEntity, $produitEntity);
+    }
+
+    public function deleteFavoris(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): void
+    {
+        $this->favorisRepository->deleteFavoris($utilisateurEntity, $produitEntity);
+    }
+
+    // --- Adresses ---
+    public function getAdresses(UtilisateurEntity $utilisateurEntity): array
+    {
+        $utilisateurEntity->setAdresses($this->adresseRepository->findByUser($utilisateurEntity));
+        return $utilisateurEntity->getAdresses();
+    }
+
+    // --- Commandes ---
+    public function getCommandes(UtilisateurEntity $utilisateurEntity): array
+    {
+        $utilisateurEntity->setCommandes($this->commandeRepository->findByUser($utilisateurEntity));
+        return $utilisateurEntity->getCommandes();
     }
 }

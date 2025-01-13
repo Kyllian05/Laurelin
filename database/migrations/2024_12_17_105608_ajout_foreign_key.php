@@ -32,7 +32,7 @@ return new class extends Migration
         DB::statement("
             ALTER TABLE Adresse
                 ADD CONSTRAINT fk_adresse_ville
-                    FOREIGN KEY (CODE_POSTAL) REFERENCES Ville(CODE_POSTAL)
+                    FOREIGN KEY (ID_VILLE) REFERENCES Ville(ID)
         ");
 
         DB::statement("
@@ -89,13 +89,6 @@ return new class extends Migration
         ");
 
         DB::statement("
-            ALTER TABLE Code
-                ADD CONSTRAINT fk_code_utilisateur
-                    FOREIGN KEY (UTILISATEUR) REFERENCES Utilisateur(ID)
-            ON DELETE CASCADE
-        ");
-
-        DB::statement("
             ALTER TABLE Favoris
                 ADD CONSTRAINT fk_favoris_utilisateur
                     FOREIGN KEY (ID_UTILISATEUR) REFERENCES Utilisateur(ID)
@@ -105,6 +98,12 @@ return new class extends Migration
             ALTER TABLE Favoris
                 ADD CONSTRAINT fk_favoris_produit
                     FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
+        ");
+
+        DB::statement("
+            ALTER TABLE AdresseMagasins
+                ADD CONSTRAINT fk_adresse_magasins
+                    FOREIGN KEY (ID_VILLE) REFERENCES Ville(ID)
         ");
     }
 

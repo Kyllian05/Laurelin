@@ -1,0 +1,62 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+package "Utilisateur.Entities" {
+    abstract class UtilisateurEntity {
+        - id: int
+        - email: string
+        - password: string
+        - prenom: string
+        - nom: string
+        - telephone: string
+        - token: string
+        - tokenGen: string
+        - code: string
+        - codeGen: string
+        - favoris: array
+        - passwordValidator: PasswordValidatorStrategy
+        --
+        # __construct(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, code: string, codeGen: string, passwordValidator: PasswordValidatorStrategy)
+        .. Factory ..
+        + {static} utilisateurFactory(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, privilege: int, code: string, codeGen: string): ?UtilisateurEntity
+        + {static} createNewUser(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, privilege: int): ?UtilisateurEntity
+        .. Autres méthodes (incomplet) ..
+    }
+}
+
+package "Validators" {
+    interface PasswordValidatorStrategy {
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+
+    class AdminPasswordValidator {
+        - {static} errorMessage: string
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+
+    class CustomerPasswordValidator {
+        - {static} errorMessage: string
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+
+    class WeakPasswordValidator {
+        - {static} errorMessage: string
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+}
+
+' Implémentation de l'interface
+AdminPasswordValidator ..|> PasswordValidatorStrategy
+CustomerPasswordValidator ..|> PasswordValidatorStrategy
+WeakPasswordValidator ..|> PasswordValidatorStrategy
+
+' Association avec PasswordValidatorStrategy
+UtilisateurEntity "*" --> "1" PasswordValidatorStrategy : - passwordValidator
+
+@enduml

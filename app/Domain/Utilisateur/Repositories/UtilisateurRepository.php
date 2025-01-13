@@ -20,7 +20,9 @@ class UtilisateurRepository
                 $utilisateurModel->TELEPHONE,
                 $utilisateurModel->TOKEN,
                 $utilisateurModel->TOKENGEN,
-                $utilisateurModel->PRIVILEGE
+                $utilisateurModel->PRIVILEGE,
+                $utilisateurModel->CODE,
+                $utilisateurModel->CODEGEN
             );
         }
         return null;
@@ -39,7 +41,9 @@ class UtilisateurRepository
                 $utilisateurModel->TELEPHONE,
                 $utilisateurModel->TOKEN,
                 $utilisateurModel->TOKENGEN,
-                $utilisateurModel->PRIVILEGE
+                $utilisateurModel->PRIVILEGE,
+                $utilisateurModel->CODE,
+                $utilisateurModel->CODEGEN
             );
         }
         return null;
@@ -58,7 +62,9 @@ class UtilisateurRepository
                 $utilisateurModel->TELEPHONE,
                 $utilisateurModel->TOKEN,
                 $utilisateurModel->TOKENGEN,
-                $utilisateurModel->PRIVILEGE
+                $utilisateurModel->PRIVILEGE,
+                $utilisateurModel->CODE,
+                $utilisateurModel->CODEGEN
             );
         }
         return null;
@@ -67,6 +73,11 @@ class UtilisateurRepository
     public function getAllToken(): array
     {
         return UtilisateurModel::pluck('TOKEN')->toArray();
+    }
+
+    public function getAllCodes(): array
+    {
+        return UtilisateurModel::pluck('CODE')->toArray();
     }
 
     public function updateToken(UtilisateurEntity $utilisateurEntity, string $newToken): void {
@@ -124,5 +135,13 @@ class UtilisateurRepository
 
     public function delete(UtilisateurEntity $utilisateurEntity): void {
         UtilisateurModel::where("ID",$utilisateurEntity->getId())->delete();
+    }
+
+    public function updateCode(UtilisateurEntity $utilisateurEntity, ?string $newCode): void
+    {
+        $newDate = time();
+        UtilisateurModel::where("ID",$utilisateurEntity->getId())->update(["CODE"=>$newCode,"CODEGEN"=>date ('Y-m-d H:i:s', $newDate)]);
+        $utilisateurEntity->setCode($newCode);
+        $utilisateurEntity->setCodeGen($newDate);
     }
 }

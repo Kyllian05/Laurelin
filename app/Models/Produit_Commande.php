@@ -22,9 +22,9 @@ class Produit_Commande extends Model
         'QUANTITE',
         'ID_PRODUIT',
         'ID_COMMANDE',
+        "TAILLE",
+        "PRIX",
     ];
 
-    static function getAllProducts(int $commande_id){
-        return self::where("ID_COMMANDE", $commande_id)->get();
-    }
+    public $timestamps = false;
 }

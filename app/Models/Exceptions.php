@@ -11,7 +11,9 @@ class Exceptions
         515 => "Identifiant invalide",
         516 => "Erreur lors de la création du Code de vérification",
         517 => "Email non vérifiée",
-        518 => "Token invalide"
+        518 => "Token invalide",
+        519 => "Impossible de supprimer un produit d'une commande",
+        520 => "Méthode de livraison invalide",
     ];
 
     static public function createError(int $code):CustomExceptions{

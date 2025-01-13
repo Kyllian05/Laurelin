@@ -12,18 +12,4 @@ class Ville extends Model
      * @var string
      */
     protected $table = 'Ville';
-
-    /**
-     * Les colonnes de la table qui peuvent être assignées en masse.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'NOM',
-        'CODE_POSTAL',
-    ];
-
-    static function getByCodePostal($codePostal) : self{
-        return self::where('CODE_POSTAL',$codePostal)->firstOrFail();
-    }
 }

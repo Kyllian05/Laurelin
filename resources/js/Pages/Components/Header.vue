@@ -19,13 +19,13 @@
         </div>
     </div>
     <div id="btn-wrapper">
-        <a class="btn-side">
+        <a href="/carte" class="btn-side" :class="{selected : currentPage === 'carte'}">
             <span class="material-symbols-rounded">location_on</span>
         </a>
-        <a href="/account" class="btn-side">
+        <a href="/account" class="btn-side" :class="{selected : currentPage === 'account'}">
             <span class="material-symbols-rounded">person</span>
         </a>
-        <a href="/panier" class="p-side btn-side">
+        <a href="/panier" class="p-side btn-side" :class="{selected : currentPage === 'panier'}">
             <span class="material-symbols-rounded">shopping_bag</span>
             <p>Panier</p>
         </a>
@@ -43,11 +43,11 @@
             <span class="material-symbols-rounded">search</span>
             Rechercher
         </a>
-        <a class="item">
+        <a href="/carte"  class="item" :class="{selected : currentPage === 'carte'}">
             <span class="material-symbols-rounded">location_on</span>
             Nos boutiques
         </a>
-        <a href="/account" class="item">
+        <a href="/account" class="item" :class="{selected : currentPage === 'account'}">
             <span class="material-symbols-rounded">person</span>
             Espace personnel
         </a>
@@ -248,6 +248,7 @@
         justify-content: center;
         gap: 8px;
     }
+
     .btn-side {
         background-color: white;
         color: #000000;
@@ -266,6 +267,14 @@
     }
     .btn-side:hover{
         background-color: #252525;
+        color: #ffffff;
+    }
+    .btn-side.selected{
+        background-color: #000000;
+        color: #ffffff;
+    }
+    .btn-side.selected:hover{
+        background-color: #000000;
         color: #ffffff;
     }
     .p-side {
@@ -392,6 +401,11 @@
             background: #000;
             color: #ffffff;
         }
+        #sideMenu .itemWrapper .selected, #sideMenu .itemWrapper .selected:hover {
+            background: #000;
+            color: #ffffff;
+        }
+
         #sideMenu #closeBtn {
             cursor: pointer;
             padding: 8px;

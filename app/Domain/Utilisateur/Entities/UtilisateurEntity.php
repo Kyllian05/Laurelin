@@ -2,7 +2,15 @@
 
 namespace App\Domain\Utilisateur\Entities;
 
+use App\Domain\Adresse\Entities\AdresseEntity;
+use App\Domain\Commande\Entities\CommandeEntity;
+use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Role;
+use App\Domain\Validators\AdminPasswordValidator;
+use App\Domain\Validators\CustomerPasswordValidator;
+use App\Domain\Validators\PasswordValidatorStrategy;
+use App\Domain\Validators\WeakPasswordValidator;
+use Illuminate\Support\Facades\App;
 
 abstract class UtilisateurEntity
 {
@@ -14,8 +22,14 @@ abstract class UtilisateurEntity
     private ?string $telephone;
     private string $token;
     private string $tokenGen;
+    private ?string $code;
+    private ?string $codeGen;
+    private ?array $favoris = null;
+    private ?array $adresses = null;
+    private ?array $commandes = null;
+    private PasswordValidatorStrategy $passwordValidator;
 
-    public function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen) {
+    protected function __construct(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, ?string $code, ?string $codeGen, PasswordValidatorStrategy $passwordValidator) {
         $this->setId($id);
         $this->setEmail($email);
         $this->password = $password;
@@ -24,6 +38,9 @@ abstract class UtilisateurEntity
         $this->telephone = $telephone;
         $this->setToken($token);
         $this->setTokenGen($tokenGen);
+        $this->setCode($code);
+        $this->setCodeGen($codeGen);
+        $this->passwordValidator = $passwordValidator;
     }
 
     /**
@@ -38,22 +55,32 @@ abstract class UtilisateurEntity
      * @param int $privilege
      * @return ?UtilisateurEntity
      */
-    public static function utilisateurFactory(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege): ?UtilisateurEntity {
+    public static function utilisateurFactory(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege, ?string $code, ?string $codeGen): ?UtilisateurEntity {
         if ($privilege == 0) {
-            return new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            return new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen, new CustomerPasswordValidator());
         } elseif ($privilege == 1) {
-            return new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            if (App::environment('local')) {
+                $validator = new WeakPasswordValidator();
+            } else {
+                $validator = new AdminPasswordValidator();
+            }
+            return new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, $code, $codeGen, $validator);
         }
         return null;
     }
 
     public static function createNewUser(int $id, string $email, string $password, string $prenom, string $nom, ?string $telephone, string $token, string $tokenGen, int $privilege): ?UtilisateurEntity {
         if ($privilege == 0) {
-            $entity = new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            $entity = new CustomerEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null, new CustomerPasswordValidator());
             $entity->setPassword($password);
             return $entity;
         } elseif ($privilege == 1) {
-            $entity = new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen);
+            if (App::environment('local')) {
+                $validator = new WeakPasswordValidator();
+            } else {
+                $validator = new AdminPasswordValidator();
+            }
+            $entity = new AdminEntity($id, $email, $password, $prenom, $nom, $telephone, $token, $tokenGen, null, null, $validator);
             $entity->setPassword($password);
             return $entity;
         }
@@ -102,11 +129,66 @@ abstract class UtilisateurEntity
         return $this->tokenGen;
     }
 
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function getCodegen(): ?string
+    {
+        return $this->codeGen;
+    }
+
+    /**
+     * @throws \Exception : Si l'attribut favori n'a pas été initialisé
+     */
+    public function getFavoris(): array {
+        if (is_null($this->favoris)) {
+            throw new \Exception("Get must be called from UtilisateurService");
+        }
+        return $this->favoris;
+    }
+
+    /**
+     * @throws \Exception : Si l'attribut adresses n'a pas été initialisé
+     */
+    public function getAdresses(): array {
+        if (is_null($this->adresses)) {
+            throw new \Exception("Get must be called from UtilisateurService");
+        }
+        return $this->adresses;
+    }
+
+    /**
+     * @throws \Exception : Si l'attribut commandes n'a pas été initialisé
+     */
+    public function getCommandes(): array {
+        if (is_null($this->commandes)) {
+            throw new \Exception("Get must be called from UtilisateurService");
+        }
+        return $this->commandes;
+    }
+
     abstract public function getRole(): Role;
 
     // ---
     // Setters
     // ---
+
+    /**
+     * @param string $password : Le mot de passe en clair
+     * @return void
+     * @throws \Exception : Si le mot de passe n'est pas valide
+     */
+    public function setPassword(string $password): void
+    {
+        if ($this->passwordValidator->validate($password, $this->nom, $this->prenom)) {
+            $this->password = hash("sha256", $password);
+            return;
+        }
+        throw new \Exception($this->passwordValidator->getErrorMessage());
+    }
+
     public function setId(int $id): void
     {
         $this->id = $id;
@@ -120,12 +202,6 @@ abstract class UtilisateurEntity
         }
         $this->email = $email;
     }
-
-    /**
-     * @param string $password : Le mot de passe en clair
-     * @return void
-     */
-    abstract public function setPassword(string $password): void;
 
     public function setPrenom(string $prenom): void
     {
@@ -166,12 +242,74 @@ abstract class UtilisateurEntity
         $this->tokenGen = $tokenGen;
     }
 
+    public function setCode(?string $code): void
+    {
+        $this->code = $code;
+    }
+
+    public function setCodeGen(?string $codeGen): void
+    {
+        $this->codeGen = $codeGen;
+    }
+
+    public function setFavoris(array $favoris): void
+    {
+        foreach ($favoris as $favori) {
+            if (!($favori instanceof ProduitEntity)) {
+                throw new \InvalidArgumentException("Le favori n'est pas un produit valide");
+            }
+        }
+        $this->favoris = $favoris;
+    }
+
+    public function setAdresses(array $adresses): void
+    {
+        foreach ($adresses as $adresse) {
+            if (!($adresse instanceof AdresseEntity)) {
+                throw new \InvalidArgumentException("L'adresse n'est pas une adresse valide");
+            }
+        }
+        $this->adresses = $adresses;
+    }
+
+    public function setCommandes(array $commandes): void
+    {
+        foreach ($commandes as $commande) {
+            if (!($commande instanceof CommandeEntity)) {
+                throw new \InvalidArgumentException("La commande n'est pas une commande valide");
+            }
+        }
+        $this->commandes = $commandes;
+    }
+
+    // Autres fonctions
+
     /**
      * Vérifie s'il faut régénérer un nouveau token
      * @return void
      */
     public function checkTokenDate(): bool {
         return time() > strtotime($this->tokenGen)+2629800;
+    }
+
+    public function isFavorite(ProduitEntity $produit): bool
+    {
+        if (is_null($this->favoris)) {
+            throw new \Exception("Set must be called before from UtilisateurService");
+        }
+        return in_array($produit, $this->favoris);
+    }
+
+    // Static
+
+    public function isUserVerified(): bool
+    {
+        if ($this->code == null) {
+            return true;
+        } elseif (empty($this->code)) {
+            return true;
+        }
+        return false;
     }
 
     public static function generateRandomString($length) : string {

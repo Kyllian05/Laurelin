@@ -14,6 +14,8 @@ class Commande extends Model
      */
     protected $table = 'Commande';
 
+    protected $primaryKey = 'ID';
+
     /**
      * Les colonnes de la table qui peuvent être assignées en masse.
      *
@@ -27,7 +29,5 @@ class Commande extends Model
         'ID_ADRESSE',
     ];
 
-    static function getAllCommandes(UtilisateurEntity $utilisateur){
-        return self::where(["ID_UTILISATEUR" => $utilisateur->getId()])->get();
-    }
+    public $timestamps = false;
 }

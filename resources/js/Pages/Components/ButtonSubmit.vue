@@ -1,11 +1,13 @@
 <template>
-    <button @click="this.$emit('submit-clicked')" class="font-body-l">{{ buttonText }}</button>
+    <button @click="emits('submit-clicked')" class="font-body-l">{{ buttonText }}</button>
 </template>
 
 <script setup>
 let props = defineProps({
     "buttonText": String,
 })
+
+let emits = defineEmits(["submit-clicked"])
 </script>
 
 <style scoped>

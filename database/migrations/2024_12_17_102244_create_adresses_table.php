@@ -17,7 +17,7 @@ return new class extends Migration
                 NUM_RUE INT NOT NULL,
                 NOM_RUE VARCHAR(255)NOT NULL,
                 ID_UTILISATEUR INT,
-                CODE_POSTAL INT
+                ID_VILLE INT NOT NULL
             )
         ");
     }

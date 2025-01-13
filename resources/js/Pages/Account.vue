@@ -1,6 +1,5 @@
 <template>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <Header></Header>
+    <Header currentPage="account"></Header>
     <div id="mainWrapper">
         <div id="navWrapper">
             <div v-for="nav in Object.keys(navConv)" :class="dynamicPage == nav ? 'currentNav' : ''" @click="dynamicPage = nav">
@@ -21,15 +20,15 @@
             </div>
             <div v-else-if="dynamicPage == 'commandes'" id="commandsWrapper">
                 <div v-for="(commande,index) in commandes" class="commandWrapper" :class="index%2==1 ? 'grayBackground' :''">
-                    <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande["Date"]}}</p>
+                    <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande.DATE}}</p>
                     <p class="font-body-s" style="margin-bottom: 2vh">Produits :</p>
                     <ul>
-                        <li v-for="produit in commande['Produits']">
-                            <p class="font-body-s">{{ produit["Nom"] }} {{ produit["Quantité"] > 1 ? 'x'+produit["Quantité"] : '' }}</p>
+                        <li v-for="produit in commande.PRODUITS">
+                            <p class="font-body-s">{{ produit.PRODUIT.NOM }} {{ produit.QUANTITE > 1 ? 'x'+produit.QUANTITE : '' }}</p>
                         </li>
                     </ul>
                     <div class="commandSideWrapper">
-                        <button class="font-body-s" :class="commande['Etat'] == 2 ? 'commandFinished' : ''">{{ etatText[commande["Etat"]] }}</button>
+                        <button class="font-body-s" :class="commande.ETAT === 'Terminée' ? 'commandFinished' : ''">{{commande.ETAT}}</button>
                         <p class="font-body-s">TOTAL : {{ getCommandeSum(commande) }}€</p>
                     </div>
                 </div>
@@ -39,15 +38,20 @@
                     Loading
                 </div>
                 <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
-                    <div style="position: relative;width: fit-content">
-                        <a :href="'/produit/'+favori['ID']" target="_blank">
-                            <img :src="favori['Image']['URL']" class="favorisImage" @load="favorisImageLoaded()">
-                        </a>
-                        <span class="material-symbols-outlined favoriteRemoveSymbol" @click="supprimerFavoris(favori['ID'])">
+                    <div style="position: relative;width: fit-content" class="imageWrapper">
+                        <div>
+                            <a :href="'/produit/'+favori.ID" target="_blank">
+                                <img :src="favori.IMAGES[0]" class="favorisImage" @load="favorisImageLoaded()">
+                            </a>
+                            <span class="material-symbols-rounded favoriteRemoveSymbol displayHover" @click="supprimerFavoris(favori.ID)">
                             remove
-                        </span>
+                            </span>
+                            <div class="buttonAcheter displayHover">
+                                <ButtonAcheter white-border="false" :id="favori.ID"></ButtonAcheter>
+                            </div>
+                        </div>
                     </div>
-                    <p>{{ favori.Nom }}</p>
+                    <p>{{ favori.NOM }}</p>
                     <p>{{ favori.Prix }}€</p>
                 </div>
             </div>
@@ -57,20 +61,27 @@
                         <span class="material-symbols-rounded" @click="ajoutAdresseState = false" id="ajoutAdresseClose">close</span>
                         <p class="font-body-s">AJOUTER UNE NOUVELLE ADRESSE</p>
                         <div style="width: 70%;margin-left: 50%;transform: translateX(-50%)">
-                            <Form :fields="[{name:'Numéro'},{name:'Nom de rue'},{name:'Code Postale'}]" button-text="Enregistrer cette adresse" dest="/adresse/ajout" :check-boxs="[]" succeed-message="L'adresse a bien étée ajoutée" @formSubmitSuccessfully="(response)=>{closeAddAdresse(response)}"></Form>
+                            <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
+                            <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
+                            <Field name="Code Postal" @input="value => searchVille(value)"></Field>
+                            <!-- TODO: UI-->
+                            <select v-if="villesSuggest.length > 0" v-model="villeChoice">
+                                <option v-for="ville in villesSuggest" :value="{'ID': ville.ID}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
+                            </select>
+                            <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
                         </div>
                     </div>
                 </div>
                 <button id="addAdressButton" @click="ajoutAdresseState = true">
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-rounded">
                         add
                     </span>
                     <p class="font-body-s">AJouter une adresse</p>
                 </button>
                 <div v-for="adresse in dynamicAdresse" class="adresseWrappers">
-                    <p>{{ adresse["Numéro"] }} {{ adresse["Rue"] }}, {{ adresse["Code Postal"] }} {{ adresse["Ville"] }}</p>
+                    <p>{{ adresse.NUM_RUE }} {{ adresse.NOM_RUE }}, {{ adresse.VILLE.CODE_POSTAL }} {{ adresse.VILLE.NOM }}</p>
                     <div>
-                        <span class="material-symbols-outlined garbageIcon" @click="deleteAdresse(adresse['ID'])">
+                        <span class="material-symbols-rounded garbageIcon" @click="deleteAdresse(adresse.ID)">
                             delete
                         </span>
                     </div>
@@ -86,6 +97,9 @@ import {defineProps, ref, watch} from "vue"
 import Form from "./Components/Form.vue"
 import Header from "./Components/Header.vue"
 import Footer from "./Components/Footer.vue"
+import ButtonAcheter from "./Components/ButtonAcheter.vue";
+import Field from "./Components/Field.vue";
+import ButtonSubmit from "./Components/ButtonSubmit.vue";
 
 let props = defineProps(
     {
@@ -106,6 +120,15 @@ let props = defineProps(
 
     const ajoutAdresseState = ref(false)
 
+    const villesSuggest = ref([]);
+
+    const villeChoice = ref()
+
+    const ajoutAdresseData = ref({
+        "Numéro":"",
+        "Nom de rue":""
+    })
+
     watch(ajoutAdresseState,async (newState)=>{
         if(newState){
             document.body.style.overflowY = "hidden"
@@ -121,12 +144,6 @@ let props = defineProps(
         "adresses" : {text:"Mes adresses",icon:"home"}
     }
 
-    let etatText = {
-        "0" : "En cours de préparation",
-        "1" : "Expediée",
-        "2" : "Terminée"
-    }
-
     let infoFields = [[],[]]
 
     for(let i = 0;i<3;i++){
@@ -135,17 +152,46 @@ let props = defineProps(
 
     infoFields[1].push({"name":Object.keys(props.info)[3],"value":props.info[Object.keys(props.info)[3]],"required":false})
 
-    function closeAddAdresse(response){
-        dynamicAdresse.value.push(response)
-        ajoutAdresseState.value = false
+    function updateNewAdresseValue(field,value){
+        ajoutAdresseData.value[field] = value
     }
 
-    function favorisImageLoaded(){
-        favorisImagesCount.value++
+    function newAdresseClicked(){
+        fetch("/adresse/ajout",{
+            method : "POST",
+            body : JSON.stringify({
+                "Numéro" : ajoutAdresseData.value["Numéro"],
+                "Nom de rue" : ajoutAdresseData.value["Nom de rue"],
+                "Ville" : villeChoice.value
+            }),
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response => {
+            dynamicAdresse.value.push(await response.json())
+            ajoutAdresseState.value = false
+        })
+    }
+
+    function searchVille(codePostal){
+        if(codePostal === ""){
+            villesSuggest.value = []
+        }else{
+            fetch("/adresse/getVilles/"+codePostal,{
+                method:"GET",
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    "Content-Type":"application/json"
+                },
+            }).then( async response =>{
+                villesSuggest.value = await response.json()
+            })
+        }
     }
 
     function deleteAdresse(id){
-        fetch("/produit/supprimer",{
+        fetch("/adresse/supprimer",{
             method:"POST",
             body: JSON.stringify({"ID":id}),
             headers: {
@@ -153,16 +199,20 @@ let props = defineProps(
                 "Content-Type":"application/json"
             },
         }).then(async response =>{
-            if(response.status == 200){
-                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse["ID"] != id)
+            if(response.status === 200){
+                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse.ID != id)
             }
         })
     }
 
+    function favorisImageLoaded(){
+        favorisImagesCount.value++
+    }
+
     function getCommandeSum(commande){
         let sum = 0
-        commande["Produits"].forEach((produit)=>{
-            sum += produit["Prix"] * produit["Quantité"]
+        commande.PRODUITS.forEach((produit)=>{
+            sum += produit.PRIX * produit.QUANTITE
         })
         return sum
     }
@@ -186,14 +236,25 @@ let props = defineProps(
 </script>
 
 <style scoped>
+    .displayHover{
+        opacity: 0;
+        transition-duration: .25s;
+    }
+    .buttonAcheter{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        margin-left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+    }
     #ajoutAdresseContent p{
         text-align: center;
         font-size: 19px;
         position: relative;
         letter-spacing: 1px;
-        margin-top: 5vh;
         margin-bottom: 5vh;
-        margin-top: 0px;
+        margin-top: 0;
     }
     #ajoutAdresseClose:hover{
         background-color: rgba(0,0,0,20%);
@@ -271,15 +332,15 @@ let props = defineProps(
         position: absolute;
         right: 0.5vw;
         top: 0.5vw;
-        display: none;
         background-color: white;
         border-radius: 50%;
         box-shadow: 0 0 8px rgba(0,0,0,20%);
     }
-    .favorisWrappers a:hover + .favoriteRemoveSymbol{
-        display: inline!important;
+
+    .favorisWrappers div:hover .displayHover{
+        opacity: 1;
     }
-    .favorisImage:hover{
+    .favorisWrappers div:hover img{
         filter: brightness(70%);
     }
     .favorisWrappers{
@@ -288,6 +349,7 @@ let props = defineProps(
     #favorisWrapper{
         display: grid;
         grid-template-columns: repeat(3,1fr);
+        height: max-content;
     }
     .favorisImage{
         width: 15vw;
@@ -360,7 +422,8 @@ let props = defineProps(
         width: fit-content;
         padding-left: 10vw;
         padding-top: 119px;
-        height: 100vh;
+        height: fit-content;
+        min-height: 100vh;
     }
     .currentNav{
         background-color: black;
@@ -386,11 +449,11 @@ let props = defineProps(
         justify-content: left;
         gap: 1vw;
         align-items: center;
-        text-align: center;
     }
     #contentWrapper{
         width: 50vw;
         margin-bottom: 5vh;
+        height: fit-content;
     }
     #formWrapper2{
         margin-top: 5vh;

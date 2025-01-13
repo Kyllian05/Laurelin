@@ -1,14 +1,23 @@
 <template>
     <div id="wrapper">
         <p class="font-body-s">{{ name }}</p>
-        <input :type="type ? type : 'text'" :value="value" :required="required!=null">
+        <input :type="type ? type : 'text'" v-model="inputValue" :required="required!=null">
     </div>
 </template>
 
 <script setup>
-    import {defineProps} from "vue";
+import {defineProps, ref, watch} from "vue";
 
     let props = defineProps(["name","type","value","required"])
+
+    let emits = defineEmits(["input"])
+
+    let inputValue = ref(props.value)
+
+    watch(inputValue, async (newValue)=>{
+        emits("input",newValue)
+    })
+
 </script>
 
 <style scoped>
