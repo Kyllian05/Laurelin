@@ -237,7 +237,7 @@ let last2 = props.collections.pop();
     }
     .image > img{
         height: 100%;
-        width: 100%;
+        width: 90%;
     }
     .paragraphe{
         display: flex;
@@ -319,7 +319,7 @@ let last2 = props.collections.pop();
     }
 
     #collection{
-        margin-top: 10%;
+        margin-top: 115px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -346,7 +346,7 @@ let last2 = props.collections.pop();
         z-index: 1;
     }
     
-    @media (max-width: 600px) {
+    @media screen and (max-width: 810px) and  (max-height: 1080px){
         .hero{
             flex-direction: column;
             align-items: center;
@@ -368,9 +368,9 @@ let last2 = props.collections.pop();
         }
 
         #titre{
-            font-size: 200%;
+            font-size: 150%;
         }
-        
+
         .text_fleche{
             height:100%;
             width:200px;
