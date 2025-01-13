@@ -24,12 +24,27 @@ class CommandeRepository implements CommandeRepositoryInterface
     public function findByUser(UtilisateurEntity $user) : array
     {
         $commadesModel = CommandeModel::where(["ID_UTILISATEUR" => $user->getId()])->where("ETAT","!=","Panier")->get()->sortByDesc("DATE");
+
+        $commandesIds = [];
+        for($i = 0; $i < count($commadesModel); $i++){
+            $commandesIds[] = $commadesModel[$i]["ID"];
+        }
+
+        $produitsCommandes = $this->produitCommandeRepository->findByCommandesIds($commandesIds);
+
+        $produits = [];
+
+        foreach($produitsCommandes as $produitCommande){
+            $produits[$produitCommande->getCommandeID()][] = $produitCommande;
+        }
+
         $commandes = [];
+
         foreach ($commadesModel as $commande) {
             $commandes[] = CommandeEntity::commandeFactory(
                 $commande->ID,
                 $commande->DATE,
-                $this->produitCommandeRepository->findByCommandeId($commande->ID),
+                $produits[$commande->ID],
                 $commande->ETAT,
                 $commande->MODE_LIVRAISON,
                 $this->adresseRepository->findById($commande->ID_ADRESSE)

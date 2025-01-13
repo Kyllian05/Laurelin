@@ -11,12 +11,15 @@ class ProduitCommandeEntity
     private ?int $prix;
     private ProduitEntity $produit;
 
-    public function __construct(int $taille, int $quantite, ?int $prix, ProduitEntity $produit)
+    private ?int $commandeID;
+
+    public function __construct(int $taille, int $quantite, ?int $prix, ProduitEntity $produit, ?int $commandeID)
     {
         $this->taille = $taille;
         $this->quantite = $quantite;
         $this->produit = $produit;
         $this->prix = $prix;
+        $this->commandeID = $commandeID;
     }
 
     // Getters
@@ -64,6 +67,14 @@ class ProduitCommandeEntity
     public function setProduit(ProduitEntity $produit): void
     {
         $this->produit = $produit;
+    }
+
+    public function setCommandeID(int $commandeID): void{
+        $this->commandeID = $commandeID;
+    }
+
+    public function getCommandeID(): int{
+        return $this->commandeID;
     }
 
     public function serialize(): array

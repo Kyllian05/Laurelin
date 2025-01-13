@@ -40,6 +40,33 @@ class ProduitCommandeRepository
         return $result;
     }
 
+    public function findByCommandesIds(array $commandesIds): array{
+        $produitsCommandesModel = ProduitCommandeModel::whereIn("ID_COMMANDE", $commandesIds)->get();
+
+        $produitsID = [];//List des produits à récupérer
+        foreach ($produitsCommandesModel as $produitCommande) {
+            $produitsID[] = $produitCommande["ID_PRODUIT"];
+        }
+
+        $produits = $this->produitRepository->findAll($produitsID);
+        $produitsTreated = [];
+        for($i = 0; $i < sizeof($produits); $i++) {
+            $produitsTreated[$produits[$i]->id] = $produits[$i];
+        }
+
+        $result = [];
+        for($i = 0; $i < sizeof($produitsCommandesModel); $i++) {
+            $result[] = new ProduitCommandeEntity(
+                $produitsCommandesModel[$i]->TAILLE,
+                $produitsCommandesModel[$i]->QUANTITE,
+                $produitsCommandesModel[$i]->PRIX,
+                $produitsTreated[$produitsCommandesModel[$i]->ID_PRODUIT],
+                $produitsCommandesModel[$i]->ID_COMMANDE
+            );
+        }
+        return $result;
+    }
+
     public function create(CommandeEntity $commandeEntity, ProduitCommandeEntity $produitCommandeEntity)
     {
         ProduitCommandeModel::create([
