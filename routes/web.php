@@ -5,6 +5,7 @@ use App\Http\Controllers\AdresseController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoireController;
+use App\Http\Controllers\ListeProduitController;
 use \App\Http\Controllers\FavorisController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,7 @@ Route::get("/account/{page?}",[AccountController::class,"index"]);
 
 Route::post("/updateInfo", [AccountController::class, "update"]);
 
+Route::post('/account', [AuthController::class, 'logout'])->name('logout');
 // ---
 // Magasin
 // ---
@@ -55,6 +57,9 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // Produit
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
+Route::get("/getProduitPicture/{id}", [ProduitController::class, "getProduitPicture"]);
+Route::post("/nouveauCommentaire",[ProduitController::class, "createCommentaire"]);
+Route::post("/supprimerCommentaire",[ProduitController::class, "supprimerCommentaire"]);
 
 // ---
 // Favoris
@@ -77,7 +82,8 @@ Route::get("/contact", [ContactController::class, "index"]);
 // ---
 Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
 Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
-Route::get("/adresse/getVilles/{codePostal}", [AdresseController::class, "getVilles"]);
+Route::get("/adresse/getVilles/{codePostale}", [AdresseController::class, "getVilles"]);
+Route::get("/adresse/getMagasins/{codePostal}", [AdresseController::class, "getMagasins"]);
 
 // ---
 // Panier
@@ -85,6 +91,7 @@ Route::get("/adresse/getVilles/{codePostal}", [AdresseController::class, "getVil
 Route::get("/panier", [PanierController::class, "index"]);
 Route::post("/panier/ajout", [PanierController::class, "ajouterAuPanier"]);
 Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"]);
+Route::get("/getNumberInPanier", [PanierController::class, "getNumberInPanier"]);
 
 // ---
 // checkout

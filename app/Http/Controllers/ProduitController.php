@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Domain\ProductGroup\Services\CategorieService;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
+use App\Models\Exceptions;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Nette\NotImplementedException;
 
 class ProduitController extends Controller
 {
@@ -61,5 +63,20 @@ class ProduitController extends Controller
             ]);
         }
         return response("", 404);
+    }
+
+    public function getProduitPicture(string $id, Request $request ){
+        //TODO
+        throw Exceptions::createError(531);
+    }
+
+    public function createCommentaire(Request $request){
+        //TODO
+        throw Exceptions::createError(531);
+    }
+
+    public function supprimerCommentaire(Request $request){
+        //TODO
+        throw Exceptions::createError(531);
     }
 }

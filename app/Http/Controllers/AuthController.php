@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Shared\Exceptions as DomainExceptions;
+use App\Models\Exceptions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -123,5 +124,10 @@ class AuthController extends Controller
         $data = $request->post();
         $user = $this->userService->findByEmail($data["Adresse mail"]);
         Mail::to($user->getEmail())->send(new \App\Mail\PasswordRecovery($user->getId(), $user->getToken()));
+    }
+
+    public function logout(Request $request){
+        //TODO
+        throw Exceptions::createError(531);
     }
 }

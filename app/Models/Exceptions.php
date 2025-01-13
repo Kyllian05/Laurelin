@@ -14,6 +14,7 @@ class Exceptions
         518 => "Token invalide",
         519 => "Impossible de supprimer un produit d'une commande",
         520 => "Méthode de livraison invalide",
+        531 => "Pas implémenté",
     ];
 
     static public function createError(int $code):CustomExceptions{

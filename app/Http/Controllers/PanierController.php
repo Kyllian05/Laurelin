@@ -73,4 +73,9 @@ class PanierController extends Controller
             return response($e->getMessage(), 500);
         }
     }
+
+    function getNumberInPanier(Request $request){
+        //TODO
+        throw Exceptions::createError(531);
+    }
 }

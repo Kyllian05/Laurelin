@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Domain\Adresse\Services\AdresseService;
 use App\Domain\Adresse\Services\VilleService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
+use App\Models\Exceptions;
 use Illuminate\Http\Request;
 
 class AdresseController extends Controller{
@@ -37,5 +38,10 @@ class AdresseController extends Controller{
             $villesSerialized[] = $ville->serialize();
         }
         return response($villesSerialized)->header('Content-Type', 'application/json');
+    }
+
+    function getMagasins(string $codePostal, Request $request) {
+        //TODO
+        throw Exceptions::createError(531);
     }
 }
