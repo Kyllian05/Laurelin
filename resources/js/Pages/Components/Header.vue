@@ -270,7 +270,7 @@
         font-size: 40px;
         color: #000000;
     }
-    
+
     #imgWrapper{
         display: flex;
         align-items: center;

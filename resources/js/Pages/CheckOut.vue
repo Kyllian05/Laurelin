@@ -12,7 +12,7 @@
     <div id="Page">
         <p id="Title" class="font-subtitle-16">Commande</p>
         <div id="DonneeCommande">
-            <div id="infoWrapper" class="wrapper" :class="currentStep > 1 ? 'cursor' : '    '">
+            <div id="infoWrapper" class="wrapper" :class="['wrapper', currentStep == 1 ? 'bgGris' : '', currentStep > 1 ? 'cursor' : '']">
                 <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
                 <div id="contenuInfo" v-if="currentStep == 1">
                     <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <div id="adresseWrapper" class="wrapper" :class="currentStep > 2 ? 'cursor' : ''">
+            <div id="adresseWrapper" class="wrapper" :class="['wrapper', currentStep == 2 ? 'bgGris' : '', currentStep > 2 ? 'cursor' : '']">
                 <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
                 <div id="contenuAdresse" v-if="currentStep == 2">
                     <div id="adresseChoiceWrapper">
@@ -61,11 +61,11 @@
                 </div>
             </div>
 
-            <div id="livraisonWrapper" class="wrapper" :class="currentStep > 3 ? 'cursor' : ''">
+            <div id="livraisonWrapper" class="wrapper" :class="['wrapper', currentStep == 3 ? 'bgGris' : '', currentStep > 3 ? 'cursor' : '']">
                 <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
             </div>
 
-            <div id="paiementWrapper" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
+            <div id="paiementWrapper" :class="currentStep == 4 ? 'bgGris' : ''" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
                 <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
                 <div v-if="currentStep == 4" id="paiementContent">
                     <div class="paimentFieldWrapper" style="flex-direction: column">
@@ -84,19 +84,31 @@
             </div>
         </div>
 
-        <div id="Recap">
-            <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
-            <div id="produitComander" class="font-subtitle-16" v-for="produit in produits">
-                <p>{{ produit["NOM"] }} x{{ produit["QUANTITE"] }} <b>{{ produit["PRIX"] * produit["QUANTITE"] }} €</b></p>
+        <div id="Recap" >
+            <div id="recapFirst">
+                <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
+                <p id="articles">{{totArticle}} articles</p>
             </div>
-            <div id="sousTot">
-                <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
-                <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
-            </div>
-            <div id="Tot">
-                <p id="total" class="font-subtitle-16">total <b>{{ sum}} €</b></p>
+            <div id="prodRecap" v-for="produit in produits">
+                <div id="produitComander" class="font-subtitle-16">
+                    <p>{{ produit["NOM"] }}</p>
+                    <b>{{ produit["PRIX"] * produit["QUANTITE"] }} €</b>
+                </div>
+                <div id="quantite" >
+                    <p>{{produit["MATERIAUX"]}}</p>
+                    <p>x{{ produit["QUANTITE"] }}</p>
+                </div>
             </div>
 
+            <div id="tots">
+                <div id="sousTot">
+                    <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
+                    <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
+                </div>
+                <div id="Tot">
+                    <p id="total" class="font-subtitle-16">total <b>{{ sum}} €</b></p>
+                </div>
+            </div>
         </div>
     </div>
     <Footer></Footer>
@@ -121,6 +133,12 @@ let currentAdresse = ref(0)
 let paiementState = ref(false)
 
 let sum = 0
+
+let totArticle = 0
+
+for(let i = 0;i<props.produits.length;i++){
+    totArticle += props.produits[i]["QUANTITE"]
+}
 
 for(let i = 0;i<props.produits.length;i++){
     sum += props.produits[i]["PRIX"] * props.produits[i]["QUANTITE"]
@@ -234,7 +252,6 @@ function changeadresseMethod(){
     margin-left: 2vw;
 }
 .wrapper{
-    background-color: rgb(225,225,225);
     margin-top: 2.5vh;
 }
 #paiementWrapper input{
@@ -244,6 +261,11 @@ function changeadresseMethod(){
     width: 100%;
     margin-top: 3.5vh;
 }
+
+.bgGris {
+    background-color: #FBF9F7;
+}
+
 #adresseValidateButton:hover {
     background-color: white;
     color: black;
@@ -356,23 +378,29 @@ function changeadresseMethod(){
 }
 .adresseUserr {
     grid-column: 2;
-    width: 300px;
+    width: clamp(200px, 2vw, 400px);
 }
 #livraison {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-#paiement {
+#paiementWrapper {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
+
 #Recap{
     flex: 1 1 20%;
     padding: 25px;
     margin-right: 3%;
+    margin-top: 80px;
+    background-color: #FBF9F7;
+    height: max-content;
 }
+
 #produitComander{
-    border-top: 1px solid black;
+    display: grid;
+    grid-template-columns: 1fr auto;
     margin-top: 30px;
 }
 #Tot {
@@ -380,10 +408,67 @@ function changeadresseMethod(){
     width: 80%;
     margin: 30px auto 0;
 }
-#sousTot{
-    padding: 10px 0 0 15px;
+#sousTot, #total{
+    padding: 10px 15px 10px 15px;
 }
-#total {
-    padding: 10px 0 0 15px;
+
+#soustotal, #tva, #total {
+    display: grid;
+    grid-template-columns: 1fr auto;
 }
+
+
+#tots {
+    background-color: #F1F1F1F1;
+    margin-top: 40px;
+}
+
+#recapFirst {
+    border-bottom: 1px solid black;
+}
+
+#articles {
+    margin-bottom: 30px;
+}
+
+#quantite {
+    padding-left: 10px;
+}
+
+#Recap b {
+    text-align: right;
+}
+
+
+@media (max-width: 1000px) {
+    #Page {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, auto);
+        justify-items: center;
+    }
+
+    #Title {
+        grid-row: 1;
+    }
+
+    #DonneeCommande {
+        grid-row: 2;
+        width: 90%;
+    }
+
+    #Recap {
+        grid-row: 3;
+        width: 90%;
+        margin: 0;
+        margin-top: 80px;
+    }
+}
+
+@media (max-width: 450px) {
+    #info {
+        width: 300px;
+    }
+}
+
 </style>

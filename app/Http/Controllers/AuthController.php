@@ -108,7 +108,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
         Session::invalidate();
         $response = response()->json(['message' => 'Déconnexion réussie']);
         $response->headers->clearCookie('TOKEN');
