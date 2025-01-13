@@ -90,4 +90,5 @@ class AccountController extends Controller
             \App\Models\Utilisateur::where("ID",$user["ID"])->update(["NOM"=>$data["Nom"],"PRENOM"=>$data["Prénom"],"TELEPHONE"=>$data["Téléphone"]]);
         }
     }
+
 }

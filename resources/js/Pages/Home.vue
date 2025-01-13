@@ -1,13 +1,9 @@
 <template>
     <Header currentPage="Accueil"></Header>
-    <!--
-    <p v-if="prenom">Bienvenue {{ prenom }}</p>
-    <p>Voici le props passé : {{ test }}</p>
-    <p>{{ compteur }}</p>
-    <button @click="compteur++">Incrémenter</button>
-    <p v-if="urlData">Voici la valeur passé en url : {{ urlData }}</p>
-    <p v-else>Vous n'avez pas passé de valeur dans l'url</p>-->
     <div class="hero">
+        <video autoplay muted loop class="background-video">
+            <source src="/public/images/video1.mp4" type="video/mp4">
+        </video>
         <div class="left">
             
             <li class="font-title" id="titre">Illuminez vos journées</li>
@@ -65,17 +61,17 @@
     <div id="collection">
         <li class="font-title-24">Nos Collections</li>
         <div id="coll-container">
-                <div v-for="collection in collections" :key="collection.ID" class="item" id="coll_item" :data-id="collection.ID" :style="{ backgroundImage: `url(/pictures/collections/${collection.ID}.avif) ` }" @click="redirectOnClick(collection.ID)">
-                    <!-- TODO : faire le backend du btn favoris -->
-                    <!--<span class="material-symbols-rounded add-fav">favorite</span>-->
-                    <!-- - - - - - - - - - - - - -  -->
-                    <span id="name" class="item-text font-subtitle-16">{{ collection.NOM }}</span>
-                    <span id="description" class="materiaux-text font-subtitle-16">{{ collection.DESCRIPTION.substring(0, 90) + "..." }}</span>
-                    <!--<span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>-->
-                    <!--<button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>-->
-                    <a class="btn-side" :href="'/collections/'+collection.NOM">Découvrir</a>
-                </div>
+            <div v-for="collection in collections" :key="collection.ID" class="item" id="coll_item" :data-id="collection.ID" :style="{ backgroundImage: `url(/pictures/collections/${collection.ID}.avif) ` }" @click="redirectOnClick(collection.ID)">
+                <!-- TODO : faire le backend du btn favoris -->
+                <!--<span class="material-symbols-rounded add-fav">favorite</span>-->
+                <!-- - - - - - - - - - - - - -  -->
+                <span id="name" class="item-text font-subtitle-16">{{ collection.NOM }}</span>
+                <span id="description" class="materiaux-text font-subtitle-16">{{ collection.DESCRIPTION.substring(0, 90) + "..." }}</span>
+                <!--<span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>-->
+                <!--<button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>-->
+                <a class="btn-side" :href="'/collections/'+collection.NOM">Découvrir</a>
             </div>
+        </div>
     </div>
     <Footer></Footer>
 </template>
@@ -102,10 +98,29 @@ let last2 = props.collections.pop();
 </script>
 
 <style scoped>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        height: 100%; /* Désactive le défilement horizontal */
+    }
+
+    .background-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+    }
+
     .hero {
         width: 100vw;
         height: 100vh;
-        background: url("/public/images/home-1.png") no-repeat center center/cover;
+        position: relative;
+        overflow: hidden;
         display: flex;
         justify-content: space-between;
         align-items: end;

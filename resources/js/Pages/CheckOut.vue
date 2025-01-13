@@ -1,88 +1,116 @@
 
 <template>
     <Header current-page="CheckOut"></Header>
-        <div id="Page">
-            <p id="Title" class="font-subtitle-16">Commande</p>
-            <div id="DonneeCommande">
-                <div id="infoWrapper">
-                    <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
-                    <div id="contenuInfo" v-if="currentStep == 1">
-                        <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
-                        <button class="font-body-l">Se connecter</button>
-                        <button class="font-body-l">S'inscrire</button>
-                    </div>
-                    <div id="contenuInfo" v-else>
-                        <p>Vous commandez avec cette adresse mail : {{ user["EMAIL"] }} </p>
-                    </div>
-                </div>
-
-                <div id="adresseWrapper">
-                    <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
-                    <div id="contenuAdresse" v-if="currentStep == 2">
-                        <div id="adresseChoiceWrapper">
-                            <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
-                            <button :class="{adresseChoiceActive :  adresseMethod === 'retirer'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
-                        </div>
-                        <div v-if="adresseMethod === 'domicile'">
-                            <div class="adresseUser" v-for="(adresse,index) in adresses">
-                                <input class="radButton" type="radio" name="radio" :checked="index == currentAdresse" @click="changeLivraison(index)">
-                                <div class="adresseUserr">
-                                    <p class="font-subtitle-16 adresse">{{ adresse["NUM_RUE"] }} {{ adresse["NOM_RUE"] }}</p>
-                                    <p class="font-subtitle-16 codePostale">{{ adresse["CODE_POSTAL"] }}</p>
-                                    <p class="font-subtitle-16 ville">{{ adresse["VILLE"] }}</p>
-                                </div>
-                            </div>
-                            <button id="adresseValidateButton" @click="validateLivraison()">
-                                <span class="material-symbols-rounded">
-                                    location_on
-                                </span>
-                                <p>Valider</p>
-                            </button>
-                        </div>
-                        <div v-else>
-                            <select id="selectVille" class="font-subtitle-16">
-                                <option value="">Choisir une ville</option>
-                                <!---TODO: mettre les villes de la base de dounées-->
-                            </select>
-                        </div>
-                    </div>
-                    <div v-else-if="currentStep > 2">
-                        <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
-                        <p class="font-subtitle-16 codePostale">{{ data["adresse"]["CODE_POSTAL"] }}</p>
-                        <p class="font-subtitle-16 ville">{{ data["adresse"]["VILLE"] }}</p>
-                    </div>
-                </div>
-
-                <div id="livraisonWrapper">
-                    <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
-                </div>
-
-                <div id="paiementWrapper">
-                    <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
-                    <div v-if="currentStep == 4">
-                        <p>coucou</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <div id="Recap">
-                <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
-                <p id="modif" class="font-body-m">Modifier</p>
-                <p id="nbArticles" class="font-body-s">articles</p>
-                <div id="produitComander" class="font-subtitle-16">
-                    <!----TODO: met ton vfor laaa pooool-->
-                </div>
-                <div id="sousTot">
-                    <p id="soustotal" class="font-subtitle-16">sous-total</p>
-                    <p id="tva" class="font-subtitle-16">tva</p>
-                </div>
-                <div id="Tot">
-                    <p id="total" class="font-subtitle-16">total</p>
-                </div>
-
+    <div v-if="paiementState" id="paimentBackground">
+        <div id="paiementPopupWrapper">
+            <div id="paimentPopupContent">
+                <img src="/public/images/loading.gif">
+                <p>Nous procédons au paiment</p>
             </div>
         </div>
+    </div>
+    <div id="Page">
+        <p id="Title" class="font-subtitle-16">Commande</p>
+        <div id="DonneeCommande">
+            <div id="infoWrapper" class="wrapper" :class="['wrapper', currentStep == 1 ? 'bgGris' : '', currentStep > 1 ? 'cursor' : '']">
+                <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
+                <div id="contenuInfo" v-if="currentStep == 1">
+                    <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
+                    <button class="font-body-l">Se connecter</button>
+                    <button class="font-body-l">S'inscrire</button>
+                </div>
+                <div id="contenuInfo" v-else>
+                    <p>Vous commandez avec cette adresse mail : {{ user["EMAIL"] }} </p>
+                </div>
+            </div>
+
+            <div id="adresseWrapper" class="wrapper" :class="['wrapper', currentStep == 2 ? 'bgGris' : '', currentStep > 2 ? 'cursor' : '']">
+                <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
+                <div id="contenuAdresse" v-if="currentStep == 2">
+                    <div id="adresseChoiceWrapper">
+                        <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
+                        <button :class="{adresseChoiceActive :  adresseMethod === 'retirer'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
+                    </div>
+                    <div v-if="adresseMethod === 'domicile'">
+                        <div class="adresseUser" v-for="(adresse,index) in adresses">
+                            <input class="radButton" type="radio" :checked="index == currentAdresse" @click="changeLivraison(index)" style="cursor: pointer">
+                            <div class="adresseUserr">
+                                <p class="font-subtitle-16 adresse">{{ adresse["NUM_RUE"] }} {{ adresse["NOM_RUE"] }}</p>
+                                <p class="font-subtitle-16 codePostale">{{ adresse["CODE_POSTAL"] }}</p>
+                                <p class="font-subtitle-16 ville">{{ adresse["VILLE"] }}</p>
+                            </div>
+                        </div>
+                        <button id="adresseValidateButton" @click="validateLivraison()">
+                            <span class="material-symbols-rounded">
+                                location_on
+                            </span>
+                            <p>Valider</p>
+                        </button>
+                    </div>
+                    <div v-else>
+                        <select id="selectVille" class="font-subtitle-16">
+                            <option value="">Choisir une ville</option>
+                            <!---TODO: mettre les villes de la base de dounées-->
+                        </select>
+                    </div>
+                </div>
+                <div v-else-if="currentStep > 2" @click="annuleLivraison()">
+                    <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
+                    <p class="font-subtitle-16 codePostale">{{ data["adresse"]["CODE_POSTAL"] }}</p>
+                    <p class="font-subtitle-16 ville">{{ data["adresse"]["VILLE"] }}</p>
+                </div>
+            </div>
+
+            <div id="livraisonWrapper" class="wrapper" :class="['wrapper', currentStep == 3 ? 'bgGris' : '', currentStep > 3 ? 'cursor' : '']">
+                <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
+            </div>
+
+            <div id="paiementWrapper" :class="currentStep == 4 ? 'bgGris' : ''" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
+                <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
+                <div v-if="currentStep == 4" id="paiementContent">
+                    <div class="paimentFieldWrapper" style="flex-direction: column">
+                        <input placeholder="PRENOM ET NOM" class="font-body-l paiementinput1">
+                        <input placeholder="NUMERO DE LA CARTE" class="font-body-l paiementinput1">
+                    </div>
+                    <div class="paimentFieldWrapper" style="flex-direction: row;gap: 5vw">
+                        <input placeholder="MOIS" class="font-body-l">
+                        <input placeholder="ANNEE" class="font-body-l">
+                    </div>
+                    <div class="paimentFieldWrapper" style="width: 20%">
+                        <input placeholder="CRYPTOGRAME" class="font-body-l">
+                    </div>
+                    <ButtonSubmit button-text="Payer" id="payButton" @click="paye()"></ButtonSubmit>
+                </div>
+            </div>
+        </div>
+
+        <div id="Recap" >
+            <div id="recapFirst">
+                <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
+                <p id="articles">{{totArticle}} articles</p>
+            </div>
+            <div id="prodRecap" v-for="produit in produits">
+                <div id="produitComander" class="font-subtitle-16">
+                    <p>{{ produit["NOM"] }}</p>
+                    <b>{{ produit["PRIX"] * produit["QUANTITE"] }} €</b>
+                </div>
+                <div id="quantite" >
+                    <p>{{produit["MATERIAUX"]}}</p>
+                    <p>x{{ produit["QUANTITE"] }}</p>
+                </div>
+            </div>
+
+            <div id="tots">
+                <div id="sousTot">
+                    <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
+                    <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
+                </div>
+                <div id="Tot">
+                    <p id="total" class="font-subtitle-16">total <b>{{ sum}} €</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
     <Footer></Footer>
 </template>
 
@@ -91,14 +119,30 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import Form from "./Components/Form.vue";
-import {ref, toRaw} from "vue";
+import {ref, toRaw, watch} from "vue";
+import ButtonSubmit from "./Components/ButtonSubmit.vue";
 
 let props = defineProps({
     "user" : Object,
-    "adresses" : Array
+    "adresses" : Array,
+    "produits":Array
 })
 
 let currentAdresse = ref(0)
+
+let paiementState = ref(false)
+
+let sum = 0
+
+let totArticle = 0
+
+for(let i = 0;i<props.produits.length;i++){
+    totArticle += props.produits[i]["QUANTITE"]
+}
+
+for(let i = 0;i<props.produits.length;i++){
+    sum += props.produits[i]["PRIX"] * props.produits[i]["QUANTITE"]
+}
 
 let data = {}
 
@@ -106,8 +150,47 @@ let adresseMethod = ref("domicile")
 
 let currentStep = ref(2)
 
+watch(paiementState,async value=>{
+    if(value){
+        document.body.style.overflowY = "hidden"
+    }else{
+        document.body.style.overflowY = "scroll"
+    }
+})
+
+async function paye(){
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    const response = await fetch("/checkout/valider",{
+        method : "POST",
+        body : JSON.stringify({
+            "adresse" : props.adresses[currentAdresse.value]["ID"],
+            "livraison" : adresseMethod.value
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    })
+    paiementState.value = true
+    await sleep(0)
+    document.getElementById("paimentBackground").style.top = window.scrollY+"px"
+    await sleep(Math.random()*3000 + 3000)
+    if(response.status == 200){
+        window.location="/account/commandes"
+    }
+    paiementState.value = false
+}
+
 function changeLivraison(index){
     currentAdresse.value = index
+}
+
+function annuleLivraison() {
+    if(currentStep.value > 2){
+        currentStep.value = 2
+    }
 }
 
 function validateLivraison(){
@@ -122,6 +205,67 @@ function changeadresseMethod(){
 </script>
 
 <style scoped>
+#paimentPopupContent img{
+    width: 10vw;
+}
+#paimentPopupContent{
+    margin-left: 50%;
+    margin-top: 25%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    font-size: 2vw;
+    position: absolute;
+    height: fit-content;
+    width: fit-content;
+}
+#paiementPopupWrapper{
+    width: 50%;
+    height: 50%;
+    background-color: white;
+    border-radius: 20px;
+    left: 50%;
+    position: relative;
+    top: 50vh;
+    transform: translate(-50%,-50%);
+}
+#paimentBackground{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0,0,0,50%);
+    z-index: 1000;
+}
+.cursor{
+    cursor: pointer;
+}
+#payButton{
+    width: 50%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 0.8vw 0px;
+}
+.paimentFieldWrapper{
+    display: flex;
+    width: 50%;
+    margin-left: 2vw;
+}
+.wrapper{
+    margin-top: 2.5vh;
+}
+#paiementWrapper input{
+    border: none;
+    border-bottom: solid 1px black;
+    background-color: transparent;
+    width: 100%;
+    margin-top: 3.5vh;
+}
+
+.bgGris {
+    background-color: #FBF9F7;
+}
+
 #adresseValidateButton:hover {
     background-color: white;
     color: black;
@@ -234,23 +378,29 @@ function changeadresseMethod(){
 }
 .adresseUserr {
     grid-column: 2;
-    width: 300px;
+    width: clamp(200px, 2vw, 400px);
 }
 #livraison {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-#paiement {
+#paiementWrapper {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
+
 #Recap{
     flex: 1 1 20%;
     padding: 25px;
     margin-right: 3%;
+    margin-top: 80px;
+    background-color: #FBF9F7;
+    height: max-content;
 }
+
 #produitComander{
-    border-top: 1px solid black;
+    display: grid;
+    grid-template-columns: 1fr auto;
     margin-top: 30px;
 }
 #Tot {
@@ -258,10 +408,67 @@ function changeadresseMethod(){
     width: 80%;
     margin: 30px auto 0;
 }
-#sousTot{
-    padding: 10px 0 0 15px;
+#sousTot, #total{
+    padding: 10px 15px 10px 15px;
 }
-#total {
-    padding: 10px 0 0 15px;
+
+#soustotal, #tva, #total {
+    display: grid;
+    grid-template-columns: 1fr auto;
 }
+
+
+#tots {
+    background-color: #F1F1F1F1;
+    margin-top: 40px;
+}
+
+#recapFirst {
+    border-bottom: 1px solid black;
+}
+
+#articles {
+    margin-bottom: 30px;
+}
+
+#quantite {
+    padding-left: 10px;
+}
+
+#Recap b {
+    text-align: right;
+}
+
+
+@media (max-width: 1000px) {
+    #Page {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, auto);
+        justify-items: center;
+    }
+
+    #Title {
+        grid-row: 1;
+    }
+
+    #DonneeCommande {
+        grid-row: 2;
+        width: 90%;
+    }
+
+    #Recap {
+        grid-row: 3;
+        width: 90%;
+        margin: 0;
+        margin-top: 80px;
+    }
+}
+
+@media (max-width: 450px) {
+    #info {
+        width: 300px;
+    }
+}
+
 </style>

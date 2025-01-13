@@ -43,6 +43,7 @@ Route::get("/account/{page?}",[AccountController::class,"index"]);
 
 Route::post("/updateInfo", [AccountController::class, "update"]);
 
+Route::post('/account', [AuthController::class, 'logout'])->name('logout');
 // ---
 // Magasin
 // ---
@@ -58,6 +59,8 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
 Route::get("/produitData/{id}", [ProduitController::class, "produitData"]);
 Route::get("/getProduitPicture/{id}", [ProduitController::class, "getProduitPicture"]);
+Route::post("/nouveauCommentaire",[ProduitController::class, "createCommentaire"]);
+Route::post("/supprimerCommentaire",[ProduitController::class, "supprimerCommentaire"]);
 
 // ---
 // Favoris
@@ -88,12 +91,13 @@ Route::get("/adresse/getVilles/{codePostale}", [AdresseController::class, "getVi
 Route::get("/panier", [PanierController::class, "index"]);
 Route::post("/panier/ajout", [PanierController::class, "ajouterAuPanier"]);
 Route::post("/panier/supprimer", [PanierController::class, "supprimerDuPanier"]);
+Route::get("/getNumberInPanier", [PanierController::class, "getNumberInPanier"]);
 
 // ---
 // checkout
 // ---
 Route::get("/checkout", [CheckOutController::class, "index"]);
-
+Route::post("/checkout/valider", [CheckOutController::class, "valider"]);
 
 // ---
 // Carte

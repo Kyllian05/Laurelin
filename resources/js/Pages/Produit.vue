@@ -1,5 +1,5 @@
 <template>
-    <Header current-page="Nos bijoux"></Header>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
     <div id="page">
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
@@ -13,9 +13,9 @@
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
-            <ButtonAcheter :white-border="true" :id="props.produit['ID']"></ButtonAcheter>
+            <ButtonAcheter :white-border="true" :id="props.produit['ID']" @ajout="eventPanier()"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
-            <span @click="favorisAction()" id="favoriteButton" class="material-symbols-rounded">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
+            <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
         </div>
 
 
@@ -36,9 +36,7 @@
 
         <div id="prodCreaAssocier">
             <div v-for="produit in prodAssocier" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
-                <!-- TODO : faire le backend du btn favoris -->
-                <span class="material-symbols-rounded add-fav">favorite</span>
-                <!-- - - - - - - - - - - - - -  -->
+                <span id="favoriteButton2" class="add-fav" :class="produit['FAVORITE'] ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(produit['ID'])">favorite</span>
                 <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                 <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
                 <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
@@ -48,15 +46,17 @@
 
         <div id="avis">
             <p class="font-subtitle-16"> Les Avis de Nos Clients </p>
-                <div v-for="comm in donneesCommentaires" class="commentaire">
+                <textarea class="font-body-m" v-model="commentaireInput"></textarea>
+                <button class="avisButton font-body-l" @click="sendCommentaire()"> Donnez votre avis </button>
+                <div v-for="comm in dynamicCommentaire" class="commentaire">
                     <div  class="nom-prenom">
                         <span class="prenom font-body-l">{{comm.PRENOM}}</span>
                         <span class="nom font-body-l">{{comm.NOM}}</span>
                     </div>
                     <span class="date font-body-s">{{comm.DATE}}</span>
                     <span class="contenu font-body-m">{{comm.CONTENU}}</span>
+                    <span class="material-symbols-rounded" id="deleteComment" v-if="comm['DELETABLE']" alt="supprimer le commentaire" title="supprimer le commentaire"@click="deleteCommentaire()">remove</span>
                 </div>
-            <button class="avisButton font-body-l" > Donnez votre avis </button>
         </div>
     </div>
 
@@ -67,7 +67,7 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import ButtonAcheter from "./Components/ButtonAcheter.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
 import {router} from "@inertiajs/vue3";
@@ -83,6 +83,81 @@ const props = defineProps({
 
 const dynamicFavorite = ref(props.isFavorite)
 
+const dynamicCommentaire = ref(props.donneesCommentaires)
+
+const commentaireInput = ref("")
+
+const updatePanier = ref(false)
+
+function changeFavorite(id){
+    let index = -1
+
+    for(let i = 0;i<prodAssocier.value.length;i++){
+        if(prodAssocier.value[i]["ID"] == id){
+            index = i
+            break
+        }
+    }
+
+    let dest = "ajouterFavoris"
+    if(prodAssocier.value[index]["FAVORITE"]){
+        dest = "supprimerFavoris"
+    }
+    fetch("/"+dest,{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : prodAssocier.value[index]["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response=>{
+        if(response.status == 200){
+            prodAssocier.value[index]["FAVORITE"] = !prodAssocier.value[index]["FAVORITE"]
+        }
+    })
+}
+
+function eventPanier(){
+    updatePanier.value = true
+}
+
+function deleteCommentaire(){
+    fetch("/supprimerCommentaire",{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : props.produit["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire["DELETABLE"] == false )
+        }
+    })
+}
+
+function sendCommentaire(){
+    fetch("/nouveauCommentaire",{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : props.produit["ID"],
+            "contenu" : commentaireInput.value
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        if(response.status == 200){
+            dynamicCommentaire.value.push(await response.json())
+        }
+    })
+}
+
 /* Gère l'espace du prix */
 const formatPrix = (prix) => {
     return new Intl.NumberFormat("fr-FR", {
@@ -94,6 +169,7 @@ const formatPrix = (prix) => {
 
 const produits = ref([]);
 const prodAssocier = ref([]);
+
 
 function favorisAction(){
     let destination = "/ajouterFavoris"
@@ -111,7 +187,7 @@ function favorisAction(){
         },
     }).then(async response => {
         if(response.status == 200){
-            alert("ajouté au panier")
+            dynamicFavorite.value = !dynamicFavorite.value
         }
     })
 }
@@ -138,7 +214,35 @@ const handleClick = (produit) => {
 </script>
 
 <style scoped>
-
+.material-symbols-outlined{
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+}
+#deleteComment:hover{
+    background-color: rgba(255,0,0,25%);
+}
+#deleteComment{
+    position: absolute;
+    cursor: pointer;
+    right: 0px;
+    font-size: 40px;
+    align-self: center;
+    border-radius: 50%;
+}
+textarea{
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    resize: none;
+    width: 25vw;
+    aspect-ratio: 15/5;
+    border-radius: 20px;
+    border:solid 1px black;
+    min-width: 450px;
+    padding: 0.5vw;
+}
 #page {
     display: grid;
     margin-top: 119px;
@@ -336,7 +440,7 @@ img {
     cursor: pointer;
 }
 
-#prodCreaAssocier .item:hover .add-fav {
+#prodCreaAssocier .item:hover #favoriteButton2 {
     opacity: 1;
 }
 
@@ -393,6 +497,7 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 2vh;
 }
 
 #avis .commentaire {
@@ -400,10 +505,12 @@ img {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(3, auto);
     width: 70%;
+    height: fit-content;
     text-align: left;
     margin-top: 20px;
     gap: 5px;
     border-bottom: 1px solid black;
+    position: relative;
 }
 
 #avis .commentaire .nom-prenom {
@@ -431,7 +538,6 @@ img {
     width: 200px;
     height: clamp(45px, 3vw, 65px);
     margin-bottom: 45px;
-    margin-top: 50px;
     border-radius: 10px;
     background-color: black;
     color: white;
@@ -584,7 +690,7 @@ img {
     }
 }
 
-.add-fav {
+#favoriteButton2 {
     position: absolute;
     right: 12px;
     top: 12px;
@@ -596,7 +702,7 @@ img {
     opacity: 0;
     transition: all .3s;
 }
-.add-fav:hover {
+#favoriteButton2:hover {
     background: #000;
     color: #ffffff;
 }

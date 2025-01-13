@@ -14,6 +14,8 @@ class Commentaire extends Model
      */
     protected $table = 'Commentaire';
 
+    public $timestamps = false;
+
     /**
      * Les colonnes de la table qui peuvent être assignées en masse.
      *
@@ -23,6 +25,7 @@ class Commentaire extends Model
         'CONTENU',
         'ID_UTILISATEUR',
         'ID_PRODUIT',
+        "DATE"
     ];
 
 }

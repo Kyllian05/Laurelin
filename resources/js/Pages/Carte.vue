@@ -1,5 +1,5 @@
 <template>
-  <Header currentPage="Carte"></Header>
+  <Header currentPage="carte"></Header>
   <iframe 
     class="responsive-iframe" 
     frameborder="0" 
