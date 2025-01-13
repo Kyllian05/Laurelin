@@ -352,10 +352,11 @@ let last2 = props.collections.pop();
             align-items: center;
         }
         .left, .right{
-            margin-top: 15%;
+            margin-top: 30%;
             height:100%;
             width: 100%;
             align-items: center;
+            justify-content: end;
             text-align: center;
         }
 
@@ -363,21 +364,37 @@ let last2 = props.collections.pop();
             margin-bottom: 20px;
             list-style-type: none;
             color:#000000;
+            font-size: 150%;
+        }
+
+        #titre{
             font-size: 200%;
         }
+        
         .text_fleche{
             height:100%;
             width:200px;
         }
 
+        .history{
+            overflow: hidden;
+        }
+        .paragraphe{
+            overflow: hidden;
+            z-index: 1;
+            margin-bottom: 50px;
+        }
         .image{
         height: 100%;
         width: 100%;
+        position: absolute;
+
 
         }
         .image > img{
-            height: 100%;
-            width: 900%;
+            height: 600px;
+            min-width: 1100px;
+            
         }
         .paragraphe > li{
             color:#ffffff
@@ -396,6 +413,9 @@ let last2 = props.collections.pop();
 
         .container, #coll-container{
             grid-template-columns: 1fr;
+        }
+        .right{
+            display: none;
         }
     }
 </style>
