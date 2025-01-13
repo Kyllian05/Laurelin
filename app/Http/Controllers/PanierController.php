@@ -75,7 +75,10 @@ class PanierController extends Controller
     }
 
     function getNumberInPanier(Request $request){
-        //TODO
-        throw Exceptions::createError(531);
+        //TODO : Optimisation: pas besoin d'obtenir le détail des produits
+        $user = $this->utilisateurService->getAuthenticatedUser($request);
+
+        $this->cartService = new CartService($user);
+        return response(sizeof($this->cartService->getCart($user)->getProducts()),200)->header('Content-Type', 'application/json');
     }
 }

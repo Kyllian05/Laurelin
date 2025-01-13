@@ -66,8 +66,8 @@ class ProduitController extends Controller
     }
 
     public function getProduitPicture(string $id, Request $request ){
-        //TODO
-        throw Exceptions::createError(531);
+        //TODO : Optimisation: On devrait pouvoir spécifier le nombre d'image à récupérer
+        return $this->produitService->getImages($this->produitService->findById($id));
     }
 
     public function createCommentaire(Request $request){

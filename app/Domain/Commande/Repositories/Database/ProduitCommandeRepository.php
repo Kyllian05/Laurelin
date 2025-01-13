@@ -34,7 +34,8 @@ class ProduitCommandeRepository
                 $produitsCommandeModel[$i]->TAILLE,
                 $produitsCommandeModel[$i]->QUANTITE,
                 $produitsCommandeModel[$i]->PRIX,
-                $produits[$i]
+                $produits[$i],
+                $commandeId
             );
         }
         return $result;
