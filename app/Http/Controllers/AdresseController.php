@@ -11,8 +11,6 @@ class AdresseController extends Controller{
 
         $utilisateur = \App\Models\Utilisateur::getLoggedUser($request);
 
-        \Log::info($data);
-
         $adresse = \App\Models\Adresse::addAdresse($utilisateur,$data["Numéro"],$data["Nom de rue"],$data["Ville"]["Nom"],$data["Ville"]["Code Postal"]);
 
         $resultadresse = [];
@@ -40,7 +38,10 @@ class AdresseController extends Controller{
     }
 
     function getVilles(string $codepostale,Request $request){
-
         return response(\App\Models\Ville::getByCodePostal($codepostale))->header('Content-Type', 'application/json');
+    }
+
+    function getMagasins(string $codepostale,Request $request){
+        return response(\App\Models\AdresseMagasins::getMagasins($codepostale))->header('Content-Type', 'application/json');
     }
 }

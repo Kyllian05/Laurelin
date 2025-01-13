@@ -19,7 +19,7 @@ return new class extends Migration
                 MODE_LIVRAISON VARCHAR(255),
                 ID_UTILISATEUR INT NOT NULL,
                 ID_ADRESSE INT,
-                ID_ADRESSE_MAGASINS INT
+                ID_MAGASIN INT
             )
         ");
     }

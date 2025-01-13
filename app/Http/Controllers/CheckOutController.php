@@ -60,7 +60,8 @@ class CheckOutController extends Controller
         $data = $request->post();
 
         if($data["livraison"] != "domicile" && $data["livraison"] != "magasin"){
-            throw Exceptions::createError(520);
+            $e = Exceptions::createError(520);
+            return response($e->getMessage(),$e->getCode());
         }
 
         try{
@@ -93,6 +94,8 @@ class CheckOutController extends Controller
 
         if($data["livraison"] == "domicile"){
             \App\Models\Commande::where(["ID_UTILISATEUR" => $user["ID"],"ETAT"=>"panier"])->update(["ETAT"=>0,"ID_ADRESSE"=>$data["adresse"],"MODE_LIVRAISON"=>$data["livraison"]]);
+        }else{
+            \App\Models\Commande::where(["ID_UTILISATEUR" => $user["ID"],"ETAT"=>"panier"])->update(["ETAT"=>0,"ID_MAGASIN"=>$data["adresse"],"MODE_LIVRAISON"=>$data["livraison"]]);
         }
     }
 }
