@@ -1,4 +1,5 @@
 <template>
+    <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <Header currentPage="account"></Header>
     <div id="mainWrapper">
@@ -13,10 +14,10 @@
             <hr style="margin-bottom: 2vh">
             <div v-if="dynamicPage == 'info'">
                 <div id="formWrapper1">
-                    <Form :fields="infoFields[0]" :check-boxs="[]" buttonText="Valider les modifications" :displayColumn="true" dest="/updateInfo" succeed-message="Les modifications ont bien étés effectuées"></Form>
+                    <Form :fields="infoFields[0]" :check-boxs="[]" buttonText="Valider les modifications" :displayColumn="true" dest="/updateInfo" succeed-message="Les modifications ont bien étés effectuées" @error-occured="message => errorMesage = message"></Form>
                 </div>
                 <div id="formWrapper2">
-                    <Form :fields="infoFields[1]" :check-boxs="[]" buttonText="Valider les modifications"  dest="/updateInfo" style="margin-top: 5vh"></Form>
+                    <Form :fields="infoFields[1]" :check-boxs="[]" buttonText="Valider les modifications"  dest="/updateInfo" style="margin-top: 5vh" @error-occured="message => errorMesage = message"></Form>
                 </div>
                 <div id="logoutWrapper">
                     <button id="buttonDeco" class="deco font-body-l" @click="logout"> Déconnexion </button>
@@ -104,6 +105,7 @@ import Footer from "./Components/Footer.vue"
 import ButtonAcheter from "./Components/ButtonAcheter.vue";
 import Field from "./Components/Field.vue";
 import ButtonSubmit from "./Components/ButtonSubmit.vue";
+import Error from "./Components/Error.vue";
 
 let props = defineProps(
     {
@@ -132,6 +134,8 @@ let props = defineProps(
         "Numéro":"",
         "Nom de rue":""
     })
+
+    const errorMesage = ref("")
 
     watch(ajoutAdresseState,async (newState)=>{
         if(newState){
@@ -215,6 +219,10 @@ let props = defineProps(
         }).then(async response =>{
             if(response.status == 200){
                 dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse["ID"] != id)
+            }else{
+                const reader = response.body.getReader()
+                const text = new TextDecoder().decode((await reader.read()).value)
+                errorMesage.value = text
             }
         })
     }

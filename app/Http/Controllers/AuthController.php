@@ -46,7 +46,11 @@ class AuthController extends Controller
 
             }else if($method == "login"){
                 $currentFields = self::$fields["login"];
-                $current = \App\Models\Utilisateur::login($data[$currentFields["fields"][0]],hash("sha256",$data[$currentFields["fields"][1]]));
+                try{
+                    $current = \App\Models\Utilisateur::login($data[$currentFields["fields"][0]],hash("sha256",$data[$currentFields["fields"][1]]));
+                }catch(\Exception $e){
+                    throw \App\Models\Exceptions::createError(515);
+                }
 
                 if($data[$currentFields["checkBoxs"][0]]){
                     return response("login successfuly")->cookie(

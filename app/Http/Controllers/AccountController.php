@@ -85,9 +85,17 @@ class AccountController extends Controller
 
     function update(Request $request){
         $data = $request->post();
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
-        if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
-            \App\Models\Utilisateur::where("ID",$user["ID"])->update(["NOM"=>$data["Nom"],"PRENOM"=>$data["Prénom"],"TELEPHONE"=>$data["Téléphone"]]);
+        try{
+            $user = \App\Models\Utilisateur::getLoggedUser($request);
+            if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
+                \App\Models\Utilisateur::where("ID",$user["ID"])->update(["NOM"=>$data["Nom"],"PRENOM"=>$data["Prénom"],"TELEPHONE"=>$data["Téléphone"]]);
+            }else{
+                throw \App\Models\Exceptions::createError(521);
+            }
+        }catch(\Exception $e){
+            if($e instanceof \App\Models\CustomExceptions){
+                return response($e->getMessage(),$e->getCode());
+            }
         }
     }
 

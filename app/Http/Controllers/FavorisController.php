@@ -10,7 +10,8 @@ class FavorisController extends Controller{
         $data = $request->post();
         $user = \App\Models\Utilisateur::getLoggedUser($request);
         if($user == null){
-            return response("", 404);
+            $e = \App\Models\Exceptions::createError(522);
+            return response($e->getMessage(), $e->getCode());
         }
         $produit = \App\Models\Produit::getProduct($data['produit']);
         \App\Models\Favoris::ajouterAuxFavoris($produit,$user);

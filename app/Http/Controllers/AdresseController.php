@@ -27,9 +27,16 @@ class AdresseController extends Controller{
     function supprimer(Request $request){
         $data = $request->post();
 
-        $utilisateur = \App\Models\Utilisateur::getLoggedUser($request);
+        try{
+            $utilisateur = \App\Models\Utilisateur::getLoggedUser($request);
 
-        \App\Models\Adresse::where(["ID"=>$data["ID"],"ID_UTILISATEUR" => $utilisateur["ID"]])->delete();
+            \App\Models\Adresse::where(["ID"=>$data["ID"],"ID_UTILISATEUR" => $utilisateur["ID"]])->delete();
+        }catch(\Exception $e){
+            if($e->getCode() == 23000){
+                $e = \App\Models\Exceptions::createError(523);
+            }
+            return response($e->getMessage(),$e->getCode());
+        }
     }
 
     function getVilles(string $codepostale,Request $request){

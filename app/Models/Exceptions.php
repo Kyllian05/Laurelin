@@ -14,6 +14,10 @@ class Exceptions
         518 => "Token invalide",
         519 => "Impossible de supprimer un produit d'une commande",
         520 => "Méthode de livraison invalide",
+        521 => "Champs manquants",
+        522 => "Vous devez être connecté pour ajouter des produits en favoris",
+        523 => "Cette adresse est liée à une commande",
+        524 => "Informations de paiement invalide",
     ];
 
     static public function createError(int $code):CustomExceptions{
