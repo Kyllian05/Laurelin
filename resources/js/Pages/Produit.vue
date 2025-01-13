@@ -236,11 +236,10 @@ textarea{
     margin-top: 2vh;
     margin-bottom: 2vh;
     resize: none;
-    width: 25vw;
-    aspect-ratio: 15/5;
+    aspect-ratio: 15/4;
     border-radius: 20px;
     border:solid 1px black;
-    min-width: 450px;
+    width: 550px;
     padding: 0.5vw;
 }
 #page {
@@ -620,6 +619,10 @@ img {
         bottom: 10%;
         font-size: clamp(5px, 2vw, 12px);
         line-height: 1;
+    }
+
+    textarea {
+        width: 80%;
     }
 }
 

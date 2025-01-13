@@ -114,6 +114,7 @@ function handleClick(source) {
     transform: translate(-50%, -50%);
 }
 
+
 #logo {
     filter: brightness(0%) grayscale(100%);
     width: 60%;
