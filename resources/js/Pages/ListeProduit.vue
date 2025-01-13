@@ -62,7 +62,7 @@ const props = defineProps({
     }
 });
 
-const produitsAffiches = ref(props.produits);
+const produitsAffiches = ref(props.produits.slice(0,6));
 const itemsPerPage = 6;
 let currentPage = 1;
 
@@ -107,19 +107,15 @@ const formatPrix = (prix) => {
 
 // Fonction pour trier les produits
 const trierProduits = (critere) => {
+    let copy = props.produits
     if (critere === "croiss") {
-        produitsAffiches.value.sort((a, b) => a.PRIX - b.PRIX);
+        copy.sort((a, b) => a.PRIX - b.PRIX);
     } else if (critere === "decroiss") {
-        produitsAffiches.value.sort((a, b) => b.PRIX - a.PRIX);
+        copy.sort((a, b) => b.PRIX - a.PRIX);
     } else if (critere === "recent") {
-        produitsAffiches.value.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
+        copy.sort((a, b) => b.ANNEE_CREATION - a.ANNEE_CREATION);
     }
-};
-
-
-// Charger les produits initialement avec limitation
-const fetchProducts = () => {
-    produitsAffiches.value.splice(0, produitsAffiches.value.length, ...props.produits.slice(0, itemsPerPage));
+    produitsAffiches.value = copy.slice(0,currentPage*itemsPerPage)
 };
 
 
@@ -138,8 +134,6 @@ const loadMoreProducts = () => {
 const hasMoreProducts = computed(() => {
     return produitsAffiches.value.length < props.produits.length;
 });
-
-onMounted(fetchProducts);
 
 const containers = document.querySelectorAll('.container .item');
 

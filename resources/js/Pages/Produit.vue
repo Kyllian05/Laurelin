@@ -36,7 +36,7 @@
 
         <div id="prodCreaAssocier">
             <div v-for="produit in prodAssocier" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
-                <span @click="favorisAction()" id="favoriteButton2" class="material-symbols-rounded">{{!dynamicFavorite ? "favorite" : "heart_check"}}</span>
+                <span id="favoriteButton2" class="add-fav" :class="produit['FAVORITE'] ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(produit['ID'])">favorite</span>
                 <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                 <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
                 <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
@@ -89,6 +89,36 @@ const commentaireInput = ref("")
 
 const updatePanier = ref(false)
 
+function changeFavorite(id){
+    let index = -1
+
+    for(let i = 0;i<prodAssocier.value.length;i++){
+        if(prodAssocier.value[i]["ID"] == id){
+            index = i
+            break
+        }
+    }
+
+    let dest = "ajouterFavoris"
+    if(prodAssocier.value[index]["FAVORITE"]){
+        dest = "supprimerFavoris"
+    }
+    fetch("/"+dest,{
+        method : "POST",
+        body : JSON.stringify({
+            "produit" : prodAssocier.value[index]["ID"]
+        }),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response=>{
+        if(response.status == 200){
+            prodAssocier.value[index]["FAVORITE"] = !prodAssocier.value[index]["FAVORITE"]
+        }
+    })
+}
+
 function eventPanier(){
     updatePanier.value = true
 }
@@ -105,7 +135,7 @@ function deleteCommentaire(){
         },
     }).then(async response => {
         if(response.status == 200){
-            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => { commentaire["DELETABLE"] == false })
+            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire["DELETABLE"] == false )
         }
     })
 }
