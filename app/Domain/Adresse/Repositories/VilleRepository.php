@@ -20,6 +20,20 @@ class VilleRepository
             return null;
         }
 
+        public function findByIds(array $ids): array{
+            $villeModels = VilleModel::whereIn("ID", $ids)->get();
+
+            $result = [];
+            foreach ($villeModels as $villeModel) {
+                $result[] = new VilleEntity(
+                    $villeModel->ID,
+                    $villeModel->NOM,
+                    $villeModel->CODE_POSTAL,
+                );
+            }
+            return $result;
+        }
+
         public function findByCodePostal(string $codePostal): array
         {
             $villesModel = VilleModel::where('CODE_POSTAL','LIKE', $codePostal."%")->take(10)->get();

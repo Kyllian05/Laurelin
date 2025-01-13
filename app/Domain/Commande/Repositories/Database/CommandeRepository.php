@@ -26,16 +26,25 @@ class CommandeRepository implements CommandeRepositoryInterface
         $commadesModel = CommandeModel::where(["ID_UTILISATEUR" => $user->getId()])->where("ETAT","!=","Panier")->get()->sortByDesc("DATE");
 
         $commandesIds = [];
+        $adressesId = [];
         for($i = 0; $i < count($commadesModel); $i++){
             $commandesIds[] = $commadesModel[$i]["ID"];
+            $adressesId[] = $commadesModel[$i]["ID_ADRESSE"];
         }
 
         $produitsCommandes = $this->produitCommandeRepository->findByCommandesIds($commandesIds);
+        $adresses = $this->adresseRepository->findByIds($adressesId);
 
         $produits = [];
 
         foreach($produitsCommandes as $produitCommande){
             $produits[$produitCommande->getCommandeID()][] = $produitCommande;
+        }
+
+        $commandeAdresse = [];
+
+        foreach($adresses as $adresse){
+            $commandeAdresse[$adresse->id] = $adresse;
         }
 
         $commandes = [];
@@ -47,7 +56,7 @@ class CommandeRepository implements CommandeRepositoryInterface
                 $produits[$commande->ID],
                 $commande->ETAT,
                 $commande->MODE_LIVRAISON,
-                $this->adresseRepository->findById($commande->ID_ADRESSE)
+                $commandeAdresse[$commande->ID_ADRESSE]
             );
         }
         return $commandes;

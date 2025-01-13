@@ -27,6 +27,39 @@ class AdresseRepository
         return null;
     }
 
+    public function findByIds(array $ids): array{
+        $adressesModel = AdresseModel::whereIn("ID",$ids)->get();
+
+        $villesId = [];
+        foreach ($adressesModel as $adresseModel) {
+            $villesId[] = $adresseModel->ID_VILLE;
+        }
+
+        $villes = $this->villeRepository->findByIds($villesId);
+
+        $adressesville = [];
+
+        for($i = 0; $i < sizeof($adressesModel); $i++){
+            for($j = 0; $j < sizeof($villes); $j++){
+                if($adressesModel[$i]->ID_VILLE == $villes[$j]->id){
+                    $adressesville[$adressesModel[$i]["ID"]] = $villes[$j];
+                    break;
+                }
+            }
+        }
+
+        $adresses = [];
+        foreach ($adressesModel as $adresseModel) {
+            $adresses[] = new AdresseEntity(
+                $adresseModel->ID,
+                $adresseModel->NUM_RUE,
+                $adresseModel->NOM_RUE,
+                $adressesville[$adresseModel->ID],
+            );
+        }
+        return $adresses;
+    }
+
     public function add(int $numRue, string $nomRue, VilleEntity $villeEntity, UtilisateurEntity $utilisateurEntity): AdresseEntity
     {
         $adresseModel = AdresseModel::create(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"ID_UTILISATEUR"=>$utilisateurEntity->getId(),"ID_VILLE"=>$villeEntity->id]);
@@ -47,13 +80,32 @@ class AdresseRepository
     public function findByUser(UtilisateurEntity $user): array
     {
         $adressesModel = AdresseModel::where("ID_UTILISATEUR", $user->getId())->get();
+
+        $villesId = [];
+        foreach ($adressesModel as $adresseModel) {
+            $villesId[] = $adresseModel->ID_VILLE;
+        }
+
+        $villes = $this->villeRepository->findByIds($villesId);
+
+        $adressesville = [];
+
+        for($i = 0; $i < sizeof($adressesModel); $i++){
+            for($j = 0; $j < sizeof($villes); $j++){
+                if($adressesModel[$i]->ID_VILLE == $villes[$j]->id){
+                    $adressesville[$adressesModel[$i]["ID"]] = $villes[$j];
+                    break;
+                }
+            }
+        }
+
         $adresses = [];
         foreach ($adressesModel as $adresseModel) {
             $adresses[] = new AdresseEntity(
                 $adresseModel->ID,
                 $adresseModel->NUM_RUE,
                 $adresseModel->NOM_RUE,
-                $this->villeRepository->findById($adresseModel->ID_VILLE),
+                $adressesville[$adresseModel->ID],
             );
         }
         return $adresses;
