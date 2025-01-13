@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Produit\Services\ProduitService;
+use App\Domain\Shared\Exceptions as CustomExceptions;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -20,7 +21,7 @@ class AccountController extends Controller
             $user = $this->userService->getAuthenticatedUser($request);
 
             if (!$user) {
-                throw new \Exception("User not found");
+                throw CustomExceptions::createError(518);
             }
 
             // --- Commandes ---

@@ -50,8 +50,9 @@ class UtilisateurService
         } catch (\Exception $e) {
             if ($e->getCode() == 518) {
                 \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+            }else{
+                throw $e;
             }
-            throw $e;
         }
         return null;
     }
@@ -77,7 +78,7 @@ class UtilisateurService
     {
         $user = $this->userRepository->findByToken($token);
         if (!$user) {
-            throw CustomExceptions::createError(515);
+            throw CustomExceptions::createError(518);
         }
         if ($user->checkTokenDate()) {
             $newToken = $this->generateToken();
