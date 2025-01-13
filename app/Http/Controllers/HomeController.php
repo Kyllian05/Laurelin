@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Produit;
 use \App\Models\Utilisateur;
+use \App\Models\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -15,7 +16,8 @@ class HomeController extends Controller
         $current = Utilisateur::getLoggedUser($request);
 
         return Inertia::render("Home",[
-            "prenom" => $current["PRENOM"] ?? "",
+            "produits" => Collection::get_products("Trinity"),
+            "collections" => Collection::all()
         ]);
     }
 
