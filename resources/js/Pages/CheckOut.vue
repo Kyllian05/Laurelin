@@ -41,19 +41,19 @@
                                 <p class="font-subtitle-16 ville">{{ adresse["VILLE"] }}</p>
                             </div>
                         </div>
-                        <button id="adresseValidateButton" @click="validateLivraison()">
+                    </div>
+                    <div v-else>
+                        <Field name="Code Postal" @input="codePostale => searchMagasins(codePostale)" style="width: 50%;margin-left: 50%;transform: translateX(-50%);margin-bottom: 2vh"></Field>
+                        <select id="selectVille" class="font-subtitle-16" v-model="currentMagasin">
+                            <option :value="magasin['ID']" v-for="magasin in magasinsRecomm">{{ magasin["ADRESSE"] }} {{ magasin["VILLE"] }} {{ magasin["CODEPOSTAL"] }}</option>
+                        </select>
+                    </div>
+                    <button id="adresseValidateButton" @click="validateLivraison()">
                             <span class="material-symbols-rounded">
                                 location_on
                             </span>
-                            <p>Valider</p>
-                        </button>
-                    </div>
-                    <div v-else>
-                        <select id="selectVille" class="font-subtitle-16">
-                            <option value="">Choisir une ville</option>
-                            <!---TODO: mettre les villes de la base de dounées-->
-                        </select>
-                    </div>
+                        <p>Valider</p>
+                    </button>
                 </div>
                 <div v-else-if="currentStep > 2" @click="annuleLivraison()">
                     <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
@@ -119,16 +119,18 @@
 
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
-import Form from "./Components/Form.vue";
 import {ref, toRaw, watch} from "vue";
 import ButtonSubmit from "./Components/ButtonSubmit.vue";
 import Error from "./Components/Error.vue";
+import Field from "./Components/Field.vue";
 
 let props = defineProps({
     "user" : Object,
     "adresses" : Array,
-    "produits":Array
+    "produits":Array,
 })
+
+let magasinsRecomm = ref([])
 
 let currentAdresse = ref(0)
 
@@ -156,6 +158,8 @@ let currentStep = ref(2)
 
 const errorMesage = ref("")
 
+const currentMagasin = ref()
+
 watch(paiementState,async value=>{
     if(value){
         document.body.style.overflowY = "hidden"
@@ -163,6 +167,18 @@ watch(paiementState,async value=>{
         document.body.style.overflowY = "scroll"
     }
 })
+
+function searchMagasins(codePostale){
+    fetch("/adresse/getMagasins/"+codePostale,{
+        method : "GET",
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        magasinsRecomm.value = await response.json()
+    })
+}
 
 async function paye(){
     function sleep(ms) {
@@ -207,12 +223,16 @@ function annuleLivraison() {
 }
 
 function validateLivraison(){
-    data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
+    if(adresseMethod.value == "domicile"){
+        data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
+    }else{
+        data["adresse"] = currentMagasin.value
+    }
     currentStep.value += 2
 }
 
 function changeadresseMethod(){
-    if(adresseMethod.value === "domicile")adresseMethod.value = "retirer"
+    if(adresseMethod.value === "domicile")adresseMethod.value = "magasin"
     else adresseMethod.value = "domicile"
 }
 </script>
