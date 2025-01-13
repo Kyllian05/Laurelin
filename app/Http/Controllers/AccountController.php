@@ -33,10 +33,7 @@ class AccountController extends Controller
 
             // --- Favoris ---
 
-            $favorisSerialized = [];
-            foreach($this->userService->getFavoris($user) as $favori) {
-                $favorisSerialized[] = $this->produitService->serialize($favori);
-            }
+            $favorisSerialized = $this->produitService->serializes($this->userService->getFavoris($user));
 
             // --- Adresses ---
 

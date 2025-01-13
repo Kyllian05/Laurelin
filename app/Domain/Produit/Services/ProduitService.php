@@ -33,4 +33,18 @@ class ProduitService
         $this->imageRepository->getAllProductImages($produit);
         return $produit->serialize();
     }
+
+    public function serializes(array $produits): array{
+        $this->imageRepository->getAllProductsImages($produits);
+        $result = [];
+        foreach ($produits as $produit){
+            $result[] = $produit->serialize();
+        }
+        return $result;
+    }
+
+    public function serializeWithoutImages(ProduitEntity $produit): array{
+        return $produit->serialize();
+
+    }
 }

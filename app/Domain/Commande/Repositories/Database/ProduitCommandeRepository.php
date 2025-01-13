@@ -27,10 +27,9 @@ class ProduitCommandeRepository
         $produits = $this->produitRepository->findAll($produitsID);
         $result = [];
 
-        for($i = 0; $i < sizeof($produitsID); $i++) {
-            // Update les images
-            $this->imageRepository->getAllProductImages($produits[$i]);
+        //$this->imageRepository->getAllProductsImages($produits);
 
+        for($i = 0; $i < sizeof($produitsID); $i++) {
             $result[] = new ProduitCommandeEntity(
                 $produitsCommandeModel[$i]->TAILLE,
                 $produitsCommandeModel[$i]->QUANTITE,

@@ -14,10 +14,7 @@ class FavorisRepository
     public function getFavoris(UtilisateurEntity $utilisateurEntity): void
     {
         $allFavoris = FavorisModel::where("ID_UTILISATEUR", $utilisateurEntity->getId())->pluck("ID_PRODUIT")->toArray();
-        $allProduitsEntities = [];
-        foreach ($allFavoris as $favoris) {
-            $allProduitsEntities[] = $this->produitRepository->findById($favoris);
-        }
+        $allProduitsEntities = $this->produitRepository->findAll($allFavoris);
         $utilisateurEntity->setFavoris($allProduitsEntities);
     }
 

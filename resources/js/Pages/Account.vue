@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <p>{{ favori.NOM }}</p>
-                    <p>{{ favori.Prix }}€</p>
+                    <p>{{ favori.PRIX }}€</p>
                 </div>
             </div>
             <div v-else>
@@ -109,6 +109,8 @@ let props = defineProps(
         "favoris" : Object,
         "adresses" : Array,
     })
+
+    console.log(props.commandes)
 
     const favorisImagesCount = ref(0)
 

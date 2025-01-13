@@ -72,7 +72,7 @@ class ProduitCommandeEntity
             'TAILLE' => $this->taille,
             'QUANTITE' => $this->quantite,
             'PRIX' => $this->prix,
-            'PRODUIT' => $this->produit->serialize(),
+            'PRODUIT' => $this->produit->serializeWithoutImages(),
         ];
     }
 

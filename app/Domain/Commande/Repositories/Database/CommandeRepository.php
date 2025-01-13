@@ -74,9 +74,6 @@ class CommandeRepository implements CommandeRepositoryInterface
 
     public function addProduct(CommandeEntity $commande, ProduitEntity $produitEntity, int $taille, ?int $prix): void
     {
-        // Update les images
-        $this->imageRepository->getAllProductImages($produitEntity);
-
         $prodCommande = new ProduitCommandeEntity(
             $taille,
             1,

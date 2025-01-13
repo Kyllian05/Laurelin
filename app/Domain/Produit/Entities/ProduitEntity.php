@@ -75,4 +75,16 @@ class ProduitEntity
             "IMAGES" => $this->getImages()
         ];
     }
+
+    public function serializeWithoutImages(): array{
+        return [
+            "ID" => $this->id,
+            "NOM" => $this->nom,
+            "MATERIAUX" => $this->materiaux,
+            "DESCRIPTION" => $this->description,
+            "PRIX" => $this->prix,
+            "ANNEE_CREATION" => $this->anneeCreation,
+            "STOCK" => $this->stock
+        ];
+    }
 }
