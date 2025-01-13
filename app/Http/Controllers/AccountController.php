@@ -64,7 +64,7 @@ class AccountController extends Controller
             if($e->getCode() == 518){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }
-            return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false);
+            throw $e;
         }
     }
 

@@ -18,6 +18,10 @@ class ProduitService
         return $this->produitRepository->findById($id);
     }
 
+    public function findAll(array $ids) : array{
+        return $this->produitRepository->findAll($ids);
+    }
+
     public function getImages(ProduitEntity $produit): array
     {
         $this->imageRepository->getAllProductImages($produit);

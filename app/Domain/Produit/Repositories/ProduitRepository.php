@@ -36,4 +36,31 @@ class ProduitRepository
 
         return null;
     }
+
+    public function findAll(array $ids): array{
+        $produitsModel = ProduitModel::whereIn('ID',$ids)->get();
+
+        $result = [];
+        foreach ($produitsModel as $produit) {
+            if ($produit->ETAT == "Disponible") {
+                $productState = ProductState::Disponible;
+            } elseif ($produit->ETAT == "Produit indisponible") {
+                $productState = ProductState::Indisponible;
+            } else {
+                throw new \InvalidArgumentException("L'état du produit est invalide");
+            }
+
+            $result[] = new ProduitEntity(
+                $produit->ID,
+                $produit->NOM,
+                $produit->MATERIAUX,
+                $produit->DESCRIPTION,
+                $produit->PRIX,
+                $produit->ANNEE_CREATION,
+                $productState,
+                $produit->STOCK,
+            );
+        }
+        return $result;
+    }
 }

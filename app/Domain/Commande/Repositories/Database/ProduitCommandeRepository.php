@@ -19,19 +19,26 @@ class ProduitCommandeRepository
     public function findByCommandeId(int $commandeId): array
     {
         $produitsCommandeModel = ProduitCommandeModel::where("ID_COMMANDE", $commandeId)->get();
-        $produits = [];
+        $produitsID = [];
         foreach ($produitsCommandeModel as $produitCommande) {
+            $produitsID[] = $produitCommande["ID_PRODUIT"];
+        }
+
+        $produits = $this->produitRepository->findAll($produitsID);
+        $result = [];
+
+        for($i = 0; $i < sizeof($produitsID); $i++) {
             // Update les images
-            $prod = $this->produitRepository->findById($produitCommande->ID_PRODUIT);
-            $this->imageRepository->getAllProductImages($prod);
-            $produits[] = new ProduitCommandeEntity(
-                $produitCommande->TAILLE,
-                $produitCommande->QUANTITE,
-                $produitCommande->PRIX,
-                $prod
+            $this->imageRepository->getAllProductImages($produits[$i]);
+
+            $result[] = new ProduitCommandeEntity(
+                $produitsCommandeModel[$i]->TAILLE,
+                $produitsCommandeModel[$i]->QUANTITE,
+                $produitsCommandeModel[$i]->PRIX,
+                $produits[$i]
             );
         }
-        return $produits;
+        return $result;
     }
 
     public function create(CommandeEntity $commandeEntity, ProduitCommandeEntity $produitCommandeEntity)
