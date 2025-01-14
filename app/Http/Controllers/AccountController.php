@@ -58,8 +58,8 @@ class AccountController extends Controller
                 "favoris" => $favorisSerialized,
                 "adresses" => $adressesSerialized,
             ]);
-        }catch (\Exception $e){
-            if($e->getCode() == 518){
+        }catch (\App\Domain\Shared\CustomExceptions $e){
+            if($e->httpCode == 401){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }
             throw $e;
@@ -70,15 +70,16 @@ class AccountController extends Controller
         $data = $request->post();
         try{
             $user = $this->userService->getAuthenticatedUser($request);
+            if($user == null){
+                throw CustomExceptions::createError(525);
+            }
             if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
                 $this->userService->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
             }else{
                 throw CustomExceptions::createError(521);
             }
-        }catch(\Exception $e){
-            if($e instanceof \App\Domain\Shared\CustomExceptions){
-                return response($e->getMessage(),$e->getCode());
-            }
+        }catch(\App\Domain\Shared\CustomExceptions $e){
+            return response($e->getMessage(),$e->httpCode);
         }
     }
 }

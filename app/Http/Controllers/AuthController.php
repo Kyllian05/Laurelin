@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Shared\CustomExceptions;
 use App\Domain\Shared\Exceptions as DomainExceptions;
 use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
@@ -70,15 +71,8 @@ class AuthController extends Controller
             } else {
                 throw \App\Domain\Shared\Exceptions::createError(513);
             }
-        }catch (\Exception $e){
-            $class = explode("\\",get_class($e));
-            $class = $class[sizeof($class)-1];
-            if($class == "CustomExceptions"){
-                return response($e->getMessage(),$e->getCode());
-            }else{
-                \Log::info($e);
-                return response("Erreur inconnue",500);
-            }
+        }catch (CustomExceptions $e){
+            return response($e->getMessage(),$e->httpCode);
         }
     }
 

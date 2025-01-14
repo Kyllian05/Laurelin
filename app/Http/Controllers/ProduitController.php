@@ -34,7 +34,9 @@ class ProduitController extends Controller
             $commentaires = $this->commentaireService->findByProduct($produit);
             $commentairesSerialized = [];
             foreach ($commentaires as $commentaire) {
-                $commentaire->setDeletable($user);
+                if($user != null) {
+                    $commentaire->setDeletable($user);
+                }
                 $commentairesSerialized[] = $commentaire->serialize();
             }
 
@@ -60,6 +62,10 @@ class ProduitController extends Controller
 
     public function createCommentaire(Request $request){
         $user = $this->userService->getAuthenticatedUser($request);
+        if($user == null){
+            $e = \App\Domain\Shared\Exceptions::createError(525);
+            return response($e->getMessage(), $e->httpCode);
+        }
         $data = $request->post();
         $commentaire = $this->commentaireService->create($user, $data["produit"], $data["contenu"]);
         return response($commentaire->serialize(),200);
