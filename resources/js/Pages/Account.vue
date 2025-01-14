@@ -81,6 +81,7 @@
                             <select v-if="villesSuggest.length > 0" v-model="villeChoice">
                                 <option v-for="ville in villesSuggest" :value="{'Nom':ville['NOM'],'Code Postal':ville['CODE_POSTAL']}">{{ ville["NOM"] }} {{ ville["CODE_POSTAL"] }}</option>
                             </select>
+
                             <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
                         </div>
                     </div>
