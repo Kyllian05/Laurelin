@@ -25,7 +25,7 @@ class AdresseController extends Controller{
             }
         }catch(\Exception $e){
             $e = Exceptions::createError(525);
-            return response()->json($e->getMessage(),$e->getCode());
+            return response()->json($e->getMessage(),$e->httpCode);
         }
         $ville = $this->villeService->findById(intval($data['Ville']['ID']));
         $adresse = $this->adresseService->add(intval($data["Numéro"]), $data["Nom de rue"], $ville, $utilisateur);
@@ -40,7 +40,7 @@ class AdresseController extends Controller{
         if($user == null){
             \Log::info("fuck");
             $e = Exceptions::createError(525);
-            return response()->json($e->getMessage(),$e->getCode());
+            return response()->json($e->getMessage(),$e->httpCode);
         }
         try {
             $this->adresseService->delete($this->adresseService->findById($data["ID"]));

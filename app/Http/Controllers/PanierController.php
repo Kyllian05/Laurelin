@@ -47,7 +47,7 @@ class PanierController extends Controller
         $user = $this->utilisateurService->getAuthenticatedUser($request);
         if($user == null){
             $e = Exceptions::createError(525);
-            return response()->json($e->getMessage(),$e->getCode());
+            return response()->json($e->getMessage(),$e->httpCode);
         }
         $this->cartService = new CartService($user);
         $panier = $this->cartService->getCart($user);
@@ -66,7 +66,7 @@ class PanierController extends Controller
         $user = $this->utilisateurService->getAuthenticatedUser($request);
         if($user == null){
             $e = Exceptions::createError(525);
-            return response()->json($e->getMessage(),$e->getCode());
+            return response()->json($e->getMessage(),$e->httpCode);
         }
         $this->cartService = new CartService($user);
         $panier = $this->cartService->getCart($user);
@@ -96,7 +96,7 @@ class PanierController extends Controller
             return response($result,200)->header('Content-Type', 'application/json');
         }else{
             $e = Exceptions::createError(525);
-            return response()->json($e->getMessage(),$e->getCode());
+            return response()->json($e->getMessage(),$e->httpCode);
         }
     }
 }

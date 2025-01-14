@@ -60,8 +60,8 @@ class AccountController extends Controller
                 "favoris" => $favorisSerialized,
                 "adresses" => $adressesSerialized,
             ]);
-        }catch (\Exception $e){
-            if($e->getCode() == 401){
+        }catch (\App\Domain\Shared\CustomExceptions $e){
+            if($e->httpCode == 401){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }
             throw $e;
@@ -80,8 +80,8 @@ class AccountController extends Controller
             }else{
                 throw CustomExceptions::createError(521);
             }
-        }catch(\Exception $e){
-            return response($e->getMessage(),$e->getCode());
+        }catch(\App\Domain\Shared\CustomExceptions $e){
+            return response($e->getMessage(),$e->httpCode);
         }
     }
 }

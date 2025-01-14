@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Adresse\Services\AdresseService;
 use App\Domain\Commande\Service\CartService;
 use App\Domain\Commande\Service\OrderService;
+use App\Domain\Shared\CustomExceptions;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
@@ -28,8 +29,8 @@ class CheckOutController extends Controller
             if($user == null){
                 throw Exceptions::createError(518);
             }
-        } catch(\Exception $e) {
-            if($e->getCode() == 401){
+        } catch(CustomExceptions $e) {
+            if($e->httpCode == 401){
                 return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;
@@ -70,17 +71,17 @@ class CheckOutController extends Controller
         $user = $this->utilisateurService->getAuthenticatedUser($request);
         if($user == null){
             $e = Exceptions::createError(518);
-            return response()->json($e->getCode(),$e->getCode());
+            return response()->json($e->getCode(),$e->httpCode);
         }
 
         if($data["livraison"] != "domicile" && $data["livraison"] != "magasin"){
             $e = Exceptions::createError(520);
-            return response($e->getMessage(),$e->getCode());
+            return response($e->getMessage(),$e->httpCode);
         }
 
         if(!isset($data["paiement"]["nom"]) || !isset($data["paiement"]["numéro"]) || !isset($data["paiement"]["mois"]) || !isset($data["paiement"]["année"]) || !isset($data["paiement"]["cryptograme"])){
             $e = Exceptions::createError(524);
-            return response($e->getMessage(),$e->getCode());
+            return response($e->getMessage(),$e->httpCode);
         }
 
         $this->cartService = new CartService($user);

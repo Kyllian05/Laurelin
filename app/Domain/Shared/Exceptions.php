@@ -47,16 +47,15 @@ class Exceptions
             throw new \Exception("Probleme lors de la création d'une exception");
         }
         $message = Exceptions::$messages[$code];
-        return new CustomExceptions($message,self::$statusCode[$code]);
-    }
-
-    public static function createErrorWithMessage(int $code, string $message):CustomExceptions {
-        return new CustomExceptions($message,$code);
+        $result = new CustomExceptions($message,$code);
+        $result->httpCode = self::$statusCode[$code];
+        return $result;
     }
 }
 
-class CustomExceptions extends \Exception
-{
+class CustomExceptions extends \Exception{
+    public int $httpCode;
+
     public function __contruct(string $message,int $code){
         parent::__contruct($message,$code);
     }
