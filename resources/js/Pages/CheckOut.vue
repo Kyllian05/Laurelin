@@ -1,7 +1,7 @@
-
 <template>
     <Header current-page="CheckOut"></Header>
-    <div v-if="paiementState" id="paimentBackground">
+    <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
+    <div v-if="paiementState && errorMesage == ''" id="paimentBackground">
         <div id="paiementPopupWrapper">
             <div id="paimentPopupContent">
                 <img src="/public/images/loading.gif">
@@ -12,7 +12,7 @@
     <div id="Page">
         <p id="Title" class="font-subtitle-16">Commande</p>
         <div id="DonneeCommande">
-            <div id="infoWrapper" class="wrapper" :class="currentStep > 1 ? 'cursor' : '    '">
+            <div id="infoWrapper" class="wrapper" :class="['wrapper', currentStep === 1 ? 'bgGris' : '', currentStep > 1 ? 'cursor' : '']">
                 <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
                 <div id="contenuInfo" v-if="currentStep === 1">
                     <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <div id="adresseWrapper" class="wrapper" :class="currentStep > 2 ? 'cursor' : ''">
+            <div id="adresseWrapper" class="wrapper" :class="['wrapper', currentStep === 2 ? 'bgGris' : '', currentStep > 2 ? 'cursor' : '']">
                 <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
                 <div id="contenuAdresse" v-if="currentStep === 2">
                     <div id="adresseChoiceWrapper">
@@ -40,19 +40,19 @@
                                 <p class="font-subtitle-16 ville">{{ adresse.VILLE.NOM }}</p>
                             </div>
                         </div>
-                        <button id="adresseValidateButton" @click="validateLivraison()">
+                    </div>
+                    <div v-else>
+                        <Field name="Code Postal" @input="codePostale => searchMagasins(codePostale)" style="width: 50%;margin-left: 50%;transform: translateX(-50%);margin-bottom: 2vh"></Field>
+                        <select id="selectVille" class="font-subtitle-16" v-model="currentMagasin">
+                            <option :value="magasin['ID']" v-for="magasin in magasinsRecomm">{{ magasin["ADRESSE"] }} {{ magasin["VILLE"] }} {{ magasin["CODEPOSTAL"] }}</option>
+                        </select>
+                    </div>
+                    <button id="adresseValidateButton" @click="validateLivraison()">
                             <span class="material-symbols-rounded">
                                 location_on
                             </span>
-                            <p>Valider</p>
-                        </button>
-                    </div>
-                    <div v-else>
-                        <select id="selectVille" class="font-subtitle-16">
-                            <option value="">Choisir une ville</option>
-                            <!---TODO: mettre les villes de la base de dounées-->
-                        </select>
-                    </div>
+                        <p>Valider</p>
+                    </button>
                 </div>
                 <div v-else-if="currentStep > 2" @click="annuleLivraison()">
                     <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
@@ -61,42 +61,54 @@
                 </div>
             </div>
 
-            <div id="livraisonWrapper" class="wrapper" :class="currentStep > 3 ? 'cursor' : ''">
+            <div id="livraisonWrapper" class="wrapper" :class="['wrapper', currentStep === 3 ? 'bgGris' : '', currentStep > 3 ? 'cursor' : '']">
                 <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
             </div>
 
-            <div id="paiementWrapper" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
+            <div id="paiementWrapper" :class="currentStep === 4 ? 'bgGris' : ''" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
                 <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
                 <div v-if="currentStep == 4" id="paiementContent">
                     <div class="paimentFieldWrapper" style="flex-direction: column">
-                        <input placeholder="PRENOM ET NOM" class="font-body-l paiementinput1">
-                        <input placeholder="NUMERO DE LA CARTE" class="font-body-l paiementinput1">
+                        <input placeholder="PRENOM ET NOM" class="font-body-l paiementinput1" v-model="paimentData['nom']">
+                        <input placeholder="NUMERO DE LA CARTE" class="font-body-l paiementinput1" v-model="paimentData['numéro']">
                     </div>
                     <div class="paimentFieldWrapper" style="flex-direction: row;gap: 5vw">
-                        <input placeholder="MOIS" class="font-body-l">
-                        <input placeholder="ANNEE" class="font-body-l">
+                        <input placeholder="MOIS" class="font-body-l" v-model="paimentData['mois']">
+                        <input placeholder="ANNEE" class="font-body-l" v-model="paimentData['année']">
                     </div>
                     <div class="paimentFieldWrapper" style="width: 20%">
-                        <input placeholder="CRYPTOGRAME" class="font-body-l">
+                        <input placeholder="CRYPTOGRAME" class="font-body-l" v-model="paimentData['cryptograme']">
                     </div>
                     <ButtonSubmit button-text="Payer" id="payButton" @click="paye()"></ButtonSubmit>
                 </div>
             </div>
         </div>
 
-        <div id="Recap">
-            <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
-            <div id="produitComander" class="font-subtitle-16" v-for="produitCmd in produits.PRODUITS">
-                <p>{{ produitCmd.PRODUIT.NOM }} x{{ produitCmd.QUANTITE }} <b>{{ produitCmd.PRODUIT.PRIX * produitCmd.QUANTITE }} €</b></p>
+        <div id="Recap" >
+            <div id="recapFirst">
+                <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
+                <p id="articles">{{totArticle}} articles</p>
             </div>
-            <div id="sousTot">
-                <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
-                <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
-            </div>
-            <div id="Tot">
-                <p id="total" class="font-subtitle-16">total <b>{{ sum }} €</b></p>
+            <div id="prodRecap" v-for="produitCmd in produits.PRODUITS">
+                <div id="produitComander" class="font-subtitle-16">
+                    <p>{{ produitCmd.PRODUIT.NOM }}</p>
+                    <b>{{ produitCmd.PRODUIT.PRIX * produitCmd.QUANTITE }} €</b>
+                </div>
+                <div id="quantite" >
+                    <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
+                    <p>x{{ produitCmd.QUANTITE }}</p>
+                </div>
             </div>
 
+            <div id="tots">
+                <div id="sousTot">
+                    <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
+                    <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
+                </div>
+                <div id="Tot">
+                    <p id="total" class="font-subtitle-16">total <b>{{ sum}} €</b></p>
+                </div>
+            </div>
         </div>
     </div>
     <Footer></Footer>
@@ -106,9 +118,10 @@
 
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
-import Form from "./Components/Form.vue";
 import {ref, toRaw, watch} from "vue";
 import ButtonSubmit from "./Components/ButtonSubmit.vue";
+import Error from "./Components/Error.vue";
+import Field from "./Components/Field.vue";
 
 let props = defineProps({
     "user" : Object,
@@ -116,11 +129,19 @@ let props = defineProps({
     "produits": Object
 })
 
+let magasinsRecomm = ref([])
+
 let currentAdresse = ref(0)
 
 let paiementState = ref(false)
 
 let sum = 0
+
+let totArticle = 0
+
+for(let i = 0;i<props.produits.PRODUITS.length;i++){
+    totArticle += props.produits.PRODUITS[i].QUANTITE
+}
 
 for(let i = 0;i<props.produits.PRODUITS.length;i++){
     sum += props.produits.PRODUITS[i].PRODUIT.PRIX * props.produits.PRODUITS[i].QUANTITE
@@ -130,7 +151,13 @@ let data = {}
 
 let adresseMethod = ref("domicile")
 
+const paimentData = ref({})
+
 let currentStep = ref(2)
+
+const errorMesage = ref("")
+
+const currentMagasin = ref()
 
 watch(paiementState,async value=>{
     if(value){
@@ -140,6 +167,18 @@ watch(paiementState,async value=>{
     }
 })
 
+function searchMagasins(codePostale){
+    fetch("/adresse/getMagasins/"+codePostale,{
+        method : "GET",
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type":"application/json"
+        },
+    }).then(async response => {
+        magasinsRecomm.value = await response.json()
+    })
+}
+
 async function paye(){
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -148,13 +187,19 @@ async function paye(){
         method : "POST",
         body : JSON.stringify({
             "adresse" : props.adresses[currentAdresse.value].ID,
-            "livraison" : adresseMethod.value
+            "livraison" : adresseMethod.value,
+            "paiement" : paimentData.value
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
         },
     })
+    if(response.status !== 200){
+        const reader = response.body.getReader()
+        errorMesage.value = new TextDecoder().decode((await reader.read()).value)
+        return
+    }
     paiementState.value = true
     await sleep(0)
     document.getElementById("paimentBackground").style.top = window.scrollY+"px"
@@ -176,12 +221,16 @@ function annuleLivraison() {
 }
 
 function validateLivraison(){
-    data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
+    if(adresseMethod.value === "domicile"){
+        data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
+    }else{
+        data["adresse"] = currentMagasin.value
+    }
     currentStep.value += 2
 }
 
 function changeadresseMethod(){
-    if(adresseMethod.value === "domicile")adresseMethod.value = "retirer"
+    if(adresseMethod.value === "domicile")adresseMethod.value = "magasin"
     else adresseMethod.value = "domicile"
 }
 </script>
@@ -234,7 +283,6 @@ function changeadresseMethod(){
     margin-left: 2vw;
 }
 .wrapper{
-    background-color: rgb(225,225,225);
     margin-top: 2.5vh;
 }
 #paiementWrapper input{
@@ -244,6 +292,11 @@ function changeadresseMethod(){
     width: 100%;
     margin-top: 3.5vh;
 }
+
+.bgGris {
+    background-color: #FBF9F7;
+}
+
 #adresseValidateButton:hover {
     background-color: white;
     color: black;
@@ -356,23 +409,29 @@ function changeadresseMethod(){
 }
 .adresseUserr {
     grid-column: 2;
-    width: 300px;
+    width: clamp(200px, 2vw, 400px);
 }
 #livraison {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
-#paiement {
+#paiementWrapper {
     padding: 35px 0 35px 20px;
     border-bottom: 1px solid black;
 }
+
 #Recap{
     flex: 1 1 20%;
     padding: 25px;
     margin-right: 3%;
+    margin-top: 80px;
+    background-color: #FBF9F7;
+    height: max-content;
 }
+
 #produitComander{
-    border-top: 1px solid black;
+    display: grid;
+    grid-template-columns: 1fr auto;
     margin-top: 30px;
 }
 #Tot {
@@ -380,10 +439,67 @@ function changeadresseMethod(){
     width: 80%;
     margin: 30px auto 0;
 }
-#sousTot{
-    padding: 10px 0 0 15px;
+#sousTot, #total{
+    padding: 10px 15px 10px 15px;
 }
-#total {
-    padding: 10px 0 0 15px;
+
+#soustotal, #tva, #total {
+    display: grid;
+    grid-template-columns: 1fr auto;
 }
+
+
+#tots {
+    background-color: #F1F1F1F1;
+    margin-top: 40px;
+}
+
+#recapFirst {
+    border-bottom: 1px solid black;
+}
+
+#articles {
+    margin-bottom: 30px;
+}
+
+#quantite {
+    padding-left: 10px;
+}
+
+#Recap b {
+    text-align: right;
+}
+
+
+@media (max-width: 1000px) {
+    #Page {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, auto);
+        justify-items: center;
+    }
+
+    #Title {
+        grid-row: 1;
+    }
+
+    #DonneeCommande {
+        grid-row: 2;
+        width: 90%;
+    }
+
+    #Recap {
+        grid-row: 3;
+        width: 90%;
+        margin: 0;
+        margin-top: 80px;
+    }
+}
+
+@media (max-width: 450px) {
+    #info {
+        width: 300px;
+    }
+}
+
 </style>

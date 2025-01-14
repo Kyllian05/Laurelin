@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Shared\Exceptions as DomainExceptions;
-use App\Models\Exceptions;
+use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 
@@ -51,7 +50,11 @@ class AuthController extends Controller
             } else if($method == "login") {
                 $currentFields = self::$fields["login"];
 
-                $user = $this->userService->login($data[$currentFields["fields"][0]], $data[$currentFields["fields"][1]]);
+                try {
+                    $user = $this->userService->login($data[$currentFields["fields"][0]], $data[$currentFields["fields"][1]]);
+                } catch (\Exception $e) {
+                    throw Exceptions::createError(515);
+                }
 
                 if($data[$currentFields["checkBoxs"][0]]){
                     return response("login successfuly")->cookie(
@@ -126,8 +129,8 @@ class AuthController extends Controller
         Mail::to($user->getEmail())->send(new \App\Mail\PasswordRecovery($user->getId(), $user->getToken()));
     }
 
-    public function logout(Request $request){
-        //TODO
-        throw Exceptions::createError(531);
+    public function logout(Request $request)
+    {
+        return $this->userService->logout();
     }
 }

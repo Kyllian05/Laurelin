@@ -1,5 +1,5 @@
 <template>
-    <Header currentPage="panier"></Header>
+    <Header currentPage="panier" :update-panier="panierUpdate" @panierUpdated="() => {panierUpdate = false}"></Header>
     <div class="globalWrapper">
         <div class="leftWrapper">
             <h1>Panier</h1>
@@ -19,7 +19,7 @@
                 <div v-else>
                     <p style="margin-top: 5vh; margin-bottom: 3vh">Votre panier est vide</p>
                 </div>
-                <a href="/" class="continue">← Continuer ma visite</a>
+                <a href="/bijoux" class="continue">← Continuer ma visite</a>
             </div>
         </div>
         <div class="rightWrapper">
@@ -48,6 +48,10 @@ const props = defineProps({
 })
 
 let panierData = ref(props.panier)
+
+console.log(panierData.value)
+
+const panierUpdate = ref(false)
 
 let somme = ref(0)
 

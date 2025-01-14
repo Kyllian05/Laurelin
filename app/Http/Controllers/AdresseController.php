@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Domain\Adresse\Services\AdresseService;
 use App\Domain\Adresse\Services\VilleService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
-use App\Models\Exceptions;
+use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
 
 class AdresseController extends Controller{
@@ -28,7 +28,14 @@ class AdresseController extends Controller{
     function supprimer(Request $request){
         $data = $request->post();
         $this->utilisateurService->getAuthenticatedUser($request); // Sécurité
-        $this->adresseService->delete($this->adresseService->findById($data["ID"]));
+        try {
+            $this->adresseService->delete($this->adresseService->findById($data["ID"]));
+        } catch(\Exception $e){
+            if($e->getCode() == 23000){
+                $e = Exceptions::createError(523);
+            }
+            return response($e->getMessage(),$e->getCode());
+        }
     }
 
     function getVilles(string $codePostal, Request $request) {
@@ -40,8 +47,9 @@ class AdresseController extends Controller{
         return response($villesSerialized)->header('Content-Type', 'application/json');
     }
 
-    function getMagasins(string $codePostal, Request $request) {
+    function getMagasins(string $codepostal,Request $request){
         //TODO
         throw Exceptions::createError(531);
+        return response(\App\Models\AdresseMagasins::getMagasins($codepostal))->header('Content-Type', 'application/json');
     }
 }

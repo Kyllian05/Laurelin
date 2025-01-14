@@ -6,7 +6,7 @@ use App\Domain\Adresse\Services\AdresseService;
 use App\Domain\Commande\Service\CartService;
 use App\Domain\Commande\Service\OrderService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
-use App\Models\Exceptions;
+use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
@@ -68,7 +68,8 @@ class CheckOutController extends Controller
         $data = $request->post();
 
         if($data["livraison"] != "domicile" && $data["livraison"] != "magasin"){
-            throw Exceptions::createError(520);
+            $e = Exceptions::createError(520);
+            return response($e->getMessage(),$e->getCode());
         }
 
         try{
@@ -83,13 +84,27 @@ class CheckOutController extends Controller
                 throw $e;
             }
         }
+
+        if(!isset($data["paiement"]["nom"]) || !isset($data["paiement"]["numéro"]) || !isset($data["paiement"]["mois"]) || !isset($data["paiement"]["année"]) || !isset($data["paiement"]["cryptograme"])){
+            $e = \App\Models\Exceptions::createError(524);
+            return response($e->getMessage(),$e->getCode());
+        }
+
         $this->cartService = new CartService($user);
 
         $commande = $this->cartService->getCart($user);
         $this->orderService->toOrder($commande);
-        $this->utilisateurService->getAdresses($user); // Update les adresses
-        $adresseCommande = $this->adresseService->findById(intval($data["adresse"])); // Seulement pour le domicile
 
-        $this->orderService->order($commande, $data['livraison'], $adresseCommande, $user);
+        if ($data["livraison"] == "domicile") {
+            // Domicile
+            $this->utilisateurService->getAdresses($user); // Update les adresses
+            $adresseCommande = $this->adresseService->findById(intval($data["adresse"])); // Seulement pour le domicile
+            $this->orderService->order($commande, $data['livraison'], $adresseCommande, $user);
+        } else {
+            // Magasin
+            // TODO
+            throw Exceptions::createError(531);
+            // \App\Models\Commande::where(["ID_UTILISATEUR" => $user["ID"],"ETAT"=>"panier"])->update(["ETAT"=>0,"ID_MAGASIN"=>$data["adresse"],"MODE_LIVRAISON"=>$data["livraison"]]);
+        }
     }
 }

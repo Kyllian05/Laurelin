@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Commande\Service\CartService;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
-use App\Models\Exceptions;
+use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
@@ -76,9 +76,11 @@ class PanierController extends Controller
 
     function getNumberInPanier(Request $request){
         //TODO : Optimisation: pas besoin d'obtenir le détail des produits
+        //TODO : Panier pour les utilisateurs non connectés
         $user = $this->utilisateurService->getAuthenticatedUser($request);
-
-        $this->cartService = new CartService($user);
-        return response(sizeof($this->cartService->getCart($user)->getProducts()),200)->header('Content-Type', 'application/json');
+        if ($user) {
+            $this->cartService = new CartService($user);
+            return response(sizeof($this->cartService->getCart($user)->getProducts()),200)->header('Content-Type', 'application/json');
+        }
     }
 }

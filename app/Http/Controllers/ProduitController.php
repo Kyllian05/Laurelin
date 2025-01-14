@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Domain\ProductGroup\Services\CategorieService;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
-use App\Models\Exceptions;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Nette\NotImplementedException;
 
 class ProduitController extends Controller
 {
@@ -44,6 +42,7 @@ class ProduitController extends Controller
                     'NOM' => $utilisateur ? $utilisateur->getNom() : ' ',
                     'PRENOM' => $utilisateur ? $utilisateur->getPrenom() : 'Anonyme',
                     'DATE' => $comment["DATE"],
+                    "DELETABLE" => $user != null && $comment["ID_UTILISATEUR"] == $user->getId(),
                 ];
             }
 
@@ -52,7 +51,9 @@ class ProduitController extends Controller
             $produitsAssocie = $this->categorieService->getProducts($cat);
             $dataProduitsAssocie = [];
             foreach ($produitsAssocie as $p) {
-                $dataProduitsAssocie[] = $this->produitService->serialize($p);
+                $prodSerialized = $this->produitService->serialize($p);
+                $prodSerialized["FAVORITE"] = $user && $this->userService->isFavorite($user, $p);
+                $dataProduitsAssocie[] = $prodSerialized;
             }
 
             return Inertia::render("Produit",[
@@ -65,18 +66,33 @@ class ProduitController extends Controller
         return response("", 404);
     }
 
-    public function getProduitPicture(string $id, Request $request ){
-        //TODO : Optimisation: On devrait pouvoir spécifier le nombre d'image à récupérer
-        return $this->produitService->getImages($this->produitService->findById($id));
-    }
-
     public function createCommentaire(Request $request){
+
         //TODO
-        throw Exceptions::createError(531);
+
+        $user = $this->userService->getAuthenticatedUser($request);
+
+        $data = $request->post();
+
+        $commentaire = \App\Models\Commentaire::create(["CONTENU"=>$data["contenu"],"ID_UTILISATEUR"=>$user->getId(),"ID_PRODUIT"=>$data["produit"],"DATE"=>date('Y-m-d', time())]);
+        $response = $commentaire->toArray();
+        unset($response["ID_UTILISATEUR"]);
+        unset($response["ID_PRODUIT"]);
+        unset($response["id"]);
+        $response["PRENOM"] = $user->getPrenom();
+        $response["NOM"] = $user->getNom();
+        $response["DELETABLE"] = true;
+        return response($response,200);
     }
 
     public function supprimerCommentaire(Request $request){
+
         //TODO
-        throw Exceptions::createError(531);
+
+        $user = $this->userService->getAuthenticatedUser($request);
+
+        $data = $request->post();
+
+        \App\Models\Commentaire::where(["ID_PRODUIT"=>$data["produit"],"ID_UTILISATEUR"=>$user->getId()])->delete();
     }
 }

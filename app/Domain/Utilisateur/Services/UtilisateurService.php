@@ -3,7 +3,6 @@
 namespace App\Domain\Utilisateur\Services;
 
 use App\Domain\Adresse\Repositories\AdresseRepository;
-use App\Domain\Commande\Entities\CommandeEntity;
 use App\Domain\Commande\Repositories\Database\CommandeRepository;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
@@ -69,6 +68,14 @@ class UtilisateurService
         }
         session(["TOKEN"=>$user->getToken()]);
         return $this->loginWithToken($user->getToken());
+    }
+
+    public function logout(): \Illuminate\Http\JsonResponse
+    {
+        session()->forget("TOKEN");
+        $response = response()->json(['message' => 'Déconnexion réussie']);
+        $response->headers->clearCookie('TOKEN');
+        return $response;
     }
 
     /**

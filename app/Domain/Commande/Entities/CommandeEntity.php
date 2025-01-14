@@ -122,8 +122,15 @@ class CommandeEntity
     public function serialize(): array
     {
         $productsSerialized = [];
-        foreach ($this->products as $product) {
-            $productsSerialized[] = $product->serialize();
+
+        if ($this->state instanceof CartSate) {
+            foreach ($this->products as $product) {
+                $productsSerialized[] = $product->serializeWithImages();
+            }
+        } else {
+            foreach ($this->products as $product) {
+                $productsSerialized[] = $product->serialize();
+            }
         }
 
         if ($this->state instanceof CartSate) {

@@ -87,4 +87,13 @@ class ProduitCommandeEntity
         ];
     }
 
+    public function serializeWithImages(): array
+    {
+        return [
+            'TAILLE' => $this->taille,
+            'QUANTITE' => $this->quantite,
+            'PRIX' => $this->prix,
+            'PRODUIT' => $this->produit->serialize(),
+        ];
+    }
 }

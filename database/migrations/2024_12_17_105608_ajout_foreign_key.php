@@ -44,8 +44,15 @@ return new class extends Migration
 
         DB::statement("
             ALTER TABLE Commande
-                ADD CONSTRAINT fk_commande_adresse
+                ADD CONSTRAINT fk_commande_magasin
                     FOREIGN KEY (ID_ADRESSE) REFERENCES Adresse(ID)
+        ");
+
+
+        DB::statement("
+            ALTER TABLE Commande
+                ADD CONSTRAINT fk_commande_adresseMagasins
+                    FOREIGN KEY (ID_MAGASIN) REFERENCES AdresseMagasins(ID)
         ");
 
         DB::statement("

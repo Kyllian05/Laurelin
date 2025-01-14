@@ -16,7 +16,7 @@ class ProduitCommandeRepository
         private ImageRepository $imageRepository
     ) {}
 
-    public function findByCommandeId(int $commandeId): array
+    public function findByCommandeId(int $commandeId, bool $withImages = false): array
     {
         $produitsCommandeModel = ProduitCommandeModel::where("ID_COMMANDE", $commandeId)->get();
         $produitsID = [];
@@ -27,7 +27,9 @@ class ProduitCommandeRepository
         $produits = $this->produitRepository->findAll($produitsID);
         $result = [];
 
-        //$this->imageRepository->getAllProductsImages($produits);
+        if ($withImages) {
+            $this->imageRepository->getAllProductsImages($produits);
+        }
 
         for($i = 0; $i < sizeof($produitsID); $i++) {
             $result[] = new ProduitCommandeEntity(

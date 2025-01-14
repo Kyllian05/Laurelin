@@ -57,7 +57,6 @@ Route::get("/collections/{name}", [MagasinController::class, "list_collections"]
 // Produit
 // ---
 Route::get("/produit/{id}", [ProduitController::class, "show"]);
-Route::get("/getProduitPicture/{id}", [ProduitController::class, "getProduitPicture"]);
 Route::post("/nouveauCommentaire",[ProduitController::class, "createCommentaire"]);
 Route::post("/supprimerCommentaire",[ProduitController::class, "supprimerCommentaire"]);
 
@@ -82,7 +81,7 @@ Route::get("/contact", [ContactController::class, "index"]);
 // ---
 Route::post("/adresse/ajout", [AdresseController::class, "ajout"]);
 Route::post("/adresse/supprimer", [AdresseController::class, "supprimer"]);
-Route::get("/adresse/getVilles/{codePostale}", [AdresseController::class, "getVilles"]);
+Route::get("/adresse/getVilles/{codePostal}", [AdresseController::class, "getVilles"]);
 Route::get("/adresse/getMagasins/{codePostal}", [AdresseController::class, "getMagasins"]);
 
 // ---

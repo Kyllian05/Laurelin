@@ -68,23 +68,17 @@ class AccountController extends Controller
 
     function update(Request $request) {
         $data = $request->post();
-        $user = $this->userService->getAuthenticatedUser($request);
-        if($user && isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])) {
-            try {
+        try{
+            $user = $this->userService->getAuthenticatedUser($request);
+            if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
                 $this->userService->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
-            } catch (\Exception $e) {
-                $class = explode("\\",get_class($e));
-                $class = $class[sizeof($class)-1];
-                if($class == "CustomExceptions"){
-                    return response($e->getMessage(),$e->getCode());
-                }else{
-                    \Log::info($e);
-                    return response("Erreur inconnue",500);
-                }
+            }else{
+                throw CustomExceptions::createError(521);
             }
-            return response("success",200);
-        } else {
-            return response("Accès refusé",520);
+        }catch(\Exception $e){
+            if($e instanceof \App\Domain\Shared\CustomExceptions){
+                return response($e->getMessage(),$e->getCode());
+            }
         }
     }
 }

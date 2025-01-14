@@ -17,7 +17,7 @@ import {defineEmits, defineProps, onMounted} from 'vue';
 import ButtonSubmit from "./ButtonSubmit.vue";
 import Field from "./Field.vue"
 
-const emit = defineEmits(["textClicked","formSubmitSuccessfully"])
+const emit = defineEmits(["textClicked","formSubmitSuccessfully","errorOccured"])
 
 let props = defineProps({
     "fields":Array[Object],
@@ -63,7 +63,8 @@ async function sendData(){
         }else{
             const reader = response.body.getReader()
             const text = new TextDecoder().decode((await reader.read()).value)
-            alert(text)
+            console.error(text)
+            emit("errorOccured",text)
         }
     })
 }

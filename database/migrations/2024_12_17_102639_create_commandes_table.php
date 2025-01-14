@@ -18,7 +18,8 @@ return new class extends Migration
                 ETAT VARCHAR(255) NOT NULL,
                 MODE_LIVRAISON VARCHAR(255),
                 ID_UTILISATEUR INT NOT NULL,
-                ID_ADRESSE INT
+                ID_ADRESSE INT,
+                ID_MAGASIN INT
             )
         ");
     }

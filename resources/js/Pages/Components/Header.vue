@@ -4,10 +4,10 @@
     <div id="burgerMenu" class="btn-side p-side" @click="showMenu = true">
         <span class="material-symbols-rounded">menu</span>
     </div>
-    <div id="imgWrapper">
+    <a href="/" id="imgWrapper">
         <img src="/public/images/logo-simple.png" alt="Logo">
-        <a href="/">Laurelin</a>
-    </div>
+        <span>Laurelin</span>
+    </a>
     <div id="centerWrapper">
         <nav>
             <a v-for="page in Object.keys(allPages)" :class="{selected : currentPage === page}" :href="allPages[page]">
@@ -28,6 +28,7 @@
         <a href="/panier" class="p-side btn-side" :class="{selected : currentPage === 'panier'}">
             <span class="material-symbols-rounded">shopping_bag</span>
             <p>Panier</p>
+            <p id="panierNumber" v-if="numberInPanier > 0">{{ numberInPanier }}</p>
         </a>
     </div>
 </div>
@@ -72,7 +73,12 @@
 <script setup>
     import { ref, watch, nextTick } from 'vue'
 
-    defineProps(["currentPage"])
+    const props = defineProps({
+        "currentPage":String,
+        "updatePanier":Boolean
+    })
+
+    const emits = defineEmits(["panierUpdated"])
 
     let allPages = {
         "Accueil":"/",
@@ -83,10 +89,13 @@
 
     const showMenu = ref(false)
     const showSearch = ref(false)
-    const searchQuery = ref("");
-    const debouncedQuery = ref("Laurelin");
-    const results = ref([]);
-    const searchInput = ref(null);
+    const searchQuery = ref("")
+    const debouncedQuery = ref("Laurelin")
+    const results = ref([])
+    const searchInput = ref(null)
+    const numberInPanier = ref(0)
+
+    getNumberInPanier()
 
     function handleClick(id) {
         window.location.href = `/produit/${id}`
@@ -99,6 +108,30 @@
         return await response.json();
     };
 
+    function getNumberInPanier(){
+        fetch("/getNumberInPanier",{
+            method : "GET",
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type":"application/json"
+            },
+        }).then(async response=> {
+            if(response.status === 200){
+                numberInPanier.value = await response.json()
+            }
+        })
+    }
+
+    watch(
+        () => props.updatePanier, // Utiliser une fonction pour observer la prop
+        () => {
+            if(props.updatePanier === true){
+                getNumberInPanier()
+                emits("panierUpdated")
+            }
+        }
+    )
+
     // Watcher pour appliquer un debounce à `searchQuery`
     let debounceTimeout = null;
     watch(
@@ -109,7 +142,7 @@
                 debouncedQuery.value = newQuery;
             }, 500); // Délai de debounce
         }
-    );
+    )
 
     // Watcher pour lancer la recherche lorsque `debouncedQuery` change
     watch(
@@ -135,6 +168,23 @@
 </script>
 
 <style scoped>
+  #panierNumber p{
+      margin: 0px;
+  }
+    #panierNumber{
+        position: absolute;
+        top: -1vh;
+        right: -1vw;
+        background-color: black;
+        color: white;
+        border-radius: 100%;
+        aspect-ratio: 1/1;
+        width: 30px;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+    }
     #header {
         position: fixed;
         display: flex;
@@ -223,17 +273,18 @@
     }
 
     /* Logo left */
-    #imgWrapper a{
+    #imgWrapper span{
         font-family: "Parisienne", serif;
         font-size: 40px;
-        text-decoration: none;
         color: #000000;
     }
+
     #imgWrapper{
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 16px;
+        text-decoration: none;
     }
     img{
         height: 48px;
@@ -279,6 +330,7 @@
     }
     .p-side {
         padding: 12px 22px;
+        position: relative;
     }
 
     /* Nav center */

@@ -8,8 +8,10 @@
 <script setup>
 let props = defineProps({
     "whiteBorder" : Boolean,
-    "id" : Number
+    "id" : Number,
 })
+
+let emits = defineEmits(["ajout"])
 
 function ajoutAuPanier(){
     fetch("/panier/ajout",{
@@ -22,8 +24,8 @@ function ajoutAuPanier(){
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200){
-            //dynamicFavorite.value = !dynamicFavorite.value
+        if(response.status === 200){
+            emits("ajout")
         }
     })
 }

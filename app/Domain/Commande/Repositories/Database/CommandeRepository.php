@@ -50,14 +50,17 @@ class CommandeRepository implements CommandeRepositoryInterface
         $commandes = [];
 
         foreach ($commadesModel as $commande) {
-            $commandes[] = CommandeEntity::commandeFactory(
-                $commande->ID,
-                $commande->DATE,
-                $produits[$commande->ID],
-                $commande->ETAT,
-                $commande->MODE_LIVRAISON,
-                $commandeAdresse[$commande->ID_ADRESSE]
-            );
+            // TODO : enlever la condition c'est pour les magasins
+            if (!is_null($commande->ID_ADRESSE)) {
+                $commandes[] = CommandeEntity::commandeFactory(
+                    $commande->ID,
+                    $commande->DATE,
+                    $produits[$commande->ID],
+                    $commande->ETAT,
+                    $commande->MODE_LIVRAISON,
+                    $commandeAdresse[$commande->ID_ADRESSE]
+                );
+            }
         }
         return $commandes;
     }
@@ -89,7 +92,7 @@ class CommandeRepository implements CommandeRepositoryInterface
             return CommandeEntity::commandeFactory(
                 $panierModel->ID,
                 $panierModel->DATE,
-                $this->produitCommandeRepository->findByCommandeId($panierModel->ID),
+                $this->produitCommandeRepository->findByCommandeId($panierModel->ID, true),
                 $panierModel->ETAT
             );
         }
@@ -98,11 +101,14 @@ class CommandeRepository implements CommandeRepositoryInterface
 
     public function addProduct(CommandeEntity $commande, ProduitEntity $produitEntity, int $taille, ?int $prix): void
     {
+        $this->imageRepository->getAllProductImages($produitEntity);
+
         $prodCommande = new ProduitCommandeEntity(
             $taille,
             1,
             $prix,
-            $produitEntity
+            $produitEntity,
+            $commande->getId()
         );
 
         $commande->addProduct($prodCommande);

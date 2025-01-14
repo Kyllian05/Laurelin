@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 
 use App\Domain\Produit\Services\ProduitService;
+use App\Domain\Shared\Exceptions;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,8 @@ class FavorisController extends Controller{
         $data = $request->post();
         $user = $this->userService->getAuthenticatedUser($request);
         if($user == null){
-            return response("", 404);
+            $e = Exceptions::createError(522);
+            return response($e->getMessage(), $e->getCode());
         }
         $produit = $this->produitService->findById($data['produit']);
         $this->userService->addFavoris($user,$produit);
