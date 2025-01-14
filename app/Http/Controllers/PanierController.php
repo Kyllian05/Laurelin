@@ -80,7 +80,12 @@ class PanierController extends Controller
         $user = $this->utilisateurService->getAuthenticatedUser($request);
         if ($user) {
             $this->cartService = new CartService($user);
-            return response(sizeof($this->cartService->getCart($user)->getProducts()),200)->header('Content-Type', 'application/json');
+            $produitCommandes = $this->cartService->getCart($user)->getProducts();
+            $result = 0;
+            foreach ($produitCommandes as $produitCommande) {
+                $result += $produitCommande->getQuantite();
+            }
+            return response($result,200)->header('Content-Type', 'application/json');
         }
     }
 }
