@@ -5,7 +5,6 @@ namespace App\Domain\Commande\Entities;
 use App\Domain\Adresse\Entities\AdresseEntity;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Livraison;
-use http\Exception\InvalidArgumentException;
 
 class CommandeEntity
 {

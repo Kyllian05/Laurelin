@@ -2,7 +2,7 @@
 
 namespace App\Domain\Utilisateur\Entities;
 
-use App\Domain\Adresse\Entities\AdresseEntity;
+use App\Domain\Adresse\Entities\AdresseUtilisateur;
 use App\Domain\Commande\Entities\CommandeEntity;
 use App\Domain\Produit\Entities\ProduitEntity;
 use App\Domain\Shared\Role;
@@ -154,7 +154,7 @@ abstract class UtilisateurEntity
      */
     public function getAdresses(): array {
         if (is_null($this->adresses)) {
-            throw new \Exception("Get must be called from UtilisateurService");
+            throw new \Exception("Get adresses must be called from UtilisateurService");
         }
         return $this->adresses;
     }
@@ -265,7 +265,7 @@ abstract class UtilisateurEntity
     public function setAdresses(array $adresses): void
     {
         foreach ($adresses as $adresse) {
-            if (!($adresse instanceof AdresseEntity)) {
+            if (!($adresse instanceof AdresseUtilisateur)) {
                 throw new \InvalidArgumentException("L'adresse n'est pas une adresse valide");
             }
         }

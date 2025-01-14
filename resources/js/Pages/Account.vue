@@ -41,7 +41,7 @@
                     <div v-if="currentCommandDetail == commande.ID" class="commandsDetails font-body-l">
                         <p>Méthode de livraison : {{ commande.LIVRAISON }}</p>
                         <p v-if="commande.LIVRAISON == 'domicile'">{{commande.ADRESSE.NUM_RUE}} {{commande.ADRESSE.NOM_RUE}} {{commande.ADRESSE.VILLE.NOM}} {{commande.ADRESSE.VILLE.CODE_POSTAL}}</p>
-                        <p v-else>{{commande.ADRESSE.ADRESSE}} {{commande.ADRESSE.VILLE.NOM}} {{commande.ADRESSE.CODE_POSTAL}}</p>
+                        <p v-else>{{commande.ADRESSE.ADRESSE}} {{commande.ADRESSE.VILLE.NOM}} {{commande.ADRESSE.VILLE.CODE_POSTAL}}</p>
                     </div>
                 </div>
             </div>

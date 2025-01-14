@@ -2,10 +2,12 @@
 
 namespace App\Domain\Adresse\Repositories;
 
-use App\Domain\Adresse\Entities\AdresseEntity;
+use App\Domain\Adresse\Entities\AdresseMagasin;
+use App\Domain\Adresse\Entities\AdresseUtilisateur;
 use App\Domain\Adresse\Entities\VilleEntity;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
 use App\Models\Adresse as AdresseModel;
+use App\Models\AdresseMagasins as AdresseMagasinModel;
 
 class AdresseRepository
 {
@@ -13,11 +15,11 @@ class AdresseRepository
         private VilleRepository $villeRepository
     ){}
 
-    public function findById(int $id): ?AdresseEntity
+    public function findById(int $id): ?AdresseUtilisateur
     {
         $adresseModel = AdresseModel::find($id);
         if ($adresseModel) {
-            return new AdresseEntity(
+            return new AdresseUtilisateur(
                 $adresseModel->ID,
                 $adresseModel->NUM_RUE,
                 $adresseModel->NOM_RUE,
@@ -27,44 +29,93 @@ class AdresseRepository
         return null;
     }
 
-    public function findByIds(array $ids): array{
-        $adressesModel = AdresseModel::whereIn("ID",$ids)->get();
 
-        $villesId = [];
-        foreach ($adressesModel as $adresseModel) {
-            $villesId[] = $adresseModel->ID_VILLE;
+    public function findByIdMagasin(int $id): ?AdresseMagasin
+    {
+        $adresseModel = AdresseMagasinModel::find($id);
+        if ($adresseModel) {
+            return new AdresseMagasin(
+                $adresseModel->ID,
+                $adresseModel->ADRESSE,
+                $this->villeRepository->findById($adresseModel->ID_VILLE),
+            );
         }
+        return null;
+    }
 
-        $villes = $this->villeRepository->findByIds($villesId);
+    public function findMagasinByCodePostal(string $codePostal): array
+    {
+        $villes = $this->villeRepository->findByCodePostal($codePostal, false);
+        $villesIds = [];
+        foreach ($villes as $ville) {
+            $villesIds[] = $ville->id;
+        }
+        $adresseModel = AdresseMagasinModel::whereIn('ID_VILLE', $villesIds)->get();
+        $allAdresses = [];
+        foreach ($adresseModel as $adresse) {
+            $index = array_search($adresse->ID_VILLE, $villesIds);
+            $allAdresses[] = new AdresseMagasin(
+                $adresse->ID,
+                $adresse->ADRESSE,
+                $villes[$index]
+            );
+        }
+        return $allAdresses;
+    }
 
-        $adressesville = [];
+    public function findByIds(array $ids): array
+    {
+        $adressesModel = AdresseModel::whereIn('ID', $ids)->get();
 
-        for($i = 0; $i < sizeof($adressesModel); $i++){
-            for($j = 0; $j < sizeof($villes); $j++){
-                if($adressesModel[$i]->ID_VILLE == $villes[$j]->id){
-                    $adressesville[$adressesModel[$i]["ID"]] = $villes[$j];
-                    break;
-                }
-            }
+        $villesId = $adressesModel->pluck('ID_VILLE')->unique();
+
+        $villes = $this->villeRepository->findByIds($villesId->toArray());
+
+        $villesIndexees = [];
+        foreach ($villes as $ville) {
+            $villesIndexees[$ville->id] = $ville;
         }
 
         $adresses = [];
         foreach ($adressesModel as $adresseModel) {
-            $adresses[] = new AdresseEntity(
+            $adresses[] = new AdresseUtilisateur(
                 $adresseModel->ID,
                 $adresseModel->NUM_RUE,
                 $adresseModel->NOM_RUE,
-                $adressesville[$adresseModel->ID],
+                $villesIndexees[$adresseModel->ID_VILLE],
             );
         }
         return $adresses;
     }
 
-    public function add(int $numRue, string $nomRue, VilleEntity $villeEntity, UtilisateurEntity $utilisateurEntity): AdresseEntity
+    public function findMagasinByIds(array $ids): array
+    {
+        $adressesModel = AdresseMagasinModel::whereIn('ID', $ids)->get();
+        $villesId = $adressesModel->pluck('ID_VILLE')->unique();
+
+        $villes = $this->villeRepository->findByIds($villesId->toArray());
+
+        $villesIndexees = [];
+        foreach ($villes as $ville) {
+            $villesIndexees[$ville->id] = $ville;
+        }
+
+        $adresses = [];
+        foreach ($adressesModel as $adresseModel) {
+            $adresses[] = new AdresseMagasin(
+                $adresseModel->ID,
+                $adresseModel->ADRESSE,
+                $villesIndexees[$adresseModel->ID_VILLE],
+            );
+        }
+        return $adresses;
+    }
+
+    public function add(int $numRue, string $nomRue, VilleEntity $villeEntity, UtilisateurEntity $utilisateurEntity): AdresseUtilisateur
     {
         $adresseModel = AdresseModel::create(["NUM_RUE"=>$numRue,"NOM_RUE"=>$nomRue,"ID_UTILISATEUR"=>$utilisateurEntity->getId(),"ID_VILLE"=>$villeEntity->id]);
 
-        return new AdresseEntity(
+        return new AdresseUtilisateur(
             $adresseModel->ID,
             $adresseModel->NUM_RUE,
             $adresseModel->NOM_RUE,
@@ -72,7 +123,7 @@ class AdresseRepository
         );
     }
 
-    public function delete(AdresseEntity $adresseEntity): void
+    public function delete(AdresseUtilisateur $adresseEntity): void
     {
         AdresseModel::where(["ID"=>$adresseEntity->id])->delete();
     }
@@ -101,7 +152,7 @@ class AdresseRepository
 
         $adresses = [];
         foreach ($adressesModel as $adresseModel) {
-            $adresses[] = new AdresseEntity(
+            $adresses[] = new AdresseUtilisateur(
                 $adresseModel->ID,
                 $adresseModel->NUM_RUE,
                 $adresseModel->NOM_RUE,

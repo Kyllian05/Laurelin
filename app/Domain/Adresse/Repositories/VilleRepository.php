@@ -34,9 +34,13 @@ class VilleRepository
             return $result;
         }
 
-        public function findByCodePostal(string $codePostal): array
+        public function findByCodePostal(string $codePostal, bool $limit = true): array
         {
-            $villesModel = VilleModel::where('CODE_POSTAL','LIKE', $codePostal."%")->take(10)->get();
+            if ($limit) {
+                $villesModel = VilleModel::where('CODE_POSTAL','LIKE', $codePostal."%")->take(10)->get();
+            } else {
+                $villesModel = VilleModel::where('CODE_POSTAL','LIKE', $codePostal."%")->get();
+            }
             $allVilles = [];
             foreach ($villesModel as $ville) {
                 $allVilles[] = new VilleEntity(

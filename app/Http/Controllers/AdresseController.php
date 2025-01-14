@@ -47,9 +47,13 @@ class AdresseController extends Controller{
         return response($villesSerialized)->header('Content-Type', 'application/json');
     }
 
-    function getMagasins(string $codepostal,Request $request){
-        //TODO
-        throw Exceptions::createError(531);
-        return response(\App\Models\AdresseMagasins::getMagasins($codepostal))->header('Content-Type', 'application/json');
+    function getMagasins(string $codepostal, Request $request)
+    {
+        $magasins = $this->adresseService->findMagasinByCodePostal($codepostal);
+        $magasinsSerialized = [];
+        foreach ($magasins as $magasin) {
+            $magasinsSerialized[] = $magasin->serialize();
+        }
+        return response($magasinsSerialized, 200)->header('Content-Type', 'application/json');
     }
 }

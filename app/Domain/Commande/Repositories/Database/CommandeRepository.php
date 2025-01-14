@@ -3,6 +3,8 @@
 namespace App\Domain\Commande\Repositories\Database;
 
 use App\Domain\Adresse\Entities\AdresseEntity;
+use App\Domain\Adresse\Entities\AdresseMagasin;
+use App\Domain\Adresse\Entities\AdresseUtilisateur;
 use App\Domain\Adresse\Repositories\AdresseRepository;
 use App\Domain\Commande\Entities\CommandeEntity;
 use App\Domain\Commande\Entities\ProduitCommandeEntity;
@@ -25,42 +27,47 @@ class CommandeRepository implements CommandeRepositoryInterface
     {
         $commadesModel = CommandeModel::where(["ID_UTILISATEUR" => $user->getId()])->where("ETAT","!=","Panier")->get()->sortByDesc("DATE");
 
-        $commandesIds = [];
-        $adressesId = [];
-        for($i = 0; $i < count($commadesModel); $i++){
-            $commandesIds[] = $commadesModel[$i]["ID"];
-            $adressesId[] = $commadesModel[$i]["ID_ADRESSE"];
-        }
+        $commandesIds = $commadesModel->pluck("ID")->toArray();
+        // Utilisation de filter pour enlever les ID nulls
+        $adressesId = $commadesModel->pluck("ID_ADRESSE")->filter()->unique()->toArray();
+        $adressesMagasinId = $commadesModel->pluck("ID_MAGASIN")->filter()->unique()->toArray();
 
         $produitsCommandes = $this->produitCommandeRepository->findByCommandesIds($commandesIds);
         $adresses = $this->adresseRepository->findByIds($adressesId);
+        $adresseMagasins = $this->adresseRepository->findMagasinByIds($adressesMagasinId);
 
-        $produits = [];
-
+        $produitsIndexes = [];
         foreach($produitsCommandes as $produitCommande){
-            $produits[$produitCommande->getCommandeID()][] = $produitCommande;
+            $produitsIndexes[$produitCommande->getCommandeID()][] = $produitCommande;
         }
 
-        $commandeAdresse = [];
-
+        $adresseIndexees = [];
         foreach($adresses as $adresse){
-            $commandeAdresse[$adresse->id] = $adresse;
+            $adresseIndexees[$adresse->id] = $adresse;
+        }
+
+        $adresseMagasinIndexees = [];
+        foreach($adresseMagasins as $adresseMagasin){
+            $adresseMagasinIndexees[$adresseMagasin->id] = $adresseMagasin;
         }
 
         $commandes = [];
-
         foreach ($commadesModel as $commande) {
-            // TODO : enlever la condition c'est pour les magasins
-            if (!is_null($commande->ID_ADRESSE)) {
-                $commandes[] = CommandeEntity::commandeFactory(
-                    $commande->ID,
-                    $commande->DATE,
-                    $produits[$commande->ID],
-                    $commande->ETAT,
-                    $commande->MODE_LIVRAISON,
-                    $commandeAdresse[$commande->ID_ADRESSE]
-                );
+            if (!is_null($commande->ID_ADRESSE) && is_null($commande->ID_MAGASIN)) {
+                $finalAdresse = $adresseIndexees[$commande->ID_ADRESSE];
+            } else if (is_null($commande->ID_ADRESSE) && !is_null($commande->ID_MAGASIN)) {
+                $finalAdresse = $adresseMagasinIndexees[$commande->ID_MAGASIN];
+            } else {
+                throw new \Exception("La commande ne possède pas d'adresse valide");
             }
+            $commandes[] = CommandeEntity::commandeFactory(
+                $commande->ID,
+                $commande->DATE,
+                $produitsIndexes[$commande->ID],
+                $commande->ETAT,
+                $commande->MODE_LIVRAISON,
+                $finalAdresse
+            );
         }
         return $commandes;
     }
@@ -148,7 +155,7 @@ class CommandeRepository implements CommandeRepositoryInterface
         }
     }
 
-    public function updateLivraisonDomicile(CommandeEntity $commandeEntity, AdresseEntity $adresseEntity): void
+    public function updateLivraisonDomicile(CommandeEntity $commandeEntity, AdresseUtilisateur $adresseEntity): void
     {
         $commandeEntity->modifyLivraison(Livraison::Domicile);
         $commandeEntity->modifyAdresse($adresseEntity);
@@ -158,8 +165,13 @@ class CommandeRepository implements CommandeRepositoryInterface
         ]);
     }
 
-    public function updateLivraisonMagasin(CommandeEntity $commandeEntity): void
+    public function updateLivraisonMagasin(CommandeEntity $commandeEntity, AdresseMagasin $adresseMagasin): void
     {
-        throw new \Exception("TODO : not implemented");
+        $commandeEntity->modifyLivraison(Livraison::Magasin);
+        $commandeEntity->modifyAdresse($adresseMagasin);
+        CommandeModel::where("ID", $commandeEntity->getId())->update([
+            "MODE_LIVRAISON" => "magasin",
+            "ID_MAGASIN" => $commandeEntity->getAdresse()->id,
+        ]);
     }
 }

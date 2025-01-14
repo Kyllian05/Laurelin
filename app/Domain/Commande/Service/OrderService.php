@@ -3,6 +3,8 @@
 namespace App\Domain\Commande\Service;
 
 use App\Domain\Adresse\Entities\AdresseEntity;
+use App\Domain\Adresse\Entities\AdresseMagasin;
+use App\Domain\Adresse\Entities\AdresseUtilisateur;
 use App\Domain\Commande\Entities\CommandeEntity;
 use App\Domain\Commande\Repositories\Database\CommandeRepository as DBCommandeRepository;
 use App\Domain\Shared\Livraison;
@@ -21,7 +23,7 @@ class OrderService
 
     public function order(CommandeEntity $commandeEntity, string $livraison, AdresseEntity $adresseEntity, UtilisateurEntity $utilisateurEntity): void
     {
-        if ($livraison == "domicile")
+        if ($livraison == "domicile" && $adresseEntity instanceof AdresseUtilisateur)
         {
             // Vérifier que l'adresse appartient à l'utilisateur
             $valid = false;
@@ -35,11 +37,10 @@ class OrderService
                 throw new \InvalidArgumentException("L'adresse n'appartient pas à l'utilisateur");
             }
             $this->commandeRepository->updateLivraisonDomicile($commandeEntity, $adresseEntity);
-        } elseif ($livraison == "magasin") {
-            // TODO
-            $this->commandeRepository->updateLivraisonMagasin($commandeEntity);
+        } elseif ($livraison == "magasin" && $adresseEntity instanceof AdresseMagasin) {
+            $this->commandeRepository->updateLivraisonMagasin($commandeEntity, $adresseEntity);
         } else {
-            throw new \InvalidArgumentException("Unexpected type of livraison");
+            throw new \InvalidArgumentException("Unexpected type of livraison or address is invalid");
         }
 
         $this->commandeRepository->updatePrices($commandeEntity);

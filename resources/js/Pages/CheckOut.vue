@@ -44,7 +44,7 @@
                     <div v-else>
                         <Field name="Code Postal" @input="codePostale => searchMagasins(codePostale)" style="width: 50%;margin-left: 50%;transform: translateX(-50%);margin-bottom: 2vh"></Field>
                         <select id="selectVille" class="font-subtitle-16" v-model="currentMagasin">
-                            <option :value="magasin['ID']" v-for="magasin in magasinsRecomm">{{ magasin["ADRESSE"] }} {{ magasin["VILLE"] }} {{ magasin["CODEPOSTAL"] }}</option>
+                            <option :value="magasin" v-for="magasin in magasinsRecomm">{{ magasin.ADRESSE }} {{ magasin.VILLE.NOM }} {{ magasin.VILLE.CODE_POSTAL }}</option>
                         </select>
                     </div>
                     <button id="adresseValidateButton" @click="validateLivraison()">
@@ -55,9 +55,10 @@
                     </button>
                 </div>
                 <div v-else-if="currentStep > 2" @click="annuleLivraison()">
-                    <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
-                    <p class="font-subtitle-16 codePostale">{{ data["adresse"]["CODE_POSTAL"] }}</p>
-                    <p class="font-subtitle-16 ville">{{ data["adresse"]["VILLE"] }}</p>
+                    <p class="font-subtitle-16 adresse" v-if="adresseMethod === 'domicile'">{{ data["adresse"].NUM_RUE }} {{ data["adresse"].NOM_RUE }}</p>
+                    <p class="font-subtitle-16 adresse" v-else>{{ data["adresse"].ADRESSE }}</p>
+                    <p class="font-subtitle-16 codePostale">{{ data["adresse"].VILLE.CODE_POSTAL }}</p>
+                    <p class="font-subtitle-16 ville">{{ data["adresse"].VILLE.NOM }}</p>
                 </div>
             </div>
 
@@ -183,10 +184,11 @@ async function paye(){
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
     const response = await fetch("/checkout/valider",{
         method : "POST",
         body : JSON.stringify({
-            "adresse" : props.adresses[currentAdresse.value].ID,
+            "adresse" : data["adresse"].ID,
             "livraison" : adresseMethod.value,
             "paiement" : paimentData.value
         }),
@@ -224,7 +226,7 @@ function validateLivraison(){
     if(adresseMethod.value === "domicile"){
         data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
     }else{
-        data["adresse"] = currentMagasin.value
+        data["adresse"] = toRaw(currentMagasin.value)
     }
     currentStep.value += 2
 }
