@@ -351,8 +351,7 @@ let props = defineProps(
         flex-direction: column;
         width: 50vw;
         max-width: 770px;
-        height: 50vh;
-        max-height: 500px;
+        height: fit-content;
         margin-top: 50vh;
         margin-left: 50vw;
         padding-bottom: 30px;
@@ -680,7 +679,7 @@ let props = defineProps(
     @media (max-width: 1000px) {
         #ajoutAdresseContent {
             width: 80vh;
-            height: 60vh;
+            height: fit-content;
             margin-left: 10%;
             margin-top: 50vh;
             transform: translate(-6%, -50%);
