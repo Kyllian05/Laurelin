@@ -38,7 +38,6 @@ class AdresseController extends Controller{
         $user = $this->utilisateurService->getAuthenticatedUser($request); // Sécurité
 
         if($user == null){
-            \Log::info("fuck");
             $e = Exceptions::createError(525);
             return response()->json($e->getMessage(),$e->httpCode);
         }

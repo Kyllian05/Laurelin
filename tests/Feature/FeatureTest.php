@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Domain\Adresse\Repositories\AdresseRepository;
+use App\Domain\Adresse\Repositories\VilleRepository;
 use App\Domain\Commentaire\Repositories\CommentaireRepository;
 use App\Domain\Produit\Repositories\ProduitRepository;
 use App\Domain\Utilisateur\Repositories\UtilisateurRepository;
@@ -18,6 +20,10 @@ class FeatureTest extends TestCase
     private \App\Domain\Commentaire\Repositories\CommentaireRepository $commentaireRepository;
 
     private \App\Domain\Produit\Repositories\ProduitRepository $produitRepository;
+
+    private \App\Domain\Adresse\Repositories\VilleRepository $villeRepository;
+
+    private \App\Domain\Adresse\Repositories\AdresseRepository $adresseRepository;
 
     function defineToken(string $email,string $password){
         $user = $this->utilisateurRepository->findByEmail($email);
@@ -46,6 +52,8 @@ class FeatureTest extends TestCase
         $this->utilisateurRepository = new UtilisateurRepository();
         $this->commentaireRepository = new CommentaireRepository($this->utilisateurRepository);
         $this->produitRepository = new ProduitRepository();
+        $this->villeRepository = new VilleRepository();
+        $this->adresseRepository = new AdresseRepository($this->villeRepository);
     }
 
     function test_authentication(){
@@ -152,5 +160,57 @@ class FeatureTest extends TestCase
 
         assert(!\App\Models\Favoris::where(["ID_PRODUIT"=>$produitTest,"ID_UTILISATEUR"=>$user->getId()])->exists());
         //on vérifie que le produit n'est plus dans les favoris de l'utilisateur
+    }
+
+    function test_ajout_interaction(){
+        $this->defineToken("admin@admin.com","admin");
+        $user = $this->utilisateurRepository->findByToken($this->token);
+        assert($user != null);
+
+        $adresses = $this->adresseRepository->findByUser($user);
+
+        $IdVilleTest = 29232;
+
+        foreach ($adresses as $adresse){
+            $serialized = $adresse->serialize();
+            assert($serialized["VILLE"]["ID"] != $IdVilleTest || $serialized["NUM_RUE"] != 42 || $serialized["NOM_RUE"] != "Rue de test");
+        }
+
+        $reponse = $this->post("/adresse/ajout", [
+            "Ville"=>[
+                "ID"=>$IdVilleTest,
+            ],
+            "Numéro"=>42,
+            "Nom de rue"=>"Rue de test"
+        ]);;
+        $reponse->assertStatus(200);
+
+        $adresses = $this->adresseRepository->findByUser($user);
+
+        assert(\App\Models\Adresse::where([
+            "NUM_RUE"=>42,
+            "NOM_RUE"=>"Rue de test",
+            "ID_VILLE"=>$IdVilleTest,
+            "ID_UTILISATEUR"=>$user->getId()
+        ])->exists());
+
+        $adresseModel = \App\Models\Adresse::where([
+            "NUM_RUE"=>42,
+            "NOM_RUE"=>"Rue de test",
+            "ID_VILLE"=>$IdVilleTest,
+            "ID_UTILISATEUR"=>$user->getId()
+        ])->firstOrFail();
+
+        $reponse = $this->post("/adresse/supprimer", [
+            "ID" => $adresseModel["ID"],
+        ]);
+        $reponse->assertStatus(200);
+
+        assert(!\App\Models\Adresse::where([
+            "NUM_RUE"=>42,
+            "NOM_RUE"=>"Rue de test",
+            "ID_VILLE"=>$IdVilleTest,
+            "ID_UTILISATEUR"=>$user->getId()
+        ])->exists());
     }
 }
