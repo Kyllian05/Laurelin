@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Commentaire\Service\CommentaireService;
 use App\Domain\ProductGroup\Services\CategorieService;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
@@ -14,6 +15,7 @@ class ProduitController extends Controller
         private UtilisateurService $userService,
         private ProduitService $produitService,
         private CategorieService $categorieService,
+        private CommentaireService $commentaireService
     ) {}
 
     public function show(string $id, Request $request)
@@ -29,21 +31,11 @@ class ProduitController extends Controller
             }
 
             // Récupérer les données des commentaires
-            $commentairedonnees = \App\Models\Commentaire::where("ID_PRODUIT",$produit->id)->get()->toArray();
-
-            $donneescommantaire = []; // Tableau final avec les données enrichies
-
-            foreach ($commentairedonnees as $comment) {
-                $utilisateur = $this->userService->findById($comment["ID_UTILISATEUR"]);
-                $donneescommantaire[] = [
-                    'CONTENU' => $comment["CONTENU"],
-                    'ID_UTILISATEUR' => $comment["ID_UTILISATEUR"],
-                    'ID_PRODUIT' => $comment["ID_PRODUIT"],
-                    'NOM' => $utilisateur ? $utilisateur->getNom() : ' ',
-                    'PRENOM' => $utilisateur ? $utilisateur->getPrenom() : 'Anonyme',
-                    'DATE' => $comment["DATE"],
-                    "DELETABLE" => $user != null && $comment["ID_UTILISATEUR"] == $user->getId(),
-                ];
+            $commentaires = $this->commentaireService->findByProduct($produit);
+            $commentairesSerialized = [];
+            foreach ($commentaires as $commentaire) {
+                $commentaire->setDeletable($user);
+                $commentairesSerialized[] = $commentaire->serialize();
             }
 
             // Récupérer les produits associés
@@ -60,39 +52,22 @@ class ProduitController extends Controller
                 "produit" => $this->produitService->serialize($produit),
                 "isFavorite" => $isFav,
                 "autreProduits" => $dataProduitsAssocie,
-                "donneesCommentaires" => $donneescommantaire,
+                "donneesCommentaires" => $commentairesSerialized,
             ]);
         }
         return response("", 404);
     }
 
     public function createCommentaire(Request $request){
-
-        //TODO
-
         $user = $this->userService->getAuthenticatedUser($request);
-
         $data = $request->post();
-
-        $commentaire = \App\Models\Commentaire::create(["CONTENU"=>$data["contenu"],"ID_UTILISATEUR"=>$user->getId(),"ID_PRODUIT"=>$data["produit"],"DATE"=>date('Y-m-d', time())]);
-        $response = $commentaire->toArray();
-        unset($response["ID_UTILISATEUR"]);
-        unset($response["ID_PRODUIT"]);
-        unset($response["id"]);
-        $response["PRENOM"] = $user->getPrenom();
-        $response["NOM"] = $user->getNom();
-        $response["DELETABLE"] = true;
-        return response($response,200);
+        $commentaire = $this->commentaireService->create($user, $data["produit"], $data["contenu"]);
+        return response($commentaire->serialize(),200);
     }
 
     public function supprimerCommentaire(Request $request){
-
-        //TODO
-
         $user = $this->userService->getAuthenticatedUser($request);
-
         $data = $request->post();
-
-        \App\Models\Commentaire::where(["ID_PRODUIT"=>$data["produit"],"ID_UTILISATEUR"=>$user->getId()])->delete();
+        $this->commentaireService->delete($user, $data['produit']);
     }
 }

@@ -86,7 +86,7 @@ class CheckOutController extends Controller
         }
 
         if(!isset($data["paiement"]["nom"]) || !isset($data["paiement"]["numéro"]) || !isset($data["paiement"]["mois"]) || !isset($data["paiement"]["année"]) || !isset($data["paiement"]["cryptograme"])){
-            $e = \App\Models\Exceptions::createError(524);
+            $e = Exceptions::createError(524);
             return response($e->getMessage(),$e->getCode());
         }
 

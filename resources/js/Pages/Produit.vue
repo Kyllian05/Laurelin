@@ -45,17 +45,19 @@
 
         <div id="avis">
             <p class="font-subtitle-16"> Les Avis de Nos Clients </p>
+            <div v-for="comm in dynamicCommentaire" class="commentaire">
+                <div  class="nom-prenom">
+                    <span class="prenom font-body-l">{{comm.PRENOM}}</span>
+                    <span class="nom font-body-l">{{comm.NOM}}</span>
+                </div>
+                <span class="date font-body-s">{{comm.DATE}}</span>
+                <span class="contenu font-body-m">{{comm.CONTENU}}</span>
+                <span class="material-symbols-rounded" id="deleteComment" v-if="comm.DELETABLE" alt="supprimer le commentaire" title="supprimer le commentaire" @click="deleteCommentaire()">remove</span>
+            </div>
+            <div v-if="!hasUserComment" id="form">
                 <textarea class="font-body-m" v-model="commentaireInput"></textarea>
                 <button class="avisButton font-body-l" @click="sendCommentaire()"> Donnez votre avis </button>
-                <div v-for="comm in dynamicCommentaire" class="commentaire">
-                    <div  class="nom-prenom">
-                        <span class="prenom font-body-l">{{comm.PRENOM}}</span>
-                        <span class="nom font-body-l">{{comm.NOM}}</span>
-                    </div>
-                    <span class="date font-body-s">{{comm.DATE}}</span>
-                    <span class="contenu font-body-m">{{comm.CONTENU}}</span>
-                    <span class="material-symbols-rounded" id="deleteComment" v-if="comm['DELETABLE']" alt="supprimer le commentaire" title="supprimer le commentaire"@click="deleteCommentaire()">remove</span>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -81,6 +83,8 @@ const props = defineProps({
 const dynamicFavorite = ref(props.isFavorite)
 
 const dynamicCommentaire = ref(props.donneesCommentaires)
+
+const hasUserComment = ref(false)
 
 const commentaireInput = ref("")
 
@@ -120,6 +124,17 @@ function eventPanier(){
     updatePanier.value = true
 }
 
+// Commentaires
+function updateUserComment() {
+    hasUserComment.value = false
+    for (let i=0; i<dynamicCommentaire.value.length; i++) {
+        if (dynamicCommentaire.value[i].DELETABLE === true) {
+            hasUserComment.value = true
+            break
+        }
+    }
+}
+
 function deleteCommentaire(){
     fetch("/supprimerCommentaire",{
         method : "POST",
@@ -132,7 +147,8 @@ function deleteCommentaire(){
         },
     }).then(async response => {
         if(response.status === 200){
-            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire["DELETABLE"] === false )
+            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire.DELETABLE === false)
+            updateUserComment()
         }
     })
 }
@@ -151,6 +167,7 @@ function sendCommentaire(){
     }).then(async response => {
         if(response.status === 200){
             dynamicCommentaire.value.push(await response.json())
+            updateUserComment()
         }
     })
 }
@@ -194,9 +211,10 @@ const choisirProduitsAleatoires = () => {
     }
 };
 
-// Initialisation des produits associés au montage
+// Initialisation des produits associés au montage et du form des commentaires
 onMounted(() => {
     choisirProduitsAleatoires();
+    updateUserComment()
 });
 
 const handleClick = (produit) => {
@@ -488,6 +506,13 @@ img {
     flex-direction: column;
     align-items: center;
     margin-bottom: 2vh;
+}
+
+#form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #avis .commentaire {

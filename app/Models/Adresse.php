@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Domain\Utilisateur\Entities\UtilisateurEntity;
 use Illuminate\Database\Eloquent\Model;
 
 class Adresse extends Model
