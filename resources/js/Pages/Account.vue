@@ -441,6 +441,8 @@ let props = defineProps(
         background-color: white;
         border-radius: 50%;
         box-shadow: 0 0 8px rgba(0,0,0,20%);
+        cursor: pointer;
+
     }
 
     .favorisWrappers div:hover .displayHover{

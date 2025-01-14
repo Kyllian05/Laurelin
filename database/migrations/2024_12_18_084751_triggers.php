@@ -28,6 +28,7 @@ return new class extends Migration
 
         ");
 
+
         /* OK */
         DB::statement("
             CREATE OR REPLACE TRIGGER STOCK_INSUFFISANT_UPDATE
@@ -84,6 +85,7 @@ return new class extends Migration
             END;
         ");
 
+
         /* OK */
         DB::statement("
             CREATE OR REPLACE TRIGGER MISE_A_JOUR_STOCK_UPDATE
@@ -98,7 +100,6 @@ return new class extends Migration
         ");
 
 
-
         /* OK */
         DB::statement("
             CREATE OR REPLACE TRIGGER MISE_A_JOUR_ETAT
@@ -108,10 +109,13 @@ return new class extends Migration
                 DECLARE STOCK_STATUS INT;
                 SELECT STOCK INTO STOCK_STATUS FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
                 IF STOCK_STATUS = 0 THEN
-                    UPDATE Produit SET ETAT = 'Produit indisponible' WHERE STOCK = STOCK_STATUS;
+                    UPDATE Produit SET ETAT = 'Indisponible' WHERE STOCK = STOCK_STATUS;
+                ELSEIF STOCK_STATUS != 0 THEN
+                    UPDATE Produit SET ETAT = 'Disponible' WHERE STOCK = STOCK_STATUS;
                 END IF;
             END;
         ");
+
 
         /* OK */
         DB::statement("
@@ -122,7 +126,9 @@ return new class extends Migration
                 DECLARE STOCK_STATUS INT;
                 SELECT STOCK INTO STOCK_STATUS FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
                 IF STOCK_STATUS = 0 THEN
-                    UPDATE Produit SET ETAT = 'Produit indisponible' WHERE STOCK = STOCK_STATUS;
+                    UPDATE Produit SET ETAT = 'Indisponible' WHERE STOCK = STOCK_STATUS;
+                ELSEIF STOCK_STATUS != 0 THEN
+                    UPDATE Produit SET ETAT = 'Disponible' WHERE STOCK = STOCK_STATUS;
                 END IF;
             END;
         ");
@@ -185,6 +191,8 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
         // Update
         DB::statement("
             CREATE TRIGGER VALID_NUMBER_UPDATE
@@ -212,6 +220,8 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
         // Update
         DB::statement("
             CREATE OR REPLACE TRIGGER VALID_EMAIL_UPDATE
@@ -234,9 +244,12 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_STOCK");
+        DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_STOCK_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS STOCK_INSUFFISANT");
+        DB::statement("DROP TRIGGER IF EXISTS STOCK_INSUFFISANT_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS ANNULLATION_COMMANDE_STOCK");
         DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_ETAT");
+        DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_ETAT_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS COMMENTAIRE_PRODUIT_RETIRE");
         DB::statement("DROP TRIGGER IF EXISTS VERIF_COMMENTAIRE");
         DB::statement("DROP TRIGGER IF EXISTS NO_DELETE_USER_COMMANDES");
