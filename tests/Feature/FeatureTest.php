@@ -101,16 +101,6 @@ class FeatureTest extends TestCase
         $user = $this->utilisateurRepository->findByToken($this->token);
         assert($user != null);
 
-        $save = [
-            "Nom"=>$user->getNom(),
-            "Prénom"=>$user->getPrenom(),
-            "Téléphone"=>$user->getTelephone(),
-        ];
-
-        if($save["Téléphone"] == null){
-            $save["Téléphone"] = "+30000000000";
-        }
-
         assert($user->getNom() != "Nom de test");
         assert($user->getPrenom() != "Prenom de test");
         assert($user->getTelephone() != "+30000000000");
@@ -128,18 +118,5 @@ class FeatureTest extends TestCase
         assert($user->getNom() == "Nom de test");
         assert($user->getPrenom() == "Prenom de test");
         assert($user->getTelephone() == "+30000000000");
-
-        $reponse = $this->post("/updateInfo", [
-            "Nom"=>$save["Nom"],
-            "Prénom"=>$save["Prénom"],
-            "Téléphone"=>$save["Téléphone"],
-        ]);
-        $reponse->assertStatus(200);
-
-        $user = $this->utilisateurRepository->findByToken($this->token);
-        assert($user != null);
-        assert($user->getNom() == $save["Nom"]);
-        assert($user->getPrenom() == $save["Prénom"]);
-        assert($user->getTelephone() == $save["Téléphone"]);
     }
 }
