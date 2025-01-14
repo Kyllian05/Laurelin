@@ -19,6 +19,7 @@ class Exceptions
         523 => "Cette adresse est liée à une commande",
         524 => "Informations de paiement invalide",
         525 => "Vous devez être connecté",
+        526 => "Informations invalides",
         530 => "Code invalide",
         531 => "Pas implémenté",
     ];
@@ -38,6 +39,7 @@ class Exceptions
         523 => 409, // 409 Conflict - "Cette adresse est liée à une commande" est un conflit d'état.
         524 => 400, // 400 Bad Request - "Informations de paiement invalide".
         525 => 401, // 401 Unauthorized - "Vous devez être connecté".
+        526 => 400,
         530 => 400, // 400 Bad Request - "Code invalide".
         531 => 501, // 501 Not Implemented - Indique que cette fonctionnalité n'est pas implémentée.
     ];

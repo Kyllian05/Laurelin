@@ -35,6 +35,11 @@ class FeatureTest extends TestCase
         $this->defaultCookies[] = $reponse->getCookie("TOKEN");
     }
 
+    function resetToken(){
+        $this->defaultCookies = [];
+        $this->token = null;
+    }
+
     function __construct(string $name)
     {
         parent::__construct($name);
@@ -44,6 +49,7 @@ class FeatureTest extends TestCase
     }
 
     function test_authentication(){
+        $this->resetToken();
         $reponse = $this->post("/auth/login", [ //tentative de connection avec un compte existant
             \App\Http\Controllers\AuthController::$fields["login"]["fields"][0] => "admin@admin.com",
             \App\Http\Controllers\AuthController::$fields["login"]["fields"][1] => "admin",
@@ -88,5 +94,52 @@ class FeatureTest extends TestCase
 
         assert(!\App\Models\Commentaire::where(["ID_PRODUIT"=>$testProduct,"ID_UTILISATEUR"=>$user->getId()])->exists());
         //on vérifie qu'il n'y pas de commentaire posté par cet utilisateur sur ce produit
+    }
+
+    function test_update_info(){
+        $this->defineToken("admin@admin.com","admin");
+        $user = $this->utilisateurRepository->findByToken($this->token);
+        assert($user != null);
+
+        $save = [
+            "Nom"=>$user->getNom(),
+            "Prénom"=>$user->getPrenom(),
+            "Téléphone"=>$user->getTelephone(),
+        ];
+
+        if($save["Téléphone"] == null){
+            $save["Téléphone"] = "+30000000000";
+        }
+
+        assert($user->getNom() != "Nom de test");
+        assert($user->getPrenom() != "Prenom de test");
+        assert($user->getTelephone() != "+30000000000");
+        //on vérifie que les informations de l'utilisateurs n'ont pas déja la valeurs que nous allons leurs donner
+
+        $reponse = $this->post("/updateInfo", [
+            "Nom"=>"Nom de test",
+            "Prénom"=>"Prenom de test",
+            "Téléphone"=>"+30000000000",
+        ]);
+        $reponse->assertStatus(200);
+
+        $user = $this->utilisateurRepository->findByToken($this->token);
+        assert($user != null);
+        assert($user->getNom() == "Nom de test");
+        assert($user->getPrenom() == "Prenom de test");
+        assert($user->getTelephone() == "+30000000000");
+
+        $reponse = $this->post("/updateInfo", [
+            "Nom"=>$save["Nom"],
+            "Prénom"=>$save["Prénom"],
+            "Téléphone"=>$save["Téléphone"],
+        ]);
+        $reponse->assertStatus(200);
+
+        $user = $this->utilisateurRepository->findByToken($this->token);
+        assert($user != null);
+        assert($user->getNom() == $save["Nom"]);
+        assert($user->getPrenom() == $save["Prénom"]);
+        assert($user->getTelephone() == $save["Téléphone"]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Utilisateur\Repositories;
 
+use App\Domain\Shared\Exceptions;
 use App\Domain\Utilisateur\Entities\UtilisateurEntity;
 use App\Models\Utilisateur as UtilisateurModel;
 
@@ -98,9 +99,15 @@ class UtilisateurRepository
     }
 
     public function updateInfo(UtilisateurEntity $utilisateurEntity, string $nom, string $prenom, string $telephone): void {
-        $utilisateurEntity->setNom($nom);
-        $utilisateurEntity->setPrenom($prenom);
-        $utilisateurEntity->setTelephone($telephone);
+
+        try{
+            $utilisateurEntity->setNom($nom);
+            $utilisateurEntity->setPrenom($prenom);
+            $utilisateurEntity->setTelephone($telephone);
+        }catch (\Exception $exception){
+            throw Exceptions::createError(526);
+        }
+
         UtilisateurModel::where("ID",$utilisateurEntity->getId())->update([
             "NOM"=>$utilisateurEntity->getNom(),
             "PRENOM"=>$utilisateurEntity->getPrenom(),
