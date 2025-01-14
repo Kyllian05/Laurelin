@@ -1,0 +1,9 @@
+config:
+  target: 'http://localhost:8000' # L'URL de ton application
+  phases:
+    - duration: 60   # Durée du test en secondes
+      arrivalRate: 20 # Requêtes par seconde
+scenarios:
+  - flow:
+      - get:
+          url: "/" # La route à tester

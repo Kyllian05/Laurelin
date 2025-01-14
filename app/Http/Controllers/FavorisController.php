@@ -32,7 +32,8 @@ class FavorisController extends Controller{
         $data = $request->post();
         $user = $this->userService->getAuthenticatedUser($request);
         if($user == null){
-            return response("", 404);
+            $e = Exceptions::createError(525);
+            return response($e->getMessage(), $e->getCode());
         }
 
         $produit = $this->produitService->findById($data['produit']);

@@ -29,7 +29,7 @@ class CheckOutController extends Controller
                 throw Exceptions::createError(518);
             }
         } catch(\Exception $e) {
-            if($e->getCode() == 518){
+            if($e->getCode() == 401){
                 return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;
@@ -67,22 +67,15 @@ class CheckOutController extends Controller
     public function valider(Request $request){
         $data = $request->post();
 
+        $user = $this->utilisateurService->getAuthenticatedUser($request);
+        if($user == null){
+            $e = Exceptions::createError(518);
+            return response()->json($e->getCode(),$e->getCode());
+        }
+
         if($data["livraison"] != "domicile" && $data["livraison"] != "magasin"){
             $e = Exceptions::createError(520);
             return response($e->getMessage(),$e->getCode());
-        }
-
-        try{
-            $user = $this->utilisateurService->getAuthenticatedUser($request);
-            if($user == null){
-                throw Exceptions::createError(518);
-            }
-        }catch(\Exception $e){
-            if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
-            }else{
-                throw $e;
-            }
         }
 
         if(!isset($data["paiement"]["nom"]) || !isset($data["paiement"]["numéro"]) || !isset($data["paiement"]["mois"]) || !isset($data["paiement"]["année"]) || !isset($data["paiement"]["cryptograme"])){

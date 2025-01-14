@@ -18,7 +18,15 @@ class AdresseController extends Controller{
     function ajout(Request $request){
         $data = $request->post();
 
-        $utilisateur = $this->utilisateurService->getAuthenticatedUser($request);
+        try{
+            $utilisateur = $this->utilisateurService->getAuthenticatedUser($request);
+            if($utilisateur == null){
+                throw Exceptions::createError(525);
+            }
+        }catch(\Exception $e){
+            $e = Exceptions::createError(525);
+            return response()->json($e->getMessage(),$e->getCode());
+        }
         $ville = $this->villeService->findById(intval($data['Ville']['ID']));
         $adresse = $this->adresseService->add(intval($data["Numéro"]), $data["Nom de rue"], $ville, $utilisateur);
 
@@ -27,12 +35,18 @@ class AdresseController extends Controller{
 
     function supprimer(Request $request){
         $data = $request->post();
-        $this->utilisateurService->getAuthenticatedUser($request); // Sécurité
+        $user = $this->utilisateurService->getAuthenticatedUser($request); // Sécurité
+
+        if($user == null){
+            \Log::info("fuck");
+            $e = Exceptions::createError(525);
+            return response()->json($e->getMessage(),$e->getCode());
+        }
         try {
             $this->adresseService->delete($this->adresseService->findById($data["ID"]));
         } catch(\Exception $e){
             if($e->getCode() == 23000){
-                $e = Exceptions::createError(523);
+                $e = Exceptions::createError(525);
             }
             return response($e->getMessage(),$e->getCode());
         }

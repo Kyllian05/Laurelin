@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Shared\Exceptions as CustomExceptions;
 use App\Domain\Utilisateur\Services\UtilisateurService;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AccountController extends Controller
 {
@@ -59,7 +61,7 @@ class AccountController extends Controller
                 "adresses" => $adressesSerialized,
             ]);
         }catch (\Exception $e){
-            if($e->getCode() == 518){
+            if($e->getCode() == 401){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }
             throw $e;
@@ -70,15 +72,16 @@ class AccountController extends Controller
         $data = $request->post();
         try{
             $user = $this->userService->getAuthenticatedUser($request);
+            if($user == null){
+                throw CustomExceptions::createError(525);
+            }
             if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
                 $this->userService->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
             }else{
                 throw CustomExceptions::createError(521);
             }
         }catch(\Exception $e){
-            if($e instanceof \App\Domain\Shared\CustomExceptions){
-                return response($e->getMessage(),$e->getCode());
-            }
+            return response($e->getMessage(),$e->getCode());
         }
     }
 }
