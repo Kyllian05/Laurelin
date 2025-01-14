@@ -20,8 +20,23 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 DECLARE current_stock INT;
-                SELECT stock INTO current_stock FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
-                IF current_stock < NEW.QUANTITE THEN
+                SELECT STOCK INTO current_stock FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
+                IF current_stock < 0 THEN
+                    SIGNAL SQLSTATE '45003' SET MESSAGE_TEXT = 'Stock insuffisant pour ce produit.';
+                END IF;
+            END;
+
+        ");
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER STOCK_INSUFFISANT_UPDATE
+            BEFORE UPDATE ON Produit_Commande
+            FOR EACH ROW
+            BEGIN
+                DECLARE current_stock INT;
+                SELECT STOCK INTO current_stock FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
+                IF current_stock < 0 THEN
                     SIGNAL SQLSTATE '45003' SET MESSAGE_TEXT = 'Stock insuffisant pour ce produit.';
                 END IF;
             END;
@@ -69,11 +84,39 @@ return new class extends Migration
             END;
         ");
 
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER MISE_A_JOUR_STOCK_UPDATE
+            AFTER UPDATE ON Produit_Commande
+            FOR EACH ROW
+            BEGIN
+                UPDATE Produit
+                SET STOCK = STOCK - (NEW.QUANTITE - OLD.QUANTITE)
+                WHERE Produit.ID = NEW.ID_PRODUIT;
+            END;
+
+        ");
+
+
 
         /* OK */
         DB::statement("
             CREATE OR REPLACE TRIGGER MISE_A_JOUR_ETAT
             AFTER INSERT ON Produit_Commande
+            FOR EACH ROW
+            BEGIN
+                DECLARE STOCK_STATUS INT;
+                SELECT STOCK INTO STOCK_STATUS FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
+                IF STOCK_STATUS = 0 THEN
+                    UPDATE Produit SET ETAT = 'Produit indisponible' WHERE STOCK = STOCK_STATUS;
+                END IF;
+            END;
+        ");
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER MISE_A_JOUR_ETAT_UPDATE
+            AFTER UPDATE ON Produit_Commande
             FOR EACH ROW
             BEGIN
                 DECLARE STOCK_STATUS INT;

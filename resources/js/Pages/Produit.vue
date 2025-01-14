@@ -13,6 +13,7 @@
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
+            <div id="dispo" class="font-body-m">Stock: {{produit.ETAT}}</div>
             <ButtonAcheter :white-border="true" :id="props.produit['ID']" @ajout="eventPanier()"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
@@ -334,6 +335,10 @@ textarea{
     margin-bottom: 30px;
 }
 
+#dispo {
+    margin-bottom: 10px;
+}
+
 #prix {
     font-size: clamp(14px, 2vw, 18px);
 }
@@ -648,6 +653,11 @@ img {
         height: clamp(25px, 2vw, 45px);
     }
 
+    #favoriteButton {
+        margin-top: -35px;
+        margin-right: -35px;
+    }
+
 }
 
 
@@ -721,10 +731,6 @@ img {
 @media (max-width: 1200px) {
     #page{
         margin-top: 84px;
-    }
-
-    #favoriteButton {
-        top: 144px;
     }
 }
 
