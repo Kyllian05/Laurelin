@@ -101,22 +101,56 @@ class FeatureTest extends TestCase
         $user = $this->utilisateurRepository->findByToken($this->token);
         assert($user != null);
 
-        assert($user->getNom() != "Nom de test");
-        assert($user->getPrenom() != "Prenom de test");
-        assert($user->getTelephone() != "+30000000000");
+        $newData = [
+            "Nom"=>(string)time(),
+            "Prénom"=>(string)time(),
+            "Téléphone"=>"+3".time()%1000000000,
+        ];
+        //on génere de nouvelle info qui n'ont pas pu être ajouté par de précédent test
+
+        assert($user->getNom() != $newData["Nom"]);
+        assert($user->getPrenom() != $newData["Prénom"]);
+        assert($user->getTelephone() != $newData["Téléphone"]);
         //on vérifie que les informations de l'utilisateurs n'ont pas déja la valeurs que nous allons leurs donner
 
         $reponse = $this->post("/updateInfo", [
-            "Nom"=>"Nom de test",
-            "Prénom"=>"Prenom de test",
-            "Téléphone"=>"+30000000000",
+            "Nom"=>$newData["Nom"],
+            "Prénom"=> $newData["Prénom"],
+            "Téléphone"=> $newData["Téléphone"],
         ]);
         $reponse->assertStatus(200);
 
         $user = $this->utilisateurRepository->findByToken($this->token);
         assert($user != null);
-        assert($user->getNom() == "Nom de test");
-        assert($user->getPrenom() == "Prenom de test");
-        assert($user->getTelephone() == "+30000000000");
+        assert($user->getNom() ==  $newData["Nom"]);
+        assert($user->getPrenom() ==  $newData["Prénom"]);
+        assert($user->getTelephone() == $newData["Téléphone"]);
+    }
+
+    function test_favoris_interaction(){
+        $this->defineToken("admin@admin.com","admin");
+        $user = $this->utilisateurRepository->findByToken($this->token);
+        assert($user != null);
+
+        $produitTest = 24;
+
+        assert(!\App\Models\Favoris::where(["ID_PRODUIT"=>$produitTest,"ID_UTILISATEUR"=>$user->getId()])->exists());
+        //on vérifie que le produit n'est pas déja dans les favoris de l'utilisateur
+
+        $reponse = $this->post("/ajouterFavoris", [
+            "produit"=>$produitTest,
+        ]);
+        $reponse->assertStatus(200);
+
+        assert(\App\Models\Favoris::where(["ID_PRODUIT"=>$produitTest,"ID_UTILISATEUR"=>$user->getId()])->exists());
+        //on vérifie que le produit a bien été ajouté dans les favoris de l'utilisateur
+
+        $reponse = $this->post("/supprimerFavoris", [
+            "produit"=>$produitTest,
+        ]);
+        $reponse->assertStatus(200);
+
+        assert(!\App\Models\Favoris::where(["ID_PRODUIT"=>$produitTest,"ID_UTILISATEUR"=>$user->getId()])->exists());
+        //on vérifie que le produit n'est plus dans les favoris de l'utilisateur
     }
 }
