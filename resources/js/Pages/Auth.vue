@@ -168,7 +168,7 @@ function handleClick(source) {
 #rightWrapper {
     width: 50vw;
     float: right;
-    height: 100vh;
+    max-height: 100vh;
 }
 
 #globalWrapper {

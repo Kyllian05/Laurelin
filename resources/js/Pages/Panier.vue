@@ -10,7 +10,7 @@
                         <h3>{{ produit["NOM"] }}</h3>
                         <p>{{ produit["MATERIAUX"] }}</p>
                         <p class="addOther" @click="addOtherProduct(produit['ID'])">En ajouter un autre</p>
-                        <h2>{{ produit["PRIX"] }}€</h2>
+                        <h2>{{ formatPrix(produit["PRIX"]) }}€</h2>
                     </div>
                     <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produit['ID'])">close</span>
                 </div>
@@ -24,7 +24,7 @@
             <div class="panierresume">
             <h2>SOUS TOTAL</h2>
             <p class="incl">INCL. TVA</p>
-            <h1>{{ somme }}€</h1>
+            <h1>{{ formatPrix(somme) }}€</h1>
             <button onclick="window.location='/checkout'">Poursuivre ma commande</button>
             <p class="secure">PAIEMENT SÉCURISÉ</p>
             <p class="returns">RETOURS ET ÉCHANGES SOUS 30 JOURS</p>
@@ -104,6 +104,15 @@ function supprimerDuPanier(id){
         }
     })
 }
+
+
+/* Gère l'espace du prix */
+const formatPrix = (prix) => {
+    return new Intl.NumberFormat("fr-FR", {
+        style: "decimal",
+        maximumFractionDigits: 0, // Pas de décimales
+    }).format(prix);
+};
 
 updatePanierSomme()
 watch(panierData.value,async newvalue => {
