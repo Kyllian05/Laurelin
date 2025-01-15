@@ -57,4 +57,14 @@ function ajoutAuPanier(){
     background-color: white;
     color: black;
 }
+#boutton_acheter:disabled {
+    cursor: default;
+    background-color: grey;
+    color: white;
+
+}
+#boutton_acheter:disabled:hover {
+    background-color: grey;
+    color: white;
+}
 </style>
