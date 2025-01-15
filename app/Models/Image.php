@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Image extends Model
 {
@@ -23,12 +22,4 @@ class Image extends Model
         'URL',
         'ID_PRODUIT',
     ];
-
-    public static function get_all_images($product_id){
-        return DB::select("call select_all_images($product_id)");
-    }
-
-    public static function get_one_image($product_id){
-        return DB::select("call select_one_image($product_id)");
-    }
 }

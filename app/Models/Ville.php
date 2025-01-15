@@ -12,9 +12,4 @@ class Ville extends Model
      * @var string
      */
     protected $table = 'Ville';
-
-
-    static function getByCodePostal($codePostal){
-        return self::where('CODE_POSTAL','LIKE', $codePostal."%")->take(10)->get();
-    }
 }

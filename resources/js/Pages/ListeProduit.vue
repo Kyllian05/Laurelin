@@ -8,7 +8,6 @@
             <span class="material-symbols-rounded">
               arrow_back_ios
             </span>
-
         </div>
 
         <div id="SecondRange">
@@ -21,13 +20,10 @@
         </div>
 
 
-
         <div id="ProduitRange">
             <div class="container">
-                <div v-for="(produit, index) in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }" @click="redirectOnClick(produit.ID)">
-                    <!-- TODO : faire le backend du btn favoris -->
-                    <span class="add-fav" :class="produit['FAVORITE'] ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(produit['ID'])">favorite</span>
-                    <!-- - - - - - - - - - - - - -  -->
+                <div v-for="produit in produitsAffiches" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }" @click="redirectOnClick(produit.ID)">
+                    <span class="add-fav" :class="produit.FAVORITE ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(produit.ID)">favorite</span>
                     <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                     <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
                     <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
@@ -46,7 +42,7 @@
 import Header from "./Components/Header.vue";
 import Footer from "./Components/Footer.vue";
 import { router } from '@inertiajs/vue3';
-import {reactive, computed, onMounted, ref} from "vue";
+import {computed, ref} from "vue";
 import Error from "./Components/Error.vue";
 
 const props = defineProps({
@@ -73,32 +69,31 @@ function changeFavorite(id){
     let index = -1
 
     for(let i = 0;i<produitsAffiches.value.length;i++){
-        if(produitsAffiches.value[i]["ID"] == id){
+        if(produitsAffiches.value[i].ID === id){
             index = i
             break
         }
     }
 
     let dest = "ajouterFavoris"
-    if(produitsAffiches.value[index]["FAVORITE"]){
+    if(produitsAffiches.value[index].FAVORITE){
         dest = "supprimerFavoris"
     }
     fetch("/"+dest,{
         method : "POST",
         body : JSON.stringify({
-            "produit" : produitsAffiches.value[index]["ID"]
+            "produit" : produitsAffiches.value[index].ID
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
         },
     }).then(async response=>{
-        if(response.status == 200){
-            produitsAffiches.value[index]["FAVORITE"] = !produitsAffiches.value[index]["FAVORITE"]
+        if(response.status === 200){
+            produitsAffiches.value[index].FAVORITE = !produitsAffiches.value[index].FAVORITE
         }else{
             const reader = response.body.getReader()
-            const text = new TextDecoder().decode((await reader.read()).value)
-            errorMesage.value = text
+            errorMesage.value = new TextDecoder().decode((await reader.read()).value)
         }
     })
 }
@@ -179,6 +174,7 @@ function redirectOnClick(id){
         'GRAD' 0,
         'opsz' 24
 }
+
 .add-fav {
     position: absolute;
     right: 12px;

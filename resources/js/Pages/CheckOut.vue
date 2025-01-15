@@ -1,4 +1,3 @@
-
 <template>
     <Header current-page="CheckOut"></Header>
     <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
@@ -13,9 +12,9 @@
     <div id="Page">
         <p id="Title" class="font-subtitle-16">Commande</p>
         <div id="DonneeCommande">
-            <div id="infoWrapper" class="wrapper" :class="['wrapper', currentStep == 1 ? 'bgGris' : '', currentStep > 1 ? 'cursor' : '']">
+            <div id="infoWrapper" class="wrapper" :class="['wrapper', currentStep === 1 ? 'bgGris' : '', currentStep > 1 ? 'cursor' : '']">
                 <p id="info" class="font-subtitle-16">1 - Informations Personnelles</p>
-                <div id="contenuInfo" v-if="currentStep == 1">
+                <div id="contenuInfo" v-if="currentStep === 1">
                     <p id="texteInfo" class="font-body-m"> Pour poursuivre votre commande veuillez vous identifiez</p>
                     <button class="font-body-l">Se connecter</button>
                     <button class="font-body-l">S'inscrire</button>
@@ -25,27 +24,27 @@
                 </div>
             </div>
 
-            <div id="adresseWrapper" class="wrapper" :class="['wrapper', currentStep == 2 ? 'bgGris' : '', currentStep > 2 ? 'cursor' : '']">
+            <div id="adresseWrapper" class="wrapper" :class="['wrapper', currentStep === 2 ? 'bgGris' : '', currentStep > 2 ? 'cursor' : '']">
                 <p id="adresse" class="font-subtitle-16">2 - Adresse de livraison</p>
-                <div id="contenuAdresse" v-if="currentStep == 2">
+                <div id="contenuAdresse" v-if="currentStep === 2">
                     <div id="adresseChoiceWrapper">
                         <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
                         <button :class="{adresseChoiceActive :  adresseMethod === 'magasin'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
                     </div>
                     <div v-if="adresseMethod === 'domicile'">
                         <div class="adresseUser" v-for="(adresse,index) in adresses">
-                            <input class="radButton" type="radio" :checked="index == currentAdresse" @click="changeLivraison(index)" style="cursor: pointer">
+                            <input class="radButton" type="radio" :checked="index === currentAdresse" @click="changeLivraison(index)" style="cursor: pointer">
                             <div class="adresseUserr">
-                                <p class="font-subtitle-16 adresse">{{ adresse["NUM_RUE"] }} {{ adresse["NOM_RUE"] }}</p>
-                                <p class="font-subtitle-16 codePostale">{{ adresse["CODE_POSTAL"] }}</p>
-                                <p class="font-subtitle-16 ville">{{ adresse["VILLE"] }}</p>
+                                <p class="font-subtitle-16 adresse">{{ adresse.NUM_RUE }} {{ adresse.NOM_RUE }}</p>
+                                <p class="font-subtitle-16 codePostale">{{ adresse.VILLE.CODE_POSTAL }}</p>
+                                <p class="font-subtitle-16 ville">{{ adresse.VILLE.NOM }}</p>
                             </div>
                         </div>
                     </div>
                     <div v-if="adresseMethod === 'magasin'">
                         <Field name="Code Postal" @input="codePostale => searchMagasins(codePostale)" style="width: 50%;margin-left: 50%;transform: translateX(-50%);margin-bottom: 2vh"></Field>
                         <select id="selectVille" class="font-subtitle-16" v-model="currentMagasin">
-                            <option :value="magasin['ID']" v-for="magasin in magasinsRecomm">{{ magasin["ADRESSE"] }} {{ magasin["VILLE"] }} {{ magasin["CODEPOSTAL"] }}</option>
+                            <option :value="magasin" v-for="magasin in magasinsRecomm">{{ magasin.ADRESSE }} {{ magasin.VILLE.NOM }} {{ magasin.VILLE.CODE_POSTAL }}</option>
                         </select>
                     </div>
                     <button id="adresseValidateButton" @click="validateLivraison()">
@@ -56,17 +55,18 @@
                     </button>
                 </div>
                 <div v-else-if="currentStep > 2" @click="annuleLivraison()">
-                    <p class="font-subtitle-16 adresse">{{ data["adresse"]["NUM_RUE"] }} {{ data["adresse"]["NOM_RUE"] }}</p>
-                    <p class="font-subtitle-16 codePostale">{{ data["adresse"]["CODE_POSTAL"] }}</p>
-                    <p class="font-subtitle-16 ville">{{ data["adresse"]["VILLE"] }}</p>
+                    <p class="font-subtitle-16 adresse" v-if="adresseMethod === 'domicile'">{{ data["adresse"].NUM_RUE }} {{ data["adresse"].NOM_RUE }}</p>
+                    <p class="font-subtitle-16 adresse" v-else>{{ data["adresse"].ADRESSE }}</p>
+                    <p class="font-subtitle-16 codePostale">{{ data["adresse"].VILLE.CODE_POSTAL }}</p>
+                    <p class="font-subtitle-16 ville">{{ data["adresse"].VILLE.NOM }}</p>
                 </div>
             </div>
 
-            <div id="livraisonWrapper" class="wrapper" :class="['wrapper', currentStep == 3 ? 'bgGris' : '', currentStep > 3 ? 'cursor' : '']">
+            <div id="livraisonWrapper" class="wrapper" :class="['wrapper', currentStep === 3 ? 'bgGris' : '', currentStep > 3 ? 'cursor' : '']">
                 <p id="livraison" class="font-subtitle-16">3 - Options de Livraison</p>
             </div>
 
-            <div id="paiementWrapper" :class="currentStep == 4 ? 'bgGris' : ''" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
+            <div id="paiementWrapper" :class="currentStep === 4 ? 'bgGris' : ''" class="wrapper" :style="currentStep == 4 ? 'padding-bottom: 5vh;' : ''">
                 <p id="paiement" class="font-subtitle-16">4 - Options de paiement</p>
                 <div v-if="currentStep == 4" id="paiementContent">
                     <div class="paimentFieldWrapper" style="flex-direction: column">
@@ -90,14 +90,14 @@
                 <p id="RecapTitle" class="font-subtitle-16">Récapitulatif de commande</p>
                 <p id="articles">{{totArticle}} articles</p>
             </div>
-            <div id="prodRecap" v-for="produit in produits">
+            <div id="prodRecap" v-for="produitCmd in produits.PRODUITS">
                 <div id="produitComander" class="font-subtitle-16">
-                    <p>{{ produit["NOM"] }}</p>
-                    <b>{{ formatPrix(produit["PRIX"] * produit["QUANTITE"]) }} €</b>
+                    <p>{{ produitCmd.PRODUIT.NOM }}</p>
+                    <b>{{ formatPrix(produitCmd.PRODUIT.PRIX * produitCmd.QUANTITE) }} €</b>
                 </div>
                 <div id="quantite" >
-                    <p>{{produit["MATERIAUX"]}}</p>
-                    <p>x{{ produit["QUANTITE"] }}</p>
+                    <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
+                    <p>x{{ produitCmd.QUANTITE }}</p>
                 </div>
             </div>
 
@@ -127,7 +127,7 @@ import Field from "./Components/Field.vue";
 let props = defineProps({
     "user" : Object,
     "adresses" : Array,
-    "produits":Array,
+    "produits": Object
 })
 
 let magasinsRecomm = ref([])
@@ -140,12 +140,12 @@ let sum = 0
 
 let totArticle = 0
 
-for(let i = 0;i<props.produits.length;i++){
-    totArticle += props.produits[i]["QUANTITE"]
+for(let i = 0;i<props.produits.PRODUITS.length;i++){
+    totArticle += props.produits.PRODUITS[i].QUANTITE
 }
 
-for(let i = 0;i<props.produits.length;i++){
-    sum += props.produits[i]["PRIX"] * props.produits[i]["QUANTITE"]
+for(let i = 0;i<props.produits.PRODUITS.length;i++){
+    sum += props.produits.PRODUITS[i].PRODUIT.PRIX * props.produits.PRODUITS[i].QUANTITE
 }
 
 let data = {}
@@ -184,10 +184,11 @@ async function paye(){
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
     const response = await fetch("/checkout/valider",{
         method : "POST",
         body : JSON.stringify({
-            "adresse" : props.adresses[currentAdresse.value]["ID"],
+            "adresse" : data["adresse"].ID,
             "livraison" : adresseMethod.value,
             "paiement" : paimentData.value
         }),
@@ -196,17 +197,16 @@ async function paye(){
             "Content-Type":"application/json"
         },
     })
-    if(response.status != 200){
+    if(response.status !== 200){
         const reader = response.body.getReader()
-        const text = new TextDecoder().decode((await reader.read()).value)
-        errorMesage.value = text
+        errorMesage.value = new TextDecoder().decode((await reader.read()).value)
         return
     }
     paiementState.value = true
     await sleep(0)
     document.getElementById("paimentBackground").style.top = window.scrollY+"px"
     await sleep(Math.random()*3000 + 3000)
-    if(response.status == 200){
+    if(response.status === 200){
         window.location="/account/commandes"
     }
     paiementState.value = false
@@ -223,10 +223,10 @@ function annuleLivraison() {
 }
 
 function validateLivraison(){
-    if(adresseMethod.value == "domicile"){
+    if(adresseMethod.value === "domicile"){
         data["adresse"] = toRaw(props["adresses"])[currentAdresse.value]
     }else{
-        data["adresse"] = currentMagasin.value
+        data["adresse"] = toRaw(currentMagasin.value)
     }
     currentStep.value += 2
 }

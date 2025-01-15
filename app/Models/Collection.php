@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Collection extends Model
 {
@@ -24,9 +23,4 @@ class Collection extends Model
         'ANNEE',
         'DESCRIPTION'
     ];
-
-    public static function get_products($collection_name) {
-        $name = addslashes($collection_name);
-        return DB::select("call select_product_collection('$name')");
-    }
 }

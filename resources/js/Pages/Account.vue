@@ -1,6 +1,5 @@
 <template>
     <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <Header currentPage="account"></Header>
     <div v-if="ajoutAdresseState" id="ajoutAdresseWrapper">
         <div id="ajoutAdresseContent">
@@ -12,7 +11,7 @@
                         <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
                         <Field name="Code Postale" @input="value => searchVille(value)"></Field>
                         <select id="selectCodePost" v-if="villesSuggest.length > 0" v-model="villeChoice">
-                            <option v-for="ville in villesSuggest" :value="{'Nom':ville['NOM'],'Code Postal':ville['CODE_POSTAL']}">{{ ville["NOM"] }} {{ ville["CODE_POSTAL"] }}</option>
+                            <option v-for="ville in villesSuggest" :value="{'Nom':ville.NOM,'Code Postal':ville.CODE_POSTAL}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
                         </select>
 
                         <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
@@ -43,24 +42,24 @@
             </div>
             <div v-else-if="dynamicPage == 'commandes'" id="commandsWrapper">
                 <div v-for="(commande,index) in commandes" class="commandWrapper" :class="index%2==1 ? 'grayBackground' :''">
-                    <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande["Date"]}}</p>
+                    <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande.DATE}}</p>
                     <p class="font-body-s" style="margin-bottom: 2vh">Produits :</p>
                     <ul>
-                        <li v-for="produit in commande['Produits']">
-                            <p class="font-body-s">{{ produit["Nom"] }} {{ produit["Quantité"] > 1 ? 'x'+produit["Quantité"] : '' }}</p>
+                        <li v-for="produit in commande.PRODUITS">
+                            <p class="font-body-s">{{ produit.PRODUIT.NOM }} {{ produit.QUANTITE > 1 ? 'x'+produit.QUANTITE : '' }}</p>
                         </li>
                     </ul>
                     <div class="commandSideWrapper">
-                        <button class="font-body-s" :class="commande['Etat'] == 2 ? 'commandFinished' : ''">{{ etatText[commande["Etat"]] }}</button>
+                        <button class="font-body-s" :class="commande.ETAT === 'Terminée' ? 'commandFinished' : ''">{{commande.ETAT}}</button>
                         <p class="font-body-s">TOTAL : {{ formatPrix(getCommandeSum(commande)) }}€</p>
                     </div>
-                    <span class="material-symbols-rounded commandesDownArrow" @click="currentCommandDetail != commande['ID'] ? currentCommandDetail = commande['ID'] : currentCommandDetail = null" :style="currentCommandDetail != commande['ID'] ? 'rotate : 90deg' : 'rotate : 270deg'">
+                    <span class="material-symbols-rounded commandesDownArrow" @click="currentCommandDetail != commande.ID ? currentCommandDetail = commande.ID : currentCommandDetail = null" :style="currentCommandDetail != commande.ID ? 'rotate : 90deg' : 'rotate : 270deg'">
                         arrow_forward_ios
                     </span>
-                    <div v-if="currentCommandDetail == commande['ID']" class="commandsDetails font-body-l">
-                        <p>Méthode de livraison : {{ commande['Mode Livraison'] }}</p>
-                        <p v-if="commande['Mode Livraison'] == 'domicile'">{{commande['Adresse']['NUM_RUE']}} {{commande['Adresse']['NOM_RUE']}} {{commande['Adresse']['Ville']}} {{commande['Adresse']['CodePostal']}}</p>
-                        <p v-else>{{commande['Adresse']['ADRESSE']}} {{commande['Adresse']['Ville']}} {{commande['Adresse']['CodePostal']}}</p>
+                    <div v-if="currentCommandDetail == commande.ID" class="commandsDetails font-body-l">
+                        <p>Méthode de livraison : {{ commande.LIVRAISON }}</p>
+                        <p v-if="commande.LIVRAISON == 'domicile'">{{commande.ADRESSE.NUM_RUE}} {{commande.ADRESSE.NOM_RUE}} {{commande.ADRESSE.VILLE.NOM}} {{commande.ADRESSE.VILLE.CODE_POSTAL}}</p>
+                        <p v-else>{{commande.ADRESSE.ADRESSE}} {{commande.ADRESSE.VILLE.NOM}} {{commande.ADRESSE.VILLE.CODE_POSTAL}}</p>
                     </div>
                 </div>
             </div>
@@ -68,35 +67,35 @@
                 <div v-if="favorisImagesCount < dynamicFavoris.length">
                     Loading
                 </div>
-                    <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
-                        <div style="position: relative;width: fit-content" class="imageWrapper">
-                            <div>
-                                <a :href="'/produit/'+favori['ID']" target="_blank">
-                                    <img :src="favori['Image']['URL']" class="favorisImage" @load="favorisImageLoaded()">
-                                </a>
-                                <span class="material-symbols-outlined favoriteRemoveSymbol displayHover" @click="supprimerFavoris(favori['ID'])">
-                                remove
-                                </span>
-                                <div class="buttonAcheter displayHover">
-                                    <ButtonAcheter white-border="false" :id="favori['ID']"></ButtonAcheter>
-                                </div>
+                <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
+                    <div style="position: relative;width: fit-content" class="imageWrapper">
+                        <div>
+                            <a :href="'/produit/'+favori.ID" target="_blank">
+                                <img :src="favori.IMAGES[0]" class="favorisImage" @load="favorisImageLoaded()">
+                            </a>
+                            <span class="material-symbols-rounded favoriteRemoveSymbol displayHover" @click="supprimerFavoris(favori.ID)">
+                            remove
+                            </span>
+                            <div class="buttonAcheter displayHover">
+                                <ButtonAcheter white-border="false" :id="favori.ID"></ButtonAcheter>
                             </div>
                         </div>
-                        <p>{{ favori.Nom }}</p>
-                        <p>{{ formatPrix(favori.Prix) }}€</p>
+                        <p>{{ favori.NOM }}</p>
+                        <p>{{ formatPrix(favori.PRIX) }}€</p>
                     </div>
+                </div>
             </div>
             <div v-else>
                 <button id="addAdressButton" @click="ajoutAdresseState = true">
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-rounded">
                         add
                     </span>
                     <p class="font-body-s">AJouter une adresse</p>
                 </button>
                 <div v-for="adresse in dynamicAdresse" class="adresseWrappers">
-                    <p>{{ adresse["Numéro"] }} {{ adresse["Rue"] }}, {{ adresse["Code Postal"] }} {{ adresse["Ville"] }}</p>
+                    <p>{{ adresse.NUM_RUE }} {{ adresse.NOM_RUE }}, {{ adresse.VILLE.CODE_POSTAL }} {{ adresse.VILLE.NOM }}</p>
                     <div>
-                        <span class="material-symbols-outlined garbageIcon" @click="deleteAdresse(adresse['ID'])">
+                        <span class="material-symbols-rounded garbageIcon" @click="deleteAdresse(adresse.ID)">
                             delete
                         </span>
                     </div>
@@ -126,6 +125,8 @@ let props = defineProps(
         "adresses" : Array,
     })
 
+    console.log(props.commandes)
+
     const favorisImagesCount = ref(0)
 
     const dynamicFavoris = ref(props.favoris)
@@ -149,7 +150,7 @@ let props = defineProps(
 
     const errorMesage = ref("")
 
-    watch(dynamicPage, async (page)=>{
+    watch(dynamicPage, async ()=>{
         currentCommandDetail.value = null
     })
 
@@ -166,12 +167,6 @@ let props = defineProps(
         "commandes" : {text: "Mes commandes",icon:"shopping_cart"},
         "favoris" : {text:"Mes produits favoris",icon:"favorite"},
         "adresses" : {text:"Mes adresses",icon:"home"}
-    }
-
-    let etatText = {
-        "0" : "En cours de préparation",
-        "1" : "Expediée",
-        "2" : "Terminée"
     }
 
     let infoFields = [[],[]]
@@ -205,7 +200,7 @@ let props = defineProps(
     }
 
     function searchVille(codePostal){
-        if(codePostal == ""){
+        if(codePostal === ""){
             villesSuggest.value = []
         }else{
             fetch("/adresse/getVilles/"+codePostal,{
@@ -220,10 +215,6 @@ let props = defineProps(
         }
     }
 
-    function favorisImageLoaded(){
-        favorisImagesCount.value++
-    }
-
     function deleteAdresse(id){
         fetch("/adresse/supprimer",{
             method:"POST",
@@ -233,20 +224,23 @@ let props = defineProps(
                 "Content-Type":"application/json"
             },
         }).then(async response =>{
-            if(response.status == 200){
-                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse["ID"] != id)
+            if(response.status === 200){
+                dynamicAdresse.value = dynamicAdresse.value.filter((adresse) => adresse.ID != id)
             }else{
                 const reader = response.body.getReader()
-                const text = new TextDecoder().decode((await reader.read()).value)
-                errorMesage.value = text
+                errorMesage.value = new TextDecoder().decode((await reader.read()).value)
             }
         })
     }
 
+    function favorisImageLoaded(){
+        favorisImagesCount.value++
+    }
+
     function getCommandeSum(commande){
         let sum = 0
-        commande["Produits"].forEach((produit)=>{
-            sum += produit["Prix"] * produit["Quantité"]
+        commande.PRODUITS.forEach((produit)=>{
+            sum += produit.PRIX * produit.QUANTITE
         })
         return sum
     }
@@ -319,7 +313,7 @@ let props = defineProps(
     .buttonAcheter{
         position: absolute;
         bottom: -25px;
-        left: 0px;
+        left: 0;
         margin-left: 50%;
         transform: translateX(-50%);
         width: 90%;
@@ -529,7 +523,6 @@ let props = defineProps(
         gap: 40px;
     }
 
-
     #pageInfo{
         font-size: 18px;
         margin-bottom: 1.5vh;
@@ -577,7 +570,6 @@ let props = defineProps(
         justify-content: left;
         gap: 1vw;
         align-items: center;
-        text-align: center;
     }
     #contentWrapper{
         width: 50vw;
@@ -589,7 +581,6 @@ let props = defineProps(
     }
 
     #buttonDeco {
-
         background-color: black;
         width: 60%;
         color: white;

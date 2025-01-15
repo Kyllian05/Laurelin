@@ -16,7 +16,7 @@ return new class extends Migration
                 CONTENU VARCHAR(255),
                 ID_UTILISATEUR INT NOT NULL,
                 ID_PRODUIT INT NOT NULL,
-                DATE VARCHAR(255) NOT NULL
+                DATE DATE NOT NULL
             )
         ");
     }

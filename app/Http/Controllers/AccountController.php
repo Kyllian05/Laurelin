@@ -2,113 +2,84 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Produit\Services\ProduitService;
+use App\Domain\Shared\Exceptions as CustomExceptions;
+use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class AccountController extends Controller
 {
+    public function __construct(
+        private UtilisateurService $userService,
+        private ProduitService $produitService
+    ) {}
+
     function index(Request $request,string $page = "info"){
         try{
-            $user = \App\Models\Utilisateur::getLoggedUser($request);
-            if($user == null){
-                return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false);
+            $user = $this->userService->getAuthenticatedUser($request);
+
+            if (!$user) {
+                throw CustomExceptions::createError(518);
             }
 
-            $commandes = \App\Models\Commande::getAllCommandes($user);
-
-            $commandesData = [];
+            // --- Commandes ---
+            $commandes = $this->userService->getCommandes($user);
+            $commandesSerialized = [];
 
             foreach($commandes as $commande){
-                $temp = [
-                    "Date" => $commande["DATE"],
-                    "Etat" => $commande["ETAT"],
-                    "Mode Livraison" => $commande["MODE_LIVRAISON"],
-                    "Produits" => [],
-                    "ID" => $commande["ID"],
-                ];
-
-                if($commande["MODE_LIVRAISON"] == "domicile"){
-                    $temp2 = \App\Models\Adresse::where("ID", $commande["ID_ADRESSE"])->firstOrFail();
-                }else{
-                    $temp2 = \App\Models\AdresseMagasins::where("ID", $commande["ID_MAGASIN"])->firstOrFail();
-                }
-                unset($temp2["ID"]);
-                $ville = \App\Models\Ville::where("ID", $temp2["ID_VILLE"])->firstOrFail();
-                $temp2["Ville"] = $ville["NOM"];
-                $temp2["CodePostal"] = $ville["CODE_POSTAL"];
-                $temp["Adresse"] = $temp2;
-
-                foreach(\App\Models\Produit_Commande::getAllProducts($commande["ID"]) as $produit){
-                    $produitEntity = \App\Models\Produit::getProduct($produit["ID_PRODUIT"]);
-                    $temp["Produits"][] = [
-                        "Nom" => $produitEntity["NOM"],
-                        "Quantité" => $produit["QUANTITE"],
-                        "Prix" => $produit["PRIX"],
-                    ];
-                }
-
-                $commandesData[] = $temp;
+                $commandesSerialized[] = $commande->serialize();
             }
 
-            $favoris = [];
-            foreach(\App\Models\Favoris::getAllFavoris($user) as $favori){
-                $produit  = \App\Models\Produit::getProduct($favori["ID_PRODUIT"]);
-                $favoris[] = [
-                    "Nom" => $produit["NOM"],
-                    "Prix" => $produit["PRIX"],
-                    "Image" => \App\Models\Image::get_one_image($produit["ID"])[0],
-                    "ID" => $produit["ID"],
-                ];
+            // --- Favoris ---
+
+            $favorisSerialized = $this->produitService->serializes($this->userService->getFavoris($user));
+
+            // --- Adresses ---
+
+            $adresses = $this->userService->getAdresses($user);
+            $adressesSerialized = [];
+            foreach($adresses as $adresse){
+                $adressesSerialized[] = $adresse->serialize();
             }
 
-
-            $adresses = [];
-            foreach(\App\Models\Adresse::getAllUserAdresse($user) as $adresse){
-                $ville = \App\Models\Ville::where("ID",$adresse["ID_VILLE"])->firstOrFail();
-                $adresses[] = array(
-                    "Numéro" => $adresse["NUM_RUE"],
-                    "Rue" => $adresse["NOM_RUE"],
-                    "Code Postal" => $ville["CODE_POSTAL"],
-                    "Ville" => $ville["NOM"],
-                    "ID" => $adresse["ID"],
-                );
-            }
+            // --- Render ---
 
             return Inertia::render("Account",[
                 "page"=>$page,
                 "info"=>[
-                    "Prénom"=>$user["PRENOM"],
-                    "Nom"=>$user["NOM"],
-                    "Téléphone"=>$user["TELEPHONE"],
-                    "Adresse mail"=>$user["EMAIL"],
+                    "Prénom"=>$user->getPrenom(),
+                    "Nom"=>$user->getNom(),
+                    "Téléphone"=>$user->getTelephone(),
+                    "Adresse mail"=>$user->getEmail(),
                 ],
-                "commandes"=>$commandesData,
-                "favoris"=>$favoris,
-                "adresses" => $adresses,
+                "commandes" => $commandesSerialized,
+                "favoris" => $favorisSerialized,
+                "adresses" => $adressesSerialized,
             ]);
-        }catch (\Exception $e){
-            if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
-            }else{
-                throw $e;
+        }catch (\App\Domain\Shared\CustomExceptions $e){
+            if($e->httpCode == 401){
+                return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }
+            throw $e;
         }
     }
 
-    function update(Request $request){
+    function update(Request $request) {
         $data = $request->post();
         try{
-            $user = \App\Models\Utilisateur::getLoggedUser($request);
+            $user = $this->userService->getAuthenticatedUser($request);
+            if($user == null){
+                throw CustomExceptions::createError(525);
+            }
             if(isset($data["Nom"]) && isset($data["Prénom"]) && isset($data["Téléphone"])){
-                \App\Models\Utilisateur::where("ID",$user["ID"])->update(["NOM"=>$data["Nom"],"PRENOM"=>$data["Prénom"],"TELEPHONE"=>$data["Téléphone"]]);
+                $this->userService->updateInfo($user, $data["Nom"], $data["Prénom"], $data["Téléphone"]);
             }else{
-                throw \App\Models\Exceptions::createError(521);
+                throw CustomExceptions::createError(521);
             }
-        }catch(\Exception $e){
-            if($e instanceof \App\Models\CustomExceptions){
-                return response($e->getMessage(),$e->getCode());
-            }
+        }catch(\App\Domain\Shared\CustomExceptions $e){
+            return response($e->getMessage(),$e->httpCode);
         }
     }
-
 }

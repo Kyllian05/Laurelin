@@ -2,12 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class UtilisateurSeeder extends Seeder
 {
+    public function __construct(private readonly UtilisateurService $utilisateurService) {}
+
     /**
      * Run the database seeds.
      */
@@ -19,17 +21,17 @@ class UtilisateurSeeder extends Seeder
             "PRENOM" => "Admin",
             "NOM" => "Admin",
             "PRIVILEGE" => 1,
-            "TOKEN"=>\App\Models\Utilisateur::generateToken(),
+            "TOKEN"=> $this->utilisateurService->generateToken(),
             "TOKENGEN"=>date ('Y-m-d H:i:s', time())
         ]);
 
         DB::table('Utilisateur')->insert([
-            'EMAIL' => "jeffreyepstein@gmail.com",
-            'PASSWORD' => hash("sha256","jeffrey"),
+            'EMAIL' => "jeffreyscht@gmail.com",
+            'PASSWORD' => hash("sha256","Jeffrey*123"),
             "PRENOM" => "Jeffrey",
             "NOM" => "Souchet",
             "PRIVILEGE" => 0,
-            "TOKEN"=>\App\Models\Utilisateur::generateToken(),
+            "TOKEN"=> $this->utilisateurService->generateToken(),
             "TOKENGEN"=>date ('Y-m-d H:i:s', time())
         ]);
     }

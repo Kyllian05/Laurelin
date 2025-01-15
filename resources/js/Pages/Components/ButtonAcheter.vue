@@ -24,9 +24,8 @@ function ajoutAuPanier(){
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200){
+        if(response.status === 200){
             emits("ajout")
-            //dynamicFavorite.value = !dynamicFavorite.value
         }
     })
 }

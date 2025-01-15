@@ -18,8 +18,7 @@
                     <button :class="{autChoiceActive :  authMethod === 'register'}" @click="changeAuthMethod()" class="font-subtitle-16">Inscription</button>
                 </div>
                 <Form v-if="authMethod === 'login'" :fields="[{'name':inputs['login']['fields'][0],type:'email'},{'name':inputs['login']['fields'][1],type:'password'}]" button-text="Connexion" :check-boxs="[inputs['login']['checkBoxs'][0]]" :texts="['Mot de passe oublié']" dest="/auth/login"  @textClicked="handleClick" succeed-message="Vous êtes connecté" @error-occured="message =>errorMesage = message"></Form>
-
-                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit" @error-occured="message =>errorMesage = message"></Form>
+                <Form v-else :fields="[{'name':inputs['register']['fields'][0]},{'name':inputs['register']['fields'][1]},{'name':inputs['register']['fields'][2],type:'email'},{'name':inputs['register']['fields'][3],'type':'password'}]" :check-boxs="[inputs['register']['checkBoxs'][0]]" button-text="S'inscrire" dest="/auth/register" succeed-message="Vous êtes inscrit, veuillez consulter vos mails pour valider votre adresse" @error-occured="message =>errorMesage = message"></Form>
             </div>
         </div>
     </div>
@@ -35,8 +34,8 @@
 
 <script setup>
 import Form from "./Components/Form.vue"
-import {defineProps, ref, watch} from "vue";
-    import Error from "./Components/Error.vue";
+import {defineProps, ref} from "vue";
+import Error from "./Components/Error.vue";
 
 const props = defineProps(["authMethod", "inputs"])
 
@@ -46,15 +45,16 @@ let recoverPassword = ref(false)
 
 const errorMesage = ref("")
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }function changeAuthMethod() {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+function changeAuthMethod() {
     if (authMethod.value === "login") authMethod.value = "register"
     else authMethod.value = "login"
 }
 
 function handleClick(source) {
-    if (source == "Mot de passe oublié") {
+    if (source === "Mot de passe oublié") {
         recoverPassword.value = true
     }
 }

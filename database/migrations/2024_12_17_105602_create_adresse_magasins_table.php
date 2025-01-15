@@ -14,8 +14,8 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE AdresseMagasins (
                 ID INT AUTO_INCREMENT PRIMARY KEY,
-                ID_VILLE INT,
-                ADRESSE VARCHAR(255)
+                ID_VILLE INT NOT NULL,
+                ADRESSE VARCHAR(255) NOT NULL
             )
         ");
     }

@@ -55,13 +55,6 @@ return new class extends Migration
                     FOREIGN KEY (ID_MAGASIN) REFERENCES AdresseMagasins(ID)
         ");
 
-
-        DB::statement("
-            ALTER TABLE Commande
-                ADD CONSTRAINT fk_commande_adresse
-                    FOREIGN KEY (ID_MAGASIN) REFERENCES AdresseMagasins(ID)
-        ");
-
         DB::statement("
             ALTER TABLE Produit_Commande
                 ADD CONSTRAINT fk_produit_commande_produit
@@ -99,13 +92,6 @@ return new class extends Migration
             ALTER TABLE Image
                 ADD CONSTRAINT fk_produit
                     FOREIGN KEY (ID_PRODUIT) REFERENCES Produit(ID)
-            ON DELETE CASCADE
-        ");
-
-        DB::statement("
-            ALTER TABLE Code
-                ADD CONSTRAINT fk_code_utilisateur
-                    FOREIGN KEY (UTILISATEUR) REFERENCES Utilisateur(ID)
             ON DELETE CASCADE
         ");
 

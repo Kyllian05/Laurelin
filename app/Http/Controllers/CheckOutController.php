@@ -2,100 +2,102 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Adresse;
-use App\Models\Commande;
-use App\Models\Exceptions;
+use App\Domain\Adresse\Services\AdresseService;
+use App\Domain\Commande\Service\CartService;
+use App\Domain\Commande\Service\OrderService;
+use App\Domain\Shared\CustomExceptions;
+use App\Domain\Utilisateur\Services\UtilisateurService;
+use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class CheckOutController extends Controller
 {
+    private ?CartService $cartService = null;
+
+    public function __construct(
+        private UtilisateurService $utilisateurService,
+        private OrderService $orderService,
+        private AdresseService $adresseService,
+    ) {}
+
     public function index(Request $request){
-        try{
-            $user = \App\Models\Utilisateur::getLoggedUser($request);
+        // --- Utilisateur ---
+        try {
+            $user = $this->utilisateurService->getAuthenticatedUser($request);
             if($user == null){
                 throw Exceptions::createError(518);
             }
-        }catch(\Exception $e){
-            if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
+        } catch(CustomExceptions $e) {
+            if($e->httpCode == 401){
+                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;
             }
         }
+        $this->cartService = new CartService($user);
 
         $userData = [
-            "EMAIL" => $user["EMAIL"],
-            "NOM" => $user["NOM"],
-            "PRENOM" => $user["PRENOM"],
+            "EMAIL" => $user->getEmail(),
+            "NOM" => $user->getNom(),
+            "PRENOM" => $user->getPrenom(),
         ];
 
-        $adresses = \App\Models\Adresse::getAllUserAdresse($user)->toArray();
+        // --- Adresses ---
 
-        for($i = 0; $i < count($adresses); $i++){
-            $ville = \App\Models\Ville::where("ID",$adresses[$i]["ID_VILLE"])->firstOrFail();
-            $adresses[$i]["VILLE"] = $ville["NOM"];
-            $adresses[$i]["CODE_POSTAL"] = $ville["CODE_POSTAL"];
+        $adresses = $this->utilisateurService->getAdresses($user);
+        $adressesSerialized = [];
+        foreach($adresses as $adresse){
+            $adressesSerialized[] = $adresse->serialize();
         }
 
-        $panier = \App\Models\Commande::getPanier($user);
-        $produits = \App\Models\Produit_Commande::getAllProducts($panier["ID"])->toArray();
+        // --- Panier
 
-        $result = [];
+        $panierSerialized = $this->cartService->getCart($user)->serialize();
 
-        foreach($produits as $produit){
-            $temp = \App\Models\Produit::where("ID",$produit["ID_PRODUIT"])->firstOrFail();
-            $temp["QUANTITE"] = $produit["QUANTITE"];
-            $result[] = $temp;
-        }
+        // --- Render ---
 
         return Inertia::render("CheckOut",[
             "user" => $userData,
-            "adresses" => $adresses,
-            "produits" => $result,
+            "adresses" => $adressesSerialized,
+            "produits" => $panierSerialized,
         ]);
     }
 
     public function valider(Request $request){
         $data = $request->post();
 
+        $user = $this->utilisateurService->getAuthenticatedUser($request);
+        if($user == null){
+            $e = Exceptions::createError(518);
+            return response()->json($e->getCode(),$e->httpCode);
+        }
+
         if($data["livraison"] != "domicile" && $data["livraison"] != "magasin"){
             $e = Exceptions::createError(520);
-            return response($e->getMessage(),$e->getCode());
+            return response($e->getMessage(),$e->httpCode);
         }
-
-        try{
-            $user = \App\Models\Utilisateur::getLoggedUser($request);
-            if($user == null){
-                throw Exceptions::createError(518);
-            }
-        }catch(\Exception $e){
-            if($e->getCode() == 518){
-                return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
-            }else{
-                throw $e;
-            }
-        }
-
-        $panier = \App\Models\Commande::getPanier($user);
-        $products = \App\Models\Produit_Commande::getAllProducts($panier["ID"]);
 
         if(!isset($data["paiement"]["nom"]) || !isset($data["paiement"]["numéro"]) || !isset($data["paiement"]["mois"]) || !isset($data["paiement"]["année"]) || !isset($data["paiement"]["cryptograme"])){
-            $e = \App\Models\Exceptions::createError(524);
-            return response($e->getMessage(),$e->getCode());
+            $e = Exceptions::createError(524);
+            return response($e->getMessage(),$e->httpCode);
         }
 
-        foreach($products as $product){
-            \App\Models\Produit_Commande::where([
-                "ID_PRODUIT"=>$product["ID_PRODUIT"],
-                "ID_COMMANDE"=>$panier["ID"]])
-                ->update(["PRIX"=>\App\Models\Produit::where("ID",$product["ID_PRODUIT"])->firstOrFail()["PRIX"]]);
-        }
+        $this->cartService = new CartService($user);
 
-        if($data["livraison"] == "domicile"){
-            \App\Models\Commande::where(["ID_UTILISATEUR" => $user["ID"],"ETAT"=>"panier"])->update(["ETAT"=>0,"ID_ADRESSE"=>$data["adresse"],"MODE_LIVRAISON"=>$data["livraison"]]);
-        }else{
-            \App\Models\Commande::where(["ID_UTILISATEUR" => $user["ID"],"ETAT"=>"panier"])->update(["ETAT"=>0,"ID_MAGASIN"=>$data["adresse"],"MODE_LIVRAISON"=>$data["livraison"]]);
+        $commande = $this->cartService->getCart($user);
+        $this->orderService->toOrder($commande);
+
+        if ($data["livraison"] == "domicile") {
+            // Domicile
+            $this->utilisateurService->getAdresses($user); // Update les adresses
+            $adresseCommande = $this->adresseService->findById(intval($data["adresse"]));
+            $this->orderService->order($commande, $data['livraison'], $adresseCommande, $user);
+        } else {
+            // Magasin
+            $adresseCommande = $this->adresseService->findByIdMagasin(intval($data["adresse"]));
+            $this->orderService->order($commande, $data['livraison'], $adresseCommande, $user);
         }
     }
 }

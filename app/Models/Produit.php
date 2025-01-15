@@ -29,8 +29,4 @@ class Produit extends Model
         'ID_CATEGORIE',
         'ID_COLLECTION',
     ];
-
-    static function getProduct(int $id) : Produit{
-        return self::where("ID",$id)->firstOrFail();
-    }
 }

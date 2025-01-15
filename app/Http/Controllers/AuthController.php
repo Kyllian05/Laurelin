@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use http\Cookie;
+use App\Domain\Shared\CustomExceptions;
+use App\Domain\Shared\Exceptions as DomainExceptions;
+use App\Domain\Shared\Exceptions;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
-
-use \App\Models;
+use App\Domain\Utilisateur\Services\UtilisateurService;
 
 class AuthController extends Controller
 {
@@ -24,6 +22,8 @@ class AuthController extends Controller
         ]
     ];
 
+    public function __construct(private UtilisateurService $userService) {}
+
     public function index(string $method = ""){
         if($method == ""){
             $method = "login";
@@ -34,62 +34,65 @@ class AuthController extends Controller
         ]);
     }
 
-    public function authentificate(string $method,Request $request){
+    public function authentificate(string $method, Request $request) {
         $data = $request->post();
         try{
-            if($method == "register"){
+            if($method == "register") {
                 $currentFields = self::$fields["register"];
-                $current = \App\Models\Utilisateur::register($data[$currentFields["fields"][0]],$data[$currentFields["fields"][1]],$data[$currentFields["fields"][2]],$data[$currentFields["fields"][3]]);
 
-                session(["EMAIL"=>$current["EMAIL"],"PASSWORD"=>$current["PASSWORD"]]);
-                return response("registered successfuly");
+                if (!$data[$currentFields["checkBoxs"][0]]) {
+                    throw DomainExceptions::createErrorWithMessage(521, "Veuillez accepter les conditions d'utilisation");
+                }
 
-            }else if($method == "login"){
+                $this->userService->register($data[$currentFields["fields"][0]],$data[$currentFields["fields"][1]],$data[$currentFields["fields"][2]],$data[$currentFields["fields"][3]]);
+
+                return response("registered successfully");
+
+            } else if($method == "login") {
                 $currentFields = self::$fields["login"];
-                try{
-                    $current = \App\Models\Utilisateur::login($data[$currentFields["fields"][0]],hash("sha256",$data[$currentFields["fields"][1]]));
-                }catch(\Exception $e){
-                    throw \App\Models\Exceptions::createError(515);
+
+                try {
+                    $user = $this->userService->login($data[$currentFields["fields"][0]], $data[$currentFields["fields"][1]]);
+                } catch (\Exception $e) {
+                    throw Exceptions::createError(515);
                 }
 
                 if($data[$currentFields["checkBoxs"][0]]){
                     return response("login successfuly")->cookie(
                         "TOKEN",
-                        $current["TOKEN"],
+                        $user->getToken(),
                         43800,
                         "/",
                         null,
                         true
                     );
-                }else{
-                    session(["EMAIL"=>$current["EMAIL"],"PASSWORD"=>$current["PASSWORD"]]);
-                    return response("login successfuly");
                 }
-
-            }else{
-
-                throw \App\Models\Exceptions::createError(513);
-
+                return redirect("/");
+            } else {
+                throw \App\Domain\Shared\Exceptions::createError(513);
             }
-        }catch (\Exception $e){
+        }catch (CustomExceptions $e){
+            return response($e->getMessage(),$e->httpCode);
+        }
+    }
+
+    public function verifyEmail(string $rawID, string $rawCode, Request $request){
+        try {
+            $id = intval($rawID);
+            $code = intval($rawCode);
+            $this->userService->verifyCode($id,$code);
+        } catch (\Exception $e){
             $class = explode("\\",get_class($e));
             $class = $class[sizeof($class)-1];
             if($class == "CustomExceptions"){
                 return response($e->getMessage(),$e->getCode());
             }else{
                 \Log::info($e);
-                return response("Erreur inconnu",500);
+                return response("Erreur inconnue",500);
             }
         }
-    }
 
-    public function verifyEmail(string $rawID,string $rawCode,Request $request){
-        $ID = intval($rawID);
-        $CODE = intval($rawCode);
-
-        \App\Models\Code::verifyCode($ID,$CODE);
-
-        return redirect("/");
+        return redirect("/account");
     }
 
     public function recoverPassword(string $ID, string $token,Request $request){
@@ -99,22 +102,29 @@ class AuthController extends Controller
                 "token"=>$token
             ]);
         }else{
-            \App\Models\Utilisateur::changePassword($ID,$token,$request->post()["Nouveau mot de passe"]);
+            try {
+                $this->userService->changePassword($ID,$token,$request->post()["Nouveau mot de passe"]);
+            } catch (\Exception $e){
+                $class = explode("\\",get_class($e));
+                $class = $class[sizeof($class)-1];
+                if($class == "CustomExceptions"){
+                    return response($e->getMessage(),$e->getCode());
+                }else{
+                    \Log::info($e);
+                    return response("Erreur inconnue",500);
+                }
+            }
         }
     }
 
     public function sendRecoveryMail(Request $request){
         $data = $request->post();
-        $user = \App\Models\Utilisateur::where("EMAIL",$data["Adresse mail"])->firstOrFail();
-        Mail::to($user["EMAIL"])->send(new \App\Mail\PasswordRecovery($user["ID"],$user["TOKEN"]));
+        $user = $this->userService->findByEmail($data["Adresse mail"]);
+        Mail::to($user->getEmail())->send(new \App\Mail\PasswordRecovery($user->getId(), $user->getToken()));
     }
-
 
     public function logout(Request $request)
     {
-        Session::invalidate();
-        $response = response()->json(['message' => 'Déconnexion réussie']);
-        $response->headers->clearCookie('TOKEN');
-        return $response;
+        return $this->userService->logout();
     }
 }

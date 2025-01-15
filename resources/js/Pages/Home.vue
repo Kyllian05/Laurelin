@@ -5,39 +5,30 @@
             <source src="/public/images/video1.mp4" type="video/mp4">
         </video>
         <div class="left">
-
-            <li class="font-title" id="titre">Illuminez vos journées</li>
-            <li class="font-body-m">L'avenir ce dessine avec Laurelin, transformer vos rêves en réalité</li>
+            <p class="font-title" id="titre">Illuminez vos journées</p>
+            <p class="font-body-m">L'avenir ce dessine avec Laurelin, transformer vos rêves en réalité</p>
             <a href="/bijoux" class="btn-side">Découvrir nos bijoux</a>
         </div>
         <div class="right">
             <div class="first">
-
                 <a href="/categories/Bagues">
                     <div class="text_fleche">
-                        <li>Nouvelle Bague</li>
-                        <img src="../../../public/images/fleche-pointant-vers-la-droite.png" id="fleche">
+                        <p>Nouvelle Bague</p>
+                        <span class="material-symbols-rounded">east</span>
                     </div>
-
                 </a>
             </div>
             <div class="second">
-                <li>une autre</li>
+                <p>une autre</p>
             </div>
-
         </div>
     </div>
     <div id="nouveauté">
-        <li class="font-title-24">Nouveauté</li>
+        <p class="font-title-24">Nouveauté</p>
         <div class="container">
-                <div v-for="produit in produits" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.URL})` }" @click="redirectOnClick(produit.ID)">
-                    <!-- TODO : faire le backend du btn favoris -->
-                    <!--<span class="material-symbols-rounded add-fav">favorite</span>-->
-                    <!-- - - - - - - - - - - - - -  -->
+                <div v-for="produit in produits" :key="produit.ID" class="item" :data-id="produit.ID" :style="{ backgroundImage: `url(${produit.IMAGES[0]})` }" @click="redirectOnClick(produit.ID)">
                     <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
                     <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
-                    <!--<span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>-->
-                    <!--<button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>-->
                     <a class="btn-side" :href="'/produit/'+produit.ID">Découvrir</a>
                 </div>
             </div>
@@ -47,28 +38,23 @@
             <img src="/public/images/history.png">
         </div>
         <div class="paragraphe">
-            <li id="titre_histoire" class="font-title-24">Notre histoire</li>
-            <li class="font-normal-12" id="histoire">Depuis ses débuts, Laurelin a repoussé les limites de l'artisanat de luxe. Chaque création est pensée comme une œuvre d'art, unique et intemporelle. La maîtrise des techniques ancestrales se marie avec une innovation constante. Nous sélectionnons uniquement les matériaux les plus précieux et durables. Notre savoir-faire incarne un héritage qui traverse les générations. </li>
+            <p id="titre_histoire" class="font-title-24">Notre histoire</p>
+            <p class="font-normal-12" id="histoire">Depuis ses débuts, Laurelin a repoussé les limites de l'artisanat de luxe. Chaque création est pensée comme une œuvre d'art, unique et intemporelle. La maîtrise des techniques ancestrales se marie avec une innovation constante. Nous sélectionnons uniquement les matériaux les plus précieux et durables. Notre savoir-faire incarne un héritage qui traverse les générations. </p>
             <a href="/histoire">
                     <div class="text_fleche" id="a_propos">
-                        <li>A propos de nous</li>
-                        <img src="../../../public/images/fleche-pointant-vers-la-droite.png" id="fleche">
+                        <p>A propos de nous</p>
+                        <span class="material-symbols-rounded">east</span>
                     </div>
 
                 </a>
         </div>
     </div>
     <div id="collection">
-        <li class="font-title-24">Nos Collections</li>
+        <p class="font-title-24">Nos Collections</p>
         <div id="coll-container">
             <div v-for="collection in collections" :key="collection.ID" class="item" id="coll_item" :data-id="collection.ID" :style="{ backgroundImage: `url(/pictures/collections/${collection.ID}.avif) ` }" @click="redirectOnClick(collection.ID)">
-                <!-- TODO : faire le backend du btn favoris -->
-                <!--<span class="material-symbols-rounded add-fav">favorite</span>-->
-                <!-- - - - - - - - - - - - - -  -->
                 <span id="name" class="item-text font-subtitle-16">{{ collection.NOM }}</span>
                 <span id="description" class="materiaux-text font-subtitle-16">{{ collection.DESCRIPTION.substring(0, 90) + "..." }}</span>
-                <!--<span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>-->
-                <!--<button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>-->
                 <a class="btn-side" :href="'/collections/'+collection.NOM">Découvrir</a>
             </div>
         </div>
@@ -175,7 +161,7 @@ let last2 = props.collections.pop();
     }
 
     .first{
-        background-image: url("../../../public/images/imgProd/w1242_tpadding12.webp");
+        background-image: url("/public/images/imgProd/w1242_tpadding12.webp");
         background-size: cover;
         background-position: center;
         filter: opacity(90%);
@@ -184,8 +170,11 @@ let last2 = props.collections.pop();
         justify-content: center;
         height:100%;
         border-radius: 10%;
+<<<<<<< HEAD
         width: 260px;
         /*height: 20%;*/
+=======
+>>>>>>> refs/remotes/origin/main
     }
     #fleche{
         height: 25px;

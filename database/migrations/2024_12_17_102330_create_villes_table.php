@@ -15,7 +15,7 @@ return new class extends Migration
             CREATE TABLE Ville (
                 ID INT PRIMARY KEY,
                 NOM VARCHAR(255) NOT NULL,
-                CODE_POSTAL VARCHAR(10)
+                CODE_POSTAL VARCHAR(10) NOT NULL
             )
         ");
     }

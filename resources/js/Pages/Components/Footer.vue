@@ -168,10 +168,8 @@ const content = {
     .icon {
         width: 24px;
         height: 24px;
-        transition-duration: 0.25s; 
-        border-radius: 0px!important;
+        transition-duration: 0.25s;
     }
-
     .icon:hover {
         transform: scale(1.2);
     }

@@ -1,0 +1,117 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+package "Shared" {
+    enum Role <<enumeration>> {
+        Admin
+        Customer
+    }
+}
+
+package "Utilisateur.Entities" {
+    abstract class UtilisateurEntity {
+        - id: int
+        - email: string
+        - password: string
+        - prenom: string
+        - nom: string
+        - telephone: string
+        - token: string
+        - tokenGen: string
+        - code: string
+        - codeGen: string
+        - favoris: array
+        - passwordValidator: PasswordValidatorStrategy
+        --
+        # __construct(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, code: string, codeGen: string, passwordValidator: PasswordValidatorStrategy)
+        .. Factory ..
+        + {static} utilisateurFactory(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, privilege: int, code: string, codeGen: string): ?UtilisateurEntity
+        + {static} createNewUser(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, privilege: int): ?UtilisateurEntity
+        .. Getters ..
+        + getId(): int
+        + getEmail(): string
+        + getPassword(): string
+        + getNom(): string
+        + getPrenom(): string
+        + getTelephone(): ?string
+        + getToken(): string
+        + getTokenGen(): string
+        + getCode(): ?string
+        + getCodegen(): ?string
+        + getFavoris(): array
+        + {abstract} getRole(): Role
+        .. Setters ..
+        + setPassword(password: string): void
+        + setId(id: int): void
+        + setEmail(email: string): void
+        + setPrenom(prenom: string): void
+        + setNom(nom: string): void
+        + setTelephone(telephone: string): void
+        + setToken(token: string): void
+        + setTokenGen(tokenGen: string): void
+        + setCode(code: string): void
+        + setCodeGen(codeGen: string): void
+        + setFavoris(favoris: array): void
+        .. Autres méthodes ..
+        + checkTokenDate(): bool
+        + isFavorite(produit: ProduitEntity): bool
+        + isUserVerified(): bool
+        + {static} generateRandomString(length: int): string
+    }
+
+    class AdminEntity {
+        # __construct(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, code: string, codeGen: string, passwordValidator: PasswordValidatorStrategy)
+        --
+        + getRole(): Role
+    }
+
+    class CustomerEntity {
+        # __construct(id: int, email: string, password: string, prenom: string, nom: string, telephone: string, token: string, tokenGen: string, code: string, codeGen: string, passwordValidator: PasswordValidatorStrategy)
+        --
+        + getRole(): Role
+    }
+
+    UtilisateurEntity <|-- AdminEntity
+    UtilisateurEntity <|-- CustomerEntity
+}
+
+package "Validators" {
+    interface PasswordValidatorStrategy {
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+
+    class AdminPasswordValidator {
+        - {static} errorMessage: string
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+
+    class CustomerPasswordValidator {
+        - {static} errorMessage: string
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+
+    class WeakPasswordValidator {
+        - {static} errorMessage: string
+        + validate(password: string, nom: string, prenom: string): bool
+        + getErrorMessage(): string
+    }
+}
+
+UtilisateurEntity ..> Role : uses
+AdminEntity ..> Role : returns
+CustomerEntity ..> Role : returns
+
+' Implémentation de l'interface
+AdminPasswordValidator ..|> PasswordValidatorStrategy
+CustomerPasswordValidator ..|> PasswordValidatorStrategy
+WeakPasswordValidator ..|> PasswordValidatorStrategy
+
+' Association avec PasswordValidatorStrategy
+UtilisateurEntity "*" --> "1" PasswordValidatorStrategy : - passwordValidator
+
+@enduml

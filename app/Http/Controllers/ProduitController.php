@@ -2,81 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categorie;
-use App\Models\Commentaire;
-use App\Models\Favoris;
-use App\Models\Image;
-use App\Models\Produit;
-use App\Models\User;
-use App\Models\Utilisateur;
+use App\Domain\Commentaire\Service\CommentaireService;
+use App\Domain\ProductGroup\Services\CategorieService;
+use App\Domain\Produit\Services\ProduitService;
+use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProduitController extends Controller
 {
-    public function show(string $id, Request $request){
+    public function __construct(
+        private UtilisateurService $userService,
+        private ProduitService $produitService,
+        private CategorieService $categorieService,
+        private CommentaireService $commentaireService
+    ) {}
+
+    public function show(string $id, Request $request)
+    {
         if (ctype_digit($id)) {
-            $user = \App\Models\Utilisateur::getLoggedUser($request);
-            $produit = Produit::where("ID",$id)->firstOrFail();
-            $id_categorie = $produit["ID_CATEGORIE"];
-            $nom_categorie = Categorie::where("ID",$id_categorie)->firstOrFail()["NOM"];
+            $user = $this->userService->getAuthenticatedUser($request);
+            $produit = $this->produitService->findById(intval($id));
 
-            $commentairedonnees = Commentaire::where("ID_PRODUIT",$produit->ID)->get()->toArray();
-
-            $donneescommantaire = []; // Tableau final avec les données enrichies
-
-            foreach ($commentairedonnees as $comment) {
-                $utilisateur = Utilisateur::select('NOM', 'PRENOM')->where("ID", $comment["ID_UTILISATEUR"])->first();
-                $donneescommantaire[] = [
-                    'CONTENU' => $comment["CONTENU"],
-                    'NOM' => $utilisateur ? $utilisateur->NOM : 'Non trouvé',
-                    'PRENOM' => $utilisateur ? $utilisateur->PRENOM : 'Non trouvé',
-                    'DATE' => $comment["DATE"],
-                    "DELETABLE" => $user != null ? $comment["ID_UTILISATEUR"] == $user["ID"] : false,
-                ];
+            // Récupérer si le produit est favoris
+            $isFav = false;
+            if ($user) {
+                $isFav = $this->userService->isFavorite($user, $produit);
             }
 
+            // Récupérer les données des commentaires
+            $commentaires = $this->commentaireService->findByProduct($produit);
+            $commentairesSerialized = [];
+            foreach ($commentaires as $commentaire) {
+                if($user != null) {
+                    $commentaire->setDeletable($user);
+                }
+                $commentairesSerialized[] = $commentaire->serialize();
+            }
+
+            // Récupérer les produits associés
+            $cat = $this->categorieService->findByProduct($produit);
+            $produitsAssocie = $this->categorieService->getProducts($cat);
+            $dataProduitsAssocie = [];
+            foreach ($produitsAssocie as $p) {
+                $prodSerialized = $this->produitService->serialize($p);
+                $prodSerialized["FAVORITE"] = $user && $this->userService->isFavorite($user, $p);
+                $dataProduitsAssocie[] = $prodSerialized;
+            }
 
             return Inertia::render("Produit",[
-                "produit" => $produit,
-                "images" => Image::get_all_images($id),
-                "isFavorite" => \App\Models\Favoris::isProduitInFavoris($produit,$user),
-                "autreProduits" => Categorie::get_products($nom_categorie),
-                "donneesCommentaires" => $donneescommantaire,
+                "produit" => $this->produitService->serialize($produit),
+                "isFavorite" => $isFav,
+                "autreProduits" => $dataProduitsAssocie,
+                "donneesCommentaires" => $commentairesSerialized,
             ]);
         }
         return response("", 404);
     }
 
-    public function produitData(string $id){
-        return response(Produit::find($id));
-    }
-
-    public function getProduitPicture(string $id,Request $request){
-        return response(\App\Models\Image::get_one_image($id));
-    }
-
     public function createCommentaire(Request $request){
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
-
+        $user = $this->userService->getAuthenticatedUser($request);
+        if($user == null){
+            $e = \App\Domain\Shared\Exceptions::createError(525);
+            return response($e->getMessage(), $e->httpCode);
+        }
         $data = $request->post();
-
-        $commentaire = \App\Models\Commentaire::create(["CONTENU"=>$data["contenu"],"ID_UTILISATEUR"=>$user["ID"],"ID_PRODUIT"=>$data["produit"],"DATE"=>date('Y-m-d', time())]);
-        $response = $commentaire->toArray();
-        unset($response["ID_UTILISATEUR"]);
-        unset($response["ID_PRODUIT"]);
-        unset($response["id"]);
-        $response["PRENOM"] = $user["PRENOM"];
-        $response["NOM"] = $user["NOM"];
-        $response["DELETABLE"] = true;
-        return response($response,200);
+        $commentaire = $this->commentaireService->create($user, $data["produit"], $data["contenu"]);
+        return response($commentaire->serialize(),200);
     }
 
     public function supprimerCommentaire(Request $request){
-        $user = \App\Models\Utilisateur::getLoggedUser($request);
-
+        $user = $this->userService->getAuthenticatedUser($request);
         $data = $request->post();
-
-        \App\Models\Commentaire::where(["ID_PRODUIT"=>$data["produit"],"ID_UTILISATEUR"=>$user["ID"]])->delete();
+        $this->commentaireService->delete($user, $data['produit']);
     }
 }

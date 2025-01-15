@@ -7,7 +7,7 @@
             <div id="materiaux" class="font-body-l">{{produit.MATERIAUX}} </div>
             <div id="annee" class="font-body-s"> Année création: {{produit.ANNEE_CREATION}} </div>
             <select id="taille">
-                <option name="selcetionner" class="font-body-m">Séléctionner une taille</option>
+                <option name="selcetionner" class="font-body-m">Sélectionner une taille</option>
                 <!-- TODO : mettre les tailles -->
             </select>
             <div id="prixDiv">
@@ -15,19 +15,18 @@
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
             <div id="dispo" class="font-body-m">Stock: {{produit.ETAT}}</div>
-            <ButtonAcheter :white-border="true" :id="props.produit['ID']" @ajout="eventPanier()"></ButtonAcheter>
+            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
         </div>
 
-
-        <div v-for="(image, index) in images" :key="index" :id="'img' + (index + 1)" class="produitImage">
-            <img :src="image.URL">
+        <div v-for="(image, index) in produit.IMAGES" :key="index" :id="'img' + (index + 1)" class="produitImage">
+            <img :src="image" alt="Image du produit">
         </div>
 
-        <Splide :options="{ rewind: true }" aria-label="My Favorite Images" class="slideImage">
-            <SplideSlide v-for="(image, index) in images">
-                <img :src="image.URL">
+        <Splide :options="{ rewind: true }" aria-label="Images du produit" class="slideImage">
+            <SplideSlide v-for="image in produit.IMAGES">
+                <img :src="image" alt="Image du produit">
             </SplideSlide>
         </Splide>
 
@@ -37,28 +36,30 @@
         </div>
 
         <div id="prodCreaAssocier">
-            <div v-for="produit in prodAssocier" :key="produit.ID" class="item" :style="{ backgroundImage: `url(${produit.URL})` }">
-                <span id="favoriteButton2" class="add-fav" :class="produit['FAVORITE'] ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(produit['ID'])">favorite</span>
-                <span class="item-text font-subtitle-16">{{ produit.NOM }}</span>
-                <span class="materiaux-text font-subtitle-16">{{ produit.MATERIAUX }}</span>
-                <span class="prix font-subtitle-16">{{ formatPrix(produit.PRIX) }} €</span>
-                <button class="boutton_acheter font-subtitle-16" @click="handleClick(produit)">Acheter</button>
+            <div v-for="prodA in prodAssocier" :key="prodA.ID" class="item" :style="{ backgroundImage: `url(${prodA.IMAGES[0]})` }">
+                <span id="favoriteButton2" class="add-fav" :class="prodA.FAVORITE ? 'material-symbols-outlined' : 'material-symbols-rounded'" @click="changeFavorite(prodA.ID)">favorite</span>
+                <span class="item-text font-subtitle-16">{{ prodA.NOM }}</span>
+                <span class="materiaux-text font-subtitle-16">{{ prodA.MATERIAUX }}</span>
+                <span class="prix font-subtitle-16">{{ formatPrix(prodA.PRIX) }} €</span>
+                <button class="boutton_acheter font-subtitle-16" @click="handleClick(prodA)">Acheter</button>
             </div>
         </div>
 
         <div id="avis">
             <p class="font-subtitle-16"> Les Avis de Nos Clients </p>
+            <div v-for="comm in dynamicCommentaire" class="commentaire">
+                <div  class="nom-prenom">
+                    <span class="prenom font-body-l">{{comm.PRENOM}}</span>
+                    <span class="nom font-body-l">{{comm.NOM}}</span>
+                </div>
+                <span class="date font-body-s">{{comm.DATE}}</span>
+                <span class="contenu font-body-m">{{comm.CONTENU}}</span>
+                <span class="material-symbols-rounded" id="deleteComment" v-if="comm.DELETABLE" alt="supprimer le commentaire" title="supprimer le commentaire" @click="deleteCommentaire()">remove</span>
+            </div>
+            <div v-if="!hasUserComment" id="form">
                 <textarea class="font-body-m" v-model="commentaireInput"></textarea>
                 <button class="avisButton font-body-l" @click="sendCommentaire()"> Donnez votre avis </button>
-                <div v-for="comm in dynamicCommentaire" class="commentaire">
-                    <div  class="nom-prenom">
-                        <span class="prenom font-body-l">{{comm.PRENOM}}</span>
-                        <span class="nom font-body-l">{{comm.NOM}}</span>
-                    </div>
-                    <span class="date font-body-s">{{comm.DATE}}</span>
-                    <span class="contenu font-body-m">{{comm.CONTENU}}</span>
-                    <span class="material-symbols-rounded" id="deleteComment" v-if="comm['DELETABLE']" alt="supprimer le commentaire" title="supprimer le commentaire"@click="deleteCommentaire()">remove</span>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -74,10 +75,8 @@ import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
 import {router} from "@inertiajs/vue3";
 
-
 const props = defineProps({
     "produit" : Object,
-    "images" : Array,
     "isFavorite" : Boolean,
     "autreProduits" : Array,
     "donneesCommentaires" : Array
@@ -87,6 +86,8 @@ const dynamicFavorite = ref(props.isFavorite)
 
 const dynamicCommentaire = ref(props.donneesCommentaires)
 
+const hasUserComment = ref(false)
+
 const commentaireInput = ref("")
 
 const updatePanier = ref(false)
@@ -95,28 +96,28 @@ function changeFavorite(id){
     let index = -1
 
     for(let i = 0;i<prodAssocier.value.length;i++){
-        if(prodAssocier.value[i]["ID"] == id){
+        if(prodAssocier.value[i].ID === id){
             index = i
             break
         }
     }
 
     let dest = "ajouterFavoris"
-    if(prodAssocier.value[index]["FAVORITE"]){
+    if(prodAssocier.value[index].FAVORITE){
         dest = "supprimerFavoris"
     }
     fetch("/"+dest,{
         method : "POST",
         body : JSON.stringify({
-            "produit" : prodAssocier.value[index]["ID"]
+            "produit" : prodAssocier.value[index].ID
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
         },
     }).then(async response=>{
-        if(response.status == 200){
-            prodAssocier.value[index]["FAVORITE"] = !prodAssocier.value[index]["FAVORITE"]
+        if(response.status === 200){
+            prodAssocier.value[index].FAVORITE = !prodAssocier.value[index].FAVORITE
         }
     })
 }
@@ -125,19 +126,31 @@ function eventPanier(){
     updatePanier.value = true
 }
 
+// Commentaires
+function updateUserComment() {
+    hasUserComment.value = false
+    for (let i=0; i<dynamicCommentaire.value.length; i++) {
+        if (dynamicCommentaire.value[i].DELETABLE === true) {
+            hasUserComment.value = true
+            break
+        }
+    }
+}
+
 function deleteCommentaire(){
     fetch("/supprimerCommentaire",{
         method : "POST",
         body : JSON.stringify({
-            "produit" : props.produit["ID"]
+            "produit" : props.produit.ID
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200){
-            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire["DELETABLE"] == false )
+        if(response.status === 200){
+            dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire.DELETABLE === false)
+            updateUserComment()
         }
     })
 }
@@ -146,7 +159,7 @@ function sendCommentaire(){
     fetch("/nouveauCommentaire",{
         method : "POST",
         body : JSON.stringify({
-            "produit" : props.produit["ID"],
+            "produit" : props.produit.ID,
             "contenu" : commentaireInput.value
         }),
         headers: {
@@ -154,8 +167,9 @@ function sendCommentaire(){
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200){
+        if(response.status === 200){
             dynamicCommentaire.value.push(await response.json())
+            updateUserComment()
         }
     })
 }
@@ -168,8 +182,6 @@ const formatPrix = (prix) => {
     }).format(prix);
 };
 
-
-const produits = ref([]);
 const prodAssocier = ref([]);
 
 
@@ -181,14 +193,14 @@ function favorisAction(){
     fetch(destination,{
         method : "POST",
         body : JSON.stringify({
-            produit : props.produit["ID"]
+            produit : props.produit.ID
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"
         },
     }).then(async response => {
-        if(response.status == 200){
+        if(response.status === 200){
             dynamicFavorite.value = !dynamicFavorite.value
         }
     })
@@ -198,20 +210,18 @@ const choisirProduitsAleatoires = () => {
     if (props.autreProduits.length > 3) {
         const produitsMelanges = [...props.autreProduits].sort(() => Math.random() - 0.5);
         prodAssocier.value = produitsMelanges.slice(0, 3);
-    } else {
-        prodAssocier.value = produits.value;
     }
 };
 
+// Initialisation des produits associés au montage et du form des commentaires
 onMounted(() => {
     choisirProduitsAleatoires();
+    updateUserComment()
 });
 
 const handleClick = (produit) => {
     router.visit(`/produit/${produit.ID}`);
 };
-
-
 </script>
 
 <style scoped>
@@ -502,6 +512,13 @@ img {
     flex-direction: column;
     align-items: center;
     margin-bottom: 2vh;
+}
+
+#form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #avis .commentaire {

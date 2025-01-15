@@ -13,6 +13,8 @@ class AdresseMagasins extends Model
      */
     protected $table = 'AdresseMagasins';
 
+    protected $primaryKey = "ID";
+
     /**
      * Les colonnes de la table qui peuvent être assignées en masse.
      *
@@ -24,20 +26,4 @@ class AdresseMagasins extends Model
     ];
 
     public $timestamps = false;
-
-    static function getMagasins(string $codepostale){
-        $citys = \App\Models\Ville::getByCodePostal($codepostale);
-
-        $result = [];
-        foreach ($citys as $city){
-            $magasins = \App\Models\AdresseMagasins::where('ID_VILLE', $city["ID"])->get();
-            foreach ($magasins as $magasin){
-                $temp = $magasin;
-                $temp["CODEPOSTAL"] = $city["CODE_POSTAL"];
-                $temp["VILLE"] = $city["NOM"];
-                $result[] = $temp;
-            }
-        }
-        return $result;
-    }
 }
