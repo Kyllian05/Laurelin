@@ -60,6 +60,7 @@ class ProduitController extends Controller
                 "isFavorite" => $isFav,
                 "autreProduits" => $dataProduitsAssocie,
                 "donneesCommentaires" => $commentairesSerialized,
+                "Categorie" => $produit->categorie,
             ]);
         }
         return response("", 404);

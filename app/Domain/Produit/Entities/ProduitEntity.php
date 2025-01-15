@@ -14,6 +14,7 @@ class ProduitEntity
     public readonly int $anneeCreation;
     public readonly ProductState $etat;
     public readonly int $stock;
+    public readonly int $categorie;
     private ?array $images = null;
 
     public function __construct(
@@ -25,6 +26,7 @@ class ProduitEntity
         int $anneeCreation,
         ProductState $etat,
         int $stock,
+        int $categorie,
     ) {
         $this->id = $id;
         $this->nom = $nom;
@@ -34,6 +36,7 @@ class ProduitEntity
         $this->anneeCreation = $anneeCreation;
         $this->etat = $etat;
         $this->stock = $stock;
+        $this->categorie = $categorie;
     }
 
     // Getters
@@ -72,6 +75,7 @@ class ProduitEntity
             "PRIX" => $this->prix,
             "ANNEE_CREATION" => $this->anneeCreation,
             "STOCK" => $this->stock,
+            "ID_CATEGORIE" => $this->categorie,
             "ETAT" => $this->etat == ProductState::Disponible ? "Disponible" : "Indisponible",
             "IMAGES" => $this->getImages()
         ];

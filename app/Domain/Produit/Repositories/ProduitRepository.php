@@ -31,6 +31,7 @@ class ProduitRepository
                 $produitModel->ANNEE_CREATION,
                 $productState,
                 $produitModel->STOCK,
+                $produitModel->ID_CATEGORIE,
             );
         }
 
@@ -59,6 +60,7 @@ class ProduitRepository
                 $produit->ANNEE_CREATION,
                 $productState,
                 $produit->STOCK,
+                $produit->ID_CATEGORIE,
             );
         }
         return $result;
