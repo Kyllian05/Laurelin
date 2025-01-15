@@ -40,6 +40,10 @@ class AuthController extends Controller
             if($method == "register") {
                 $currentFields = self::$fields["register"];
 
+                if (is_null($data[$currentFields["fields"][1]]) || is_null($data[$currentFields["fields"][2]]) || is_null($data[$currentFields["fields"][3]])) {
+                    throw Exceptions::createError(521);
+                }
+
                 if (!$data[$currentFields["checkBoxs"][0]]) {
                     throw DomainExceptions::createError(521, "Veuillez accepter les conditions d'utilisation");
                 }
@@ -50,6 +54,10 @@ class AuthController extends Controller
 
             } else if($method == "login") {
                 $currentFields = self::$fields["login"];
+
+                if (is_null($data[$currentFields["fields"][0]]) || is_null($data[$currentFields["fields"][1]])) {
+                    throw Exceptions::createError(521);
+                }
 
                 try {
                     $user = $this->userService->login($data[$currentFields["fields"][0]], $data[$currentFields["fields"][1]]);
