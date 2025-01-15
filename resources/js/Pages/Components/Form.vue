@@ -54,7 +54,7 @@ async function sendData(){
         },
     }).then(async response =>{
         if(response.status == 200){
-            if (redirectCookie != undefined){
+            if (redirectCookie != undefined && props.dest !== "/auth/register") {
                 window.location = redirectCookie.replace("%2F","/")
             }else{
                 alert(props.succeedMessage);

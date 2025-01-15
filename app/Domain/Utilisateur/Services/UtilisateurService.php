@@ -49,7 +49,7 @@ class UtilisateurService
         } catch (\Exception $e) {
             if ($e->getCode() == 518) {
                 \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget("TOKEN"));
-            }else{
+            } else {
                 throw $e;
             }
         }
@@ -111,7 +111,6 @@ class UtilisateurService
         }
         // Envoi du code de vérification de l'email
         $this->sendNewCode($user);
-        session(["TOKEN"=>$user->getToken()]);
         return $user;
     }
 

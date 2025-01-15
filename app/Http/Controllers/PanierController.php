@@ -27,7 +27,7 @@ class PanierController extends Controller
                 throw Exceptions::createError(518);
             }
         }catch(\Exception $e){
-            if($e->getCode() == 518){
+            if($e->getCode() == 518 || $e->getCode() == 517){
                 return redirect("/auth")->cookie("redirect","/panier",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;

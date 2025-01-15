@@ -30,7 +30,7 @@ class CheckOutController extends Controller
                 throw Exceptions::createError(518);
             }
         } catch(CustomExceptions $e) {
-            if($e->httpCode == 401){
+            if($e->httpCode == 401 || $e->httpCode == 403){
                 return redirect("/auth")->cookie("redirect","/checkout",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
             }else{
                 throw $e;

@@ -8,6 +8,7 @@ use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Domain\Shared\CustomExceptions;
 
 class ProduitController extends Controller
 {
@@ -21,7 +22,11 @@ class ProduitController extends Controller
     public function show(string $id, Request $request)
     {
         if (ctype_digit($id)) {
-            $user = $this->userService->getAuthenticatedUser($request);
+            try {
+                $user = $this->userService->getAuthenticatedUser($request);
+            } catch (CustomExceptions $e) {
+                $user = null;
+            }
             $produit = $this->produitService->findById(intval($id));
 
             // Récupérer si le produit est favoris
