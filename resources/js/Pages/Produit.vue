@@ -9,7 +9,7 @@
             <div v-if="Categorie !== 4" >
                 <select id="taille">
                     <option value="">Séléctionner une taille</option>
-                    <option :value="taille" v-for="taille in taille[Categorie-1]" class="tailleValeur">{{taille}}</option>
+                    <option :value="taille" v-for="taille in taille[Categorie-1]" class="tailleValeur">{{taille}} cm</option>
                 </select>
             </div>
             <div id="prixDiv">
