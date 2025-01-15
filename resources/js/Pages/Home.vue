@@ -136,7 +136,7 @@ let last2 = props.collections.pop();
         color: #ffffff;
     }
     .left{
-        width: 40%;
+        width: 700px;
         height: 20%;
         display: flex;
         flex-direction: column;
@@ -168,8 +168,10 @@ let last2 = props.collections.pop();
         display: flex;
         align-items: end;
         justify-content: center;
-        height:120%;
+        height:100%;
         border-radius: 10%;
+        width: 260px;
+        /*height: 20%;*/
     }
     #fleche{
         height: 25px;
@@ -201,7 +203,7 @@ let last2 = props.collections.pop();
     }
 
     .right{
-        width: 15%;
+        width: 260px;
         height: 30%;
         display: flex;
         flex-direction: column;
