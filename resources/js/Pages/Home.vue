@@ -170,11 +170,8 @@ let last2 = props.collections.pop();
         justify-content: center;
         height:100%;
         border-radius: 10%;
-<<<<<<< HEAD
         width: 260px;
         /*height: 20%;*/
-=======
->>>>>>> refs/remotes/origin/main
     }
     #fleche{
         height: 25px;
