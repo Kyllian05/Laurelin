@@ -45,7 +45,7 @@ class AdresseController extends Controller{
             $this->adresseService->delete($this->adresseService->findById($data["ID"]));
         } catch(\Exception $e){
             if($e->getCode() == 23000){
-                $e = Exceptions::createError(525);
+                $e = Exceptions::createError(523);
             }
             return response($e->getMessage(),$e->getCode());
         }
