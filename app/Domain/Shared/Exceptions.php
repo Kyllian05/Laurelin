@@ -46,7 +46,7 @@ class Exceptions
         531 => 501, // 501 Not Implemented - Indique que cette fonctionnalité n'est pas implémentée.
     ];
 
-    public static function createError(int $code, ?string $customMessage):CustomExceptions{
+    public static function createError(int $code, ?string $customMessage=null):CustomExceptions{
         if(!in_array($code,array_keys(Exceptions::$messages))){
             throw new \Exception("Probleme lors de la création d'une exception");
         }
