@@ -4,7 +4,10 @@ namespace Tests\Feature;
 
 use App\Domain\Adresse\Repositories\AdresseRepository;
 use App\Domain\Adresse\Repositories\VilleRepository;
+use App\Domain\Commande\Repositories\Database\CommandeRepository;
+use App\Domain\Commande\Repositories\Database\ProduitCommandeRepository;
 use App\Domain\Commentaire\Repositories\CommentaireRepository;
+use App\Domain\Produit\Repositories\ImageRepository;
 use App\Domain\Produit\Repositories\ProduitRepository;
 use App\Domain\Utilisateur\Repositories\UtilisateurRepository;
 use App\Models\Utilisateur;
@@ -24,6 +27,12 @@ class FeatureTest extends TestCase
     private \App\Domain\Adresse\Repositories\VilleRepository $villeRepository;
 
     private \App\Domain\Adresse\Repositories\AdresseRepository $adresseRepository;
+
+    private \App\Domain\Commande\Repositories\Database\CommandeRepository $commandeRepository;
+
+    private \App\Domain\Produit\Repositories\ImageRepository $imageRepository;
+
+    private \App\Domain\Commande\Repositories\Database\ProduitCommandeRepository $produitCommandeRepository;
 
     function defineToken(string $email,string $password){
         $user = $this->utilisateurRepository->findByEmail($email);
@@ -54,6 +63,9 @@ class FeatureTest extends TestCase
         $this->produitRepository = new ProduitRepository();
         $this->villeRepository = new VilleRepository();
         $this->adresseRepository = new AdresseRepository($this->villeRepository);
+        $this->imageRepository = new ImageRepository();
+        $this->produitCommandeRepository = new ProduitCommandeRepository($this->produitRepository,$this->imageRepository);
+        $this->commandeRepository = new CommandeRepository($this->produitCommandeRepository,$this->adresseRepository,$this->imageRepository);
     }
 
     function test_authentication(){
@@ -212,5 +224,48 @@ class FeatureTest extends TestCase
             "ID_VILLE"=>$IdVilleTest,
             "ID_UTILISATEUR"=>$user->getId()
         ])->exists());
+    }
+
+    function test_panier_interaction(){
+        $this->defineToken("admin@admin.com","admin");
+        $user = $this->utilisateurRepository->findByToken($this->token);
+        assert($user != null);
+
+        $IdProduitTest = 24;
+
+        $produits = $this->commandeRepository->getCart($user)->getProducts();
+
+        foreach ($produits as $produit){
+            assert($produit instanceof \App\Domain\Commande\Entities\ProduitCommandeEntity);
+            assert($produit->getProduit()->id != $IdProduitTest);
+        }
+
+        $reponse = $this->post("/panier/ajout", [
+            "produit"=>$IdProduitTest,
+        ]);
+        $reponse->assertStatus(200);
+
+        $produits = $this->commandeRepository->getCart($user)->getProducts();
+
+        $foundState = false;
+        foreach ($produits as $produit){
+            assert($produit instanceof \App\Domain\Commande\Entities\ProduitCommandeEntity);
+            if($produit->getProduit()->id == $IdProduitTest){
+                $foundState = true;
+            }
+        }
+        assert($foundState);
+
+        $reponse = $this->post("/panier/supprimer", [
+            "produit"=>$IdProduitTest,
+        ]);
+        $reponse->assertStatus(200);
+
+        $produits = $this->commandeRepository->getCart($user)->getProducts();
+
+        foreach ($produits as $produit){
+            assert($produit instanceof \App\Domain\Commande\Entities\ProduitCommandeEntity);
+            assert($produit->getProduit()->id != $IdProduitTest);
+        }
     }
 }
