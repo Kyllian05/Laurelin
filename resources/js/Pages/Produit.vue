@@ -209,7 +209,8 @@ function favorisAction(){
 const choisirProduitsAleatoires = () => {
     if (props.autreProduits.length > 3) {
         const produitsMelanges = [...props.autreProduits].sort(() => Math.random() - 0.5);
-        prodAssocier.value = produitsMelanges.slice(0, 3);
+        const filteredProduitsMelanges = produitsMelanges.filter((produit) => produit.ID !== props.produit.ID)
+        prodAssocier.value = filteredProduitsMelanges.slice(0, 3);
     }
 };
 
