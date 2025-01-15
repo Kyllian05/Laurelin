@@ -11,8 +11,7 @@
                         <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
                         <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
                         <Field name="Code Postale" @input="value => searchVille(value)"></Field>
-                        <!-- TODO: UI-->
-                        <select v-if="villesSuggest.length > 0" v-model="villeChoice">
+                        <select id="selectCodePost" v-if="villesSuggest.length > 0" v-model="villeChoice">
                             <option v-for="ville in villesSuggest" :value="{'Nom':ville['NOM'],'Code Postal':ville['CODE_POSTAL']}">{{ ville["NOM"] }} {{ ville["CODE_POSTAL"] }}</option>
                         </select>
 
@@ -374,6 +373,19 @@ let props = defineProps(
         width: 100%;
         align-items: center;
         padding-top: 30px;
+    }
+
+    #selectCodePost {
+        margin-left: 50%;
+        transform: translateX(-50%);
+        border-bottom: solid 1px black !important;
+        padding: 2px;
+        justify-content: space-around;
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+        width: 230px;
     }
 
     #elementAdresse {

@@ -234,6 +234,29 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER VALID_ADRESSE_OF_USERS
+            BEFORE INSERT ON Commande
+            FOR EACH ROW
+            BEGIN
+                IF (NEW.MODE_LIVRAISON = 'domicile') THEN
+                    IF NOT EXISTS (
+                        SELECT 1
+                        FROM Adresse
+                        WHERE Adresse.ID = NEW.ID_ADRESSE
+                        AND Adresse.ID_UTILISATEUR = NEW.ID_UTILISATEUR
+                    ) THEN
+                        SIGNAL SQLSTATE '45000'
+                        SET MESSAGE_TEXT = 'L\'adresse de la commande n\'appartient pas à l\'utilisateur';
+                    END IF;
+                END IF;
+            END;
+        ");
+
+
     }
 
 
@@ -258,5 +281,6 @@ return new class extends Migration
         DB::statement("DROP TRIGGER IF EXISTS VALID_NUMBER_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL_INSERT");
         DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL_UPDATE");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_ADRESSE_OF_USERS");
     }
 };

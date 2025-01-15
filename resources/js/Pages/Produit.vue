@@ -1,5 +1,6 @@
 <template>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />
+    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
     <div id="page">
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
@@ -163,7 +164,7 @@ function sendCommentaire(){
 const formatPrix = (prix) => {
     return new Intl.NumberFormat("fr-FR", {
         style: "decimal",
-        maximumFractionDigits: 0, // Pas de décimales
+        maximumFractionDigits: 0,
     }).format(prix);
 };
 
@@ -202,7 +203,6 @@ const choisirProduitsAleatoires = () => {
     }
 };
 
-// Initialisation des produits associés au montage
 onMounted(() => {
     choisirProduitsAleatoires();
 });
