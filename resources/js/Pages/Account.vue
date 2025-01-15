@@ -69,7 +69,7 @@
                 </div>
                 <div v-show="favorisImagesCount >= dynamicFavoris.length" v-for="favori in dynamicFavoris" class="favorisWrappers">
                     <div style="position: relative;width: fit-content" class="imageWrapper">
-                        <div>
+                        <div id="image">
                             <a :href="'/produit/'+favori.ID" target="_blank">
                                 <img :src="favori.IMAGES[0]" class="favorisImage" @load="favorisImageLoaded()">
                             </a>
@@ -457,15 +457,19 @@ let props = defineProps(
     .favorisWrappers div:hover img{
         filter: brightness(70%);
     }
+
     .favorisWrappers{
         text-align: center;
     }
+
     #favorisWrapper{
         display: grid;
         gap: 10px;
         grid-template-columns: repeat(3,1fr);
         height: max-content;
     }
+
+
     .favorisImage{
         width: 100%;
         cursor: pointer;
@@ -474,6 +478,11 @@ let props = defineProps(
         object-fit: cover;
         object-position: top;
     }
+
+    #image {
+        position: relative;
+    }
+
     .commandSideWrapper p{
         margin-top: 2vh;
     }
