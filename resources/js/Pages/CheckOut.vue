@@ -29,7 +29,7 @@
                 <div id="contenuAdresse" v-if="currentStep === 2">
                     <div id="adresseChoiceWrapper">
                         <button :class="{adresseChoiceActive :  adresseMethod === 'domicile'}" @click="changeadresseMethod()" class="font-subtitle-16">a domicile</button>
-                        <button :class="{adresseChoiceActive :  adresseMethod === 'retirer'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
+                        <button :class="{adresseChoiceActive :  adresseMethod === 'magasin'}" @click="changeadresseMethod()" class="font-subtitle-16">retirer en magasin</button>
                     </div>
                     <div v-if="adresseMethod === 'domicile'">
                         <div class="adresseUser" v-for="(adresse,index) in adresses">
@@ -41,7 +41,7 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else>
+                    <div v-if="adresseMethod === 'magasin'">
                         <Field name="Code Postal" @input="codePostale => searchMagasins(codePostale)" style="width: 50%;margin-left: 50%;transform: translateX(-50%);margin-bottom: 2vh"></Field>
                         <select id="selectVille" class="font-subtitle-16" v-model="currentMagasin">
                             <option :value="magasin" v-for="magasin in magasinsRecomm">{{ magasin.ADRESSE }} {{ magasin.VILLE.NOM }} {{ magasin.VILLE.CODE_POSTAL }}</option>
@@ -93,7 +93,7 @@
             <div id="prodRecap" v-for="produitCmd in produits.PRODUITS">
                 <div id="produitComander" class="font-subtitle-16">
                     <p>{{ produitCmd.PRODUIT.NOM }}</p>
-                    <b>{{ produitCmd.PRODUIT.PRIX * produitCmd.QUANTITE }} €</b>
+                    <b>{{ formatPrix(produitCmd.PRODUIT.PRIX * produitCmd.QUANTITE) }} €</b>
                 </div>
                 <div id="quantite" >
                     <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
@@ -103,11 +103,11 @@
 
             <div id="tots">
                 <div id="sousTot">
-                    <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ Math.floor(sum/1.2) }} €</b></p>
-                    <p id="tva" class="font-subtitle-16">tva <b>{{ sum-Math.floor(sum/1.2) }} €</b></p>
+                    <p id="soustotal" class="font-subtitle-16">sous-total <b>{{ formatPrix(Math.floor(sum/1.2)) }} €</b></p>
+                    <p id="tva" class="font-subtitle-16">tva <b>{{ formatPrix(sum-Math.floor(sum/1.2)) }} €</b></p>
                 </div>
                 <div id="Tot">
-                    <p id="total" class="font-subtitle-16">total <b>{{ sum}} €</b></p>
+                    <p id="total" class="font-subtitle-16">total <b>{{ formatPrix(sum) }} €</b></p>
                 </div>
             </div>
         </div>
@@ -235,6 +235,16 @@ function changeadresseMethod(){
     if(adresseMethod.value === "domicile")adresseMethod.value = "magasin"
     else adresseMethod.value = "domicile"
 }
+
+/* Gère l'espace du prix */
+const formatPrix = (prix) => {
+    return new Intl.NumberFormat("fr-FR", {
+        style: "decimal",
+        maximumFractionDigits: 0, // Pas de décimales
+    }).format(prix);
+};
+
+
 </script>
 
 <style scoped>
@@ -389,12 +399,13 @@ function changeadresseMethod(){
 #selectVille {
     margin-left: 50%;
     transform: translateX(-50%);
-    border-bottom: solid 2px black !important;
+    border-bottom: solid 1px black !important;
     padding: 2px;
     justify-content: space-around;
     background: none;
     border: none;
     cursor: pointer;
+    margin-bottom: 50px;
     width: 230px;
 }
 .adresseUser {

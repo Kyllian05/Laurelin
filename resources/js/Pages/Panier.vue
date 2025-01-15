@@ -11,7 +11,7 @@
                             <h3>{{ produitCmd.PRODUIT.NOM }}</h3>
                             <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
                             <p class="addOther" @click="addOtherProduct(produitCmd.PRODUIT.ID)">En ajouter un autre</p>
-                            <h2>{{ produitCmd.PRODUIT.PRIX }}€</h2>
+                            <h2>{{ formatPrix(produitCmd.PRODUIT.PRIX) }}€</h2>
                         </div>
                         <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produitCmd.PRODUIT.ID)">close</span>
                     </div>
@@ -26,9 +26,17 @@
             <div class="panierresume">
             <h2>SOUS TOTAL</h2>
             <p class="incl">INCL. TVA</p>
-            <h1>{{ somme }}€</h1>
+            <h1>{{ formatPrix(somme) }}€</h1>
             <button onclick="window.location='/checkout'">Poursuivre ma commande</button>
             <p class="secure">PAIEMENT SÉCURISÉ</p>
+            <div id="payement">
+                <img src="/public/images/CB-Logo.png" alt="logo-CB">
+                <img src="/public/images/American-Express-Logo.png" alt="Amex-logo">
+                <img src="/public/images/Mastercard-Logo.png" alt="Master-logo">
+                <img src="/public/images/apple-pay-Logo.jpg" alt="apple-logo">
+                <img src="/public/images/PayPal-Logo.jpg" alt="Paypal-logo">
+                <img src="/public/images/Visa-Logo.jpg" alt="visa-logo">
+            </div>
             <p class="returns">RETOURS ET ÉCHANGES SOUS 30 JOURS</p>
             <a href="#" class="legal">MENTIONS LÉGALES</a>
             </div>
@@ -96,6 +104,15 @@ function supprimerDuPanier(id){
         }
     })
 }
+
+
+/* Gère l'espace du prix */
+const formatPrix = (prix) => {
+    return new Intl.NumberFormat("fr-FR", {
+        style: "decimal",
+        maximumFractionDigits: 0, // Pas de décimales
+    }).format(prix);
+};
 
 updatePanierSomme()
 watch(panierData.value,async () => {
@@ -211,6 +228,23 @@ border-radius: 8px;
 margin-top: 110px;
 padding-bottom: 35px;
 height: fit-content;
+}
+
+
+#payement {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+
+
+.rightWrapper img {
+    width: 50px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    object-fit: cover;
 }
 
 .panierresume h3 {

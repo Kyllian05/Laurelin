@@ -31,7 +31,7 @@ import {defineProps, ref, watch} from "vue";
         border-radius: 10px;
         border: solid 1px black;
         height: 5vh;
-        width: 98%;
-        padding-left: 2%;
+        width: 100%;
+        padding: 2px 10px;
     }
 </style>

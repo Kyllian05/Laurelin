@@ -1,5 +1,6 @@
 <template>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />
+    <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
     <div id="page">
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
@@ -13,6 +14,7 @@
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
+            <div id="dispo" class="font-body-m">Stock: {{produit.ETAT}}</div>
             <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
@@ -176,7 +178,7 @@ function sendCommentaire(){
 const formatPrix = (prix) => {
     return new Intl.NumberFormat("fr-FR", {
         style: "decimal",
-        maximumFractionDigits: 0, // Pas de décimales
+        maximumFractionDigits: 0,
     }).format(prix);
 };
 
@@ -341,6 +343,10 @@ textarea{
     display: flex;
     align-items: baseline;
     margin-bottom: 30px;
+}
+
+#dispo {
+    margin-bottom: 10px;
 }
 
 #prix {
@@ -664,6 +670,11 @@ img {
         height: clamp(25px, 2vw, 45px);
     }
 
+    #favoriteButton {
+        margin-top: -35px;
+        margin-right: -35px;
+    }
+
 }
 
 
@@ -737,10 +748,6 @@ img {
 @media (max-width: 1200px) {
     #page{
         margin-top: 84px;
-    }
-
-    #favoriteButton {
-        top: 144px;
     }
 }
 

@@ -1,6 +1,24 @@
 <template>
     <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
     <Header currentPage="account"></Header>
+    <div v-if="ajoutAdresseState" id="ajoutAdresseWrapper">
+        <div id="ajoutAdresseContent">
+            <span class="material-symbols-rounded" @click="ajoutAdresseState = false" id="ajoutAdresseClose">close</span>
+                <div id="formAdresse">
+                    <p id="titre" class="font-body-s">AJOUTER UNE NOUVELLE ADRESSE</p>
+                    <div id="elementAdresse">
+                        <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
+                        <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
+                        <Field name="Code Postale" @input="value => searchVille(value)"></Field>
+                        <select id="selectCodePost" v-if="villesSuggest.length > 0" v-model="villeChoice">
+                            <option v-for="ville in villesSuggest" :value="{'Nom':ville.NOM,'Code Postal':ville.CODE_POSTAL}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
+                        </select>
+
+                        <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="mainWrapper">
         <div id="navWrapper">
             <div id="elementsNav" v-for="nav in Object.keys(navConv)" :class="dynamicPage == nav ? 'currentNav' : ''" @click="dynamicPage = nav">
@@ -68,22 +86,6 @@
                 </div>
             </div>
             <div v-else>
-                <div v-if="ajoutAdresseState" id="ajoutAdresseWrapper">
-                    <div id="ajoutAdresseContent">
-                        <span class="material-symbols-rounded" @click="ajoutAdresseState = false" id="ajoutAdresseClose">close</span>
-                        <p class="font-body-s">AJOUTER UNE NOUVELLE ADRESSE</p>
-                        <div style="width: 70%;margin-left: 50%;transform: translateX(-50%)">
-                            <Field name="Numéro" @input="value => updateNewAdresseValue('Numéro',value)"></Field>
-                            <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
-                            <Field name="Code Postal" @input="value => searchVille(value)"></Field>
-                            <!-- TODO: UI-->
-                            <select v-if="villesSuggest.length > 0" v-model="villeChoice">
-                                <option v-for="ville in villesSuggest" :value="{'ID': ville.ID}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
-                            </select>
-                            <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>
-                        </div>
-                    </div>
-                </div>
                 <button id="addAdressButton" @click="ajoutAdresseState = true">
                     <span class="material-symbols-rounded">
                         add
@@ -316,45 +318,87 @@ let props = defineProps(
         transform: translateX(-50%);
         width: 90%;
     }
-    #ajoutAdresseContent p{
-        text-align: center;
+    #titre {
+        display: flex;
         font-size: 19px;
-        position: relative;
         letter-spacing: 1px;
         margin-bottom: 5vh;
-        margin-top: 0;
+        justify-content: center;
+        width: 80%;
     }
+
     #ajoutAdresseClose:hover{
         background-color: rgba(0,0,0,20%);
         border-radius: 50%;
     }
     #ajoutAdresseClose{
         cursor: pointer;
-        font-size: 3vw;
-        position: absolute;
-        margin-top: -9vh;
-        margin-left: 1vh;
+        font-size: 30px;
+        width: fit-content;
+        min-width: 30px;
+        min-height: 30px;
+        margin: 5px 0 0 5px;
     }
     #ajoutAdresseContent{
+        display: flex;
+        flex-direction: column;
         width: 50vw;
-        background-color: white;
-        margin-left: 50vw;
+        max-width: 770px;
+        height: fit-content;
         margin-top: 50vh;
-        transform: translate(-50%,-50%);
+        margin-left: 50vw;
+        padding-bottom: 30px;
+        transform: translate(-50%, -50%);
+        background-color: white;
         border-radius: 20px;
-        overflow: hidden;
-        padding-bottom: 10vh;
-        padding-top: 10vh;
     }
     #ajoutAdresseWrapper{
+        display: flex;
         position: absolute;
-        top: 0px;
-        left: 0px;
         width: 100vw;
         height: 100vh;
         background-color: rgba(0,0,0,20%);
         z-index: 1000;
     }
+
+    #formAdresse {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        padding-top: 30px;
+    }
+
+    #selectCodePost {
+        margin-left: 50%;
+        transform: translateX(-50%);
+        border-bottom: solid 1px black !important;
+        padding: 2px;
+        justify-content: space-around;
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+        width: 230px;
+    }
+
+    #elementAdresse {
+        text-align: left;
+        width: 85%;
+    }
+
+
+    #txtCodePostal {
+        justify-content: left;
+    }
+
+    #inputCodePostal {
+        border-radius: 10px;
+        border: solid 1px black;
+        height: 5vh;
+        width: 100%;
+    }
+
     #addAdressButton p{
         letter-spacing: 1px;
     }
@@ -403,6 +447,8 @@ let props = defineProps(
         background-color: white;
         border-radius: 50%;
         box-shadow: 0 0 8px rgba(0,0,0,20%);
+        cursor: pointer;
+
     }
 
     .favorisWrappers div:hover .displayHover{
@@ -634,5 +680,17 @@ let props = defineProps(
             width: 80%;
         }
     }
+
+    @media (max-width: 1000px) {
+        #ajoutAdresseContent {
+            width: 80vh;
+            height: fit-content;
+            margin-left: 10%;
+            margin-top: 50vh;
+            transform: translate(-6%, -50%);
+        }
+    }
+
+
 
 </style>

@@ -20,8 +20,24 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 DECLARE current_stock INT;
-                SELECT stock INTO current_stock FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
-                IF current_stock < NEW.QUANTITE THEN
+                SELECT STOCK INTO current_stock FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
+                IF current_stock < 0 THEN
+                    SIGNAL SQLSTATE '45003' SET MESSAGE_TEXT = 'Stock insuffisant pour ce produit.';
+                END IF;
+            END;
+
+        ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER STOCK_INSUFFISANT_UPDATE
+            BEFORE UPDATE ON Produit_Commande
+            FOR EACH ROW
+            BEGIN
+                DECLARE current_stock INT;
+                SELECT STOCK INTO current_stock FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
+                IF current_stock < 0 THEN
                     SIGNAL SQLSTATE '45003' SET MESSAGE_TEXT = 'Stock insuffisant pour ce produit.';
                 END IF;
             END;
@@ -72,6 +88,20 @@ return new class extends Migration
 
         /* OK */
         DB::statement("
+            CREATE OR REPLACE TRIGGER MISE_A_JOUR_STOCK_UPDATE
+            AFTER UPDATE ON Produit_Commande
+            FOR EACH ROW
+            BEGIN
+                UPDATE Produit
+                SET STOCK = STOCK - (NEW.QUANTITE - OLD.QUANTITE)
+                WHERE Produit.ID = NEW.ID_PRODUIT;
+            END;
+
+        ");
+
+
+        /* OK */
+        DB::statement("
             CREATE OR REPLACE TRIGGER MISE_A_JOUR_ETAT
             AFTER INSERT ON Produit_Commande
             FOR EACH ROW
@@ -79,7 +109,26 @@ return new class extends Migration
                 DECLARE STOCK_STATUS INT;
                 SELECT STOCK INTO STOCK_STATUS FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
                 IF STOCK_STATUS = 0 THEN
-                    UPDATE Produit SET ETAT = 'Produit indisponible' WHERE STOCK = STOCK_STATUS;
+                    UPDATE Produit SET ETAT = 'Indisponible' WHERE STOCK = STOCK_STATUS;
+                ELSEIF STOCK_STATUS != 0 THEN
+                    UPDATE Produit SET ETAT = 'Disponible' WHERE STOCK = STOCK_STATUS;
+                END IF;
+            END;
+        ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER MISE_A_JOUR_ETAT_UPDATE
+            AFTER UPDATE ON Produit_Commande
+            FOR EACH ROW
+            BEGIN
+                DECLARE STOCK_STATUS INT;
+                SELECT STOCK INTO STOCK_STATUS FROM Produit WHERE Produit.ID = NEW.ID_PRODUIT;
+                IF STOCK_STATUS = 0 THEN
+                    UPDATE Produit SET ETAT = 'Indisponible' WHERE STOCK = STOCK_STATUS;
+                ELSEIF STOCK_STATUS != 0 THEN
+                    UPDATE Produit SET ETAT = 'Disponible' WHERE STOCK = STOCK_STATUS;
                 END IF;
             END;
         ");
@@ -142,6 +191,8 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
         // Update
         DB::statement("
             CREATE TRIGGER VALID_NUMBER_UPDATE
@@ -169,6 +220,8 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
         // Update
         DB::statement("
             CREATE OR REPLACE TRIGGER VALID_EMAIL_UPDATE
@@ -181,6 +234,29 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+
+        /* OK */
+        DB::statement("
+            CREATE OR REPLACE TRIGGER VALID_ADRESSE_OF_USERS
+            BEFORE INSERT ON Commande
+            FOR EACH ROW
+            BEGIN
+                IF (NEW.MODE_LIVRAISON = 'domicile') THEN
+                    IF NOT EXISTS (
+                        SELECT 1
+                        FROM Adresse
+                        WHERE Adresse.ID = NEW.ID_ADRESSE
+                        AND Adresse.ID_UTILISATEUR = NEW.ID_UTILISATEUR
+                    ) THEN
+                        SIGNAL SQLSTATE '45000'
+                        SET MESSAGE_TEXT = 'L\'adresse de la commande n\'appartient pas à l\'utilisateur';
+                    END IF;
+                END IF;
+            END;
+        ");
+
+
     }
 
 
@@ -191,9 +267,12 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_STOCK");
+        DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_STOCK_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS STOCK_INSUFFISANT");
+        DB::statement("DROP TRIGGER IF EXISTS STOCK_INSUFFISANT_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS ANNULLATION_COMMANDE_STOCK");
         DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_ETAT");
+        DB::statement("DROP TRIGGER IF EXISTS MISE_A_JOUR_ETAT_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS COMMENTAIRE_PRODUIT_RETIRE");
         DB::statement("DROP TRIGGER IF EXISTS VERIF_COMMENTAIRE");
         DB::statement("DROP TRIGGER IF EXISTS NO_DELETE_USER_COMMANDES");
@@ -202,5 +281,6 @@ return new class extends Migration
         DB::statement("DROP TRIGGER IF EXISTS VALID_NUMBER_UPDATE");
         DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL_INSERT");
         DB::statement("DROP TRIGGER IF EXISTS VALID_EMAIL_UPDATE");
+        DB::statement("DROP TRIGGER IF EXISTS VALID_ADRESSE_OF_USERS");
     }
 };

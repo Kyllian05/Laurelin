@@ -72,6 +72,7 @@ class ProduitEntity
             "PRIX" => $this->prix,
             "ANNEE_CREATION" => $this->anneeCreation,
             "STOCK" => $this->stock,
+            "ETAT" => $this->etat == ProductState::Disponible ? "Disponible" : "Indisponible",
             "IMAGES" => $this->getImages()
         ];
     }
