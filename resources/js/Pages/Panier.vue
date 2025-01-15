@@ -115,7 +115,8 @@ const formatPrix = (prix) => {
 };
 
 updatePanierSomme()
-watch(panierData.value,async () => {
+
+watch(panierData,async () => {
     updatePanierSomme()
 })
 </script>

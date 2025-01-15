@@ -54,6 +54,10 @@ class CheckOutController extends Controller
 
         // --- Panier
 
+        $panier = $this->cartService->getCart($user);
+        if (empty($panier->getProducts())) {
+            return redirect("/panier");
+        }
         $panierSerialized = $this->cartService->getCart($user)->serialize();
 
         // --- Render ---
