@@ -110,7 +110,9 @@ class UtilisateurService
             throw CustomExceptions::createError(519,$exception->getMessage());
         }
         // Envoi du code de vérification de l'email
-        $this->sendNewCode($user);
+        if(config("app.email_verification")){
+            $this->sendNewCode($user);
+        }
         session(["TOKEN"=>$user->getToken()]);
         return $user;
     }

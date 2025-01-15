@@ -61,6 +61,8 @@ class AccountController extends Controller
         }catch (\App\Domain\Shared\CustomExceptions $e){
             if($e->httpCode == 401){
                 return redirect("/auth")->cookie("redirect","/account",10,null,null,false,false)->withCookie(Cookie::forget("TOKEN"));
+            }else if($e->httpCode == 403){
+                return redirect("/");
             }
             throw $e;
         }
