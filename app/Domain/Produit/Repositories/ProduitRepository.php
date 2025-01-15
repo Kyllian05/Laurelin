@@ -16,7 +16,7 @@ class ProduitRepository
             // Gestion de l'état du produit
             if ($produitModel->ETAT == "Disponible") {
                 $productState = ProductState::Disponible;
-            } elseif ($produitModel->ETAT == "Produit indisponible") {
+            } elseif ($produitModel->ETAT == "Indisponible") {
                 $productState = ProductState::Indisponible;
             } else {
                 throw new \InvalidArgumentException("L'état du produit est invalide");
@@ -44,7 +44,7 @@ class ProduitRepository
         foreach ($produitsModel as $produit) {
             if ($produit->ETAT == "Disponible") {
                 $productState = ProductState::Disponible;
-            } elseif ($produit->ETAT == "Produit indisponible") {
+            } elseif ($produit->ETAT == "Indisponible") {
                 $productState = ProductState::Indisponible;
             } else {
                 throw new \InvalidArgumentException("L'état du produit est invalide");
