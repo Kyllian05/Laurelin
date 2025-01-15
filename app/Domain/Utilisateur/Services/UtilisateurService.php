@@ -139,7 +139,7 @@ class UtilisateurService
         try {
             $user = $this->userRepository->updatePassword($id, $token, $newPassword);
         } catch (\InvalidArgumentException $exception) {
-            throw CustomExceptions::createErrorWithMessage(519, $exception->getMessage());
+            throw CustomExceptions::createError(519, $exception->getMessage());
         }
         if (!$user) {
             throw CustomExceptions::createError(515);

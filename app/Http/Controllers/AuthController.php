@@ -41,7 +41,7 @@ class AuthController extends Controller
                 $currentFields = self::$fields["register"];
 
                 if (!$data[$currentFields["checkBoxs"][0]]) {
-                    throw DomainExceptions::createErrorWithMessage(521, "Veuillez accepter les conditions d'utilisation");
+                    throw DomainExceptions::createError(521, "Veuillez accepter les conditions d'utilisation");
                 }
 
                 $this->userService->register($data[$currentFields["fields"][0]],$data[$currentFields["fields"][1]],$data[$currentFields["fields"][2]],$data[$currentFields["fields"][3]]);
