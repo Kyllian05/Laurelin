@@ -11,7 +11,7 @@
                         <Field name="Nom de rue" @input="value => updateNewAdresseValue('Nom de rue',value)"></Field>
                         <Field name="Code Postale" @input="value => searchVille(value)"></Field>
                         <select id="selectCodePost" v-if="villesSuggest.length > 0" v-model="villeChoice">
-                            <option v-for="ville in villesSuggest" :value="{'Nom':ville.NOM,'Code Postal':ville.CODE_POSTAL}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
+                            <option v-for="ville in villesSuggest" :value="{'ID':ville.ID}">{{ ville.NOM }} {{ ville.CODE_POSTAL }}</option>
                         </select>
 
                         <ButtonSubmit buttonText="Valider" @click="newAdresseClicked"></ButtonSubmit>

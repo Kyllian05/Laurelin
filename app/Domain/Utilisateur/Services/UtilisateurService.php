@@ -107,7 +107,7 @@ class UtilisateurService
         try {
             $user = $this->userRepository->create($email, $password, $firstName, $lastName, $token, time());
         } catch (\Exception $exception) {
-            throw CustomExceptions::createErrorWithMessage(519, $exception->getMessage());
+            throw CustomExceptions::createError(519,$exception->getMessage());
         }
         // Envoi du code de vérification de l'email
         $this->sendNewCode($user);

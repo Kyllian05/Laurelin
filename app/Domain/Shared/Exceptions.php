@@ -20,6 +20,7 @@ class Exceptions
         524 => "Informations de paiement invalide",
         525 => "Vous devez être connecté",
         526 => "Informations invalides",
+        527 => "Mot de passe non conforme",
         530 => "Code invalide",
         531 => "Pas implémenté",
     ];
@@ -40,15 +41,19 @@ class Exceptions
         524 => 400, // 400 Bad Request - "Informations de paiement invalide".
         525 => 401, // 401 Unauthorized - "Vous devez être connecté".
         526 => 400,
+        527 => 400,
         530 => 400, // 400 Bad Request - "Code invalide".
         531 => 501, // 501 Not Implemented - Indique que cette fonctionnalité n'est pas implémentée.
     ];
 
-    public static function createError(int $code):CustomExceptions{
+    public static function createError(int $code, ?string $customMessage):CustomExceptions{
         if(!in_array($code,array_keys(Exceptions::$messages))){
             throw new \Exception("Probleme lors de la création d'une exception");
         }
         $message = Exceptions::$messages[$code];
+        if($customMessage != null){
+            $message = $customMessage;
+        }
         $result = new CustomExceptions($message,$code);
         $result->httpCode = self::$statusCode[$code];
         return $result;
