@@ -44,6 +44,11 @@ class PanierController extends Controller
     public function ajouterAuPanier(Request $request){
         $data = $request->post();
 
+        if ($data["taille"] == "Séléctionner une taille") {
+            $error = Exceptions::createError(532);
+            return response($error->getMessage(), $error->httpCode);
+        }
+
         $user = $this->utilisateurService->getAuthenticatedUser($request);
         if($user == null){
             $e = Exceptions::createError(525);
@@ -58,6 +63,7 @@ class PanierController extends Controller
             $data["taille"],
         );
 
+        $panier = $this->cartService->getCart($user);
         return response($panier->serialize(), 200)->header('Content-Type', 'application/json');
     }
 
@@ -86,7 +92,6 @@ class PanierController extends Controller
 
     function getNumberInPanier(Request $request){
         //TODO : Optimisation: pas besoin d'obtenir le détail des produits
-        //TODO : Panier pour les utilisateurs non connectés
         $user = $this->utilisateurService->getAuthenticatedUser($request);
         if ($user) {
             $this->cartService = new CartService($user);

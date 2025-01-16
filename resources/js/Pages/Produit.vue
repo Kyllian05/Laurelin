@@ -108,9 +108,7 @@ if (props.Categorie === 4) {
     dynamicTaille.value = "0";
 } else {
     dynamicTaille.value = "Séléctionner une taille";
-};
-
-
+}
 
 function changeFavorite(id){
     let index = -1

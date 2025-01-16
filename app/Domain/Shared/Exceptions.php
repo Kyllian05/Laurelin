@@ -23,6 +23,7 @@ class Exceptions
         527 => "Mot de passe non conforme",
         530 => "Code invalide",
         531 => "Pas implémenté",
+        532 => "Veuillez sélectionner une taille"
     ];
 
     static $statusCode = [
@@ -44,6 +45,7 @@ class Exceptions
         527 => 400,
         530 => 400, // 400 Bad Request - "Code invalide".
         531 => 501, // 501 Not Implemented - Indique que cette fonctionnalité n'est pas implémentée.
+        532 => 400,
     ];
 
     public static function createError(int $code, ?string $customMessage=null):CustomExceptions{
