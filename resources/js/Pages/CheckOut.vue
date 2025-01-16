@@ -101,7 +101,9 @@
                         <span id="quantiteIcon" class="material-symbols-rounded" > close </span>
                         <p> {{ produitCmd.QUANTITE }} </p>
                     </div>
-                    <p> {{produitCmd.TAILLE}} cm</p>
+                    <div v-if="produitCmd.TAILLE !== 0">
+                        <p> {{produitCmd.TAILLE}} cm</p>
+                    </div>
                 </div>
             </div>
 

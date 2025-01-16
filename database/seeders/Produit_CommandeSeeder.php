@@ -17,7 +17,7 @@ class Produit_CommandeSeeder extends Seeder
     {
         DB::table('Produit_Commande')->insert([
             "QUANTITE" => 2,
-            "TAILLE" => 0,
+            "TAILLE" => 43,
             "ID_PRODUIT" => 1,
             "ID_COMMANDE" => 1,
             "PRIX" => $this->produitService->findById(1)->prix
@@ -25,7 +25,7 @@ class Produit_CommandeSeeder extends Seeder
 
         DB::table('Produit_Commande')->insert([
             "QUANTITE" => 1,
-            "TAILLE" => 0,
+            "TAILLE" => 38,
             "ID_PRODUIT" => 5,
             "ID_COMMANDE" => 2,
             "PRIX" => $this->produitService->findById(5)->prix
@@ -33,7 +33,7 @@ class Produit_CommandeSeeder extends Seeder
 
         DB::table('Produit_Commande')->insert([
             "QUANTITE" => 1,
-            "TAILLE" => 0,
+            "TAILLE" => 46,
             "ID_PRODUIT" => 7,
             "ID_COMMANDE" => 2,
             "PRIX" => $this->produitService->findById(7)->prix
@@ -41,20 +41,20 @@ class Produit_CommandeSeeder extends Seeder
 
         DB::table('Produit_Commande')->insert([
             "QUANTITE" => 3,
-            "TAILLE" => 0,
+            "TAILLE" => 45,
             "ID_PRODUIT" => 1,
             "ID_COMMANDE" => 3,
             "PRIX" => $this->produitService->findById(1)->prix
         ]);
         DB::table('Produit_Commande')->insert([
             "QUANTITE" => 1,
-            "TAILLE" => 0,
+            "TAILLE" => 18,
             "ID_PRODUIT" => 17,
             "ID_COMMANDE" => 4,
         ]);
         DB::table('Produit_Commande')->insert([
             "QUANTITE" => 2,
-            "TAILLE" => 0,
+            "TAILLE" => 20,
             "ID_PRODUIT" => 15,
             "ID_COMMANDE" => 4,
         ]);

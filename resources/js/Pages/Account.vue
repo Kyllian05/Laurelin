@@ -42,8 +42,14 @@
                     <p class="font-body-s" style="margin-bottom: 2vh">Commande du {{commande.DATE}}</p>
                     <p class="font-body-s" style="margin-bottom: 2vh">Produits :</p>
                     <ul>
-                        <li v-for="produit in commande.PRODUITS">
-                            <p class="font-body-s">{{ produit.PRODUIT.NOM }} {{ produit.QUANTITE > 1 ? 'x'+produit.QUANTITE : '' }}</p>
+
+                        <li id="prodCom" v-for="produit in commande.PRODUITS">
+                            <div v-if="produit.TAILLE !== 0">
+                                <p class="font-body-s">{{ produit.PRODUIT.NOM }} {{ produit.QUANTITE > 1 ? 'x'+produit.QUANTITE : '' }} - {{produit.TAILLE}} cm</p>
+                            </div>
+                            <div v-else>
+                                <p class="font-body-s">{{ produit.PRODUIT.NOM }} {{ produit.QUANTITE > 1 ? 'x'+produit.QUANTITE : '' }}</p>
+                            </div>
                         </li>
                     </ul>
                     <div class="commandSideWrapper">
@@ -521,6 +527,10 @@ let props = defineProps(
         letter-spacing: 1px;
         font-size: 15px;
         font-weight: lighter;
+    }
+
+    #prodCom {
+        max-width: 70%;
     }
 
     #commandsWrapper {
