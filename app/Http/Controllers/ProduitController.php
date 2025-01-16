@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Commentaire\Entities\CommentaireEntity;
 use App\Domain\Commentaire\Service\CommentaireService;
 use App\Domain\ProductGroup\Services\CategorieService;
 use App\Domain\Produit\Services\ProduitService;
 use App\Domain\Utilisateur\Services\UtilisateurService;
+use App\Models\Commentaire;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Domain\Shared\CustomExceptions;
@@ -39,6 +41,7 @@ class ProduitController extends Controller
             $commentaires = $this->commentaireService->findByProduct($produit);
             $commentairesSerialized = [];
             foreach ($commentaires as $commentaire) {
+                assert($commentaire instanceof CommentaireEntity);
                 if($user != null) {
                     $commentaire->setDeletable($user);
                 }
@@ -48,11 +51,18 @@ class ProduitController extends Controller
             // Récupérer les produits associés
             $cat = $this->categorieService->findByProduct($produit);
             $produitsAssocie = $this->categorieService->getProducts($cat);
-            $dataProduitsAssocie = [];
-            foreach ($produitsAssocie as $p) {
-                $prodSerialized = $this->produitService->serialize($p);
-                $prodSerialized["FAVORITE"] = $user && $this->userService->isFavorite($user, $p);
-                $dataProduitsAssocie[] = $prodSerialized;
+            $dataProduitsAssocie = $this->produitService->serializes($produitsAssocie);
+
+            if($user != null) {
+                $favoriteStates = $this->userService->isFavorites($user,$produitsAssocie);
+
+                for($i=0;$i<sizeof($dataProduitsAssocie);$i++){
+                    $dataProduitsAssocie[$i]['FAVORITE'] = $favoriteStates[$dataProduitsAssocie[$i]['ID']];
+                }
+            }else{
+                for($i=0;$i<sizeof($dataProduitsAssocie);$i++){
+                    $dataProduitsAssocie[$i]['FAVORITE'] = false;
+                }
             }
 
             return Inertia::render("Produit",[
