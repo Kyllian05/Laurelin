@@ -1,6 +1,8 @@
 <template>
 <div id="footer">
+
     <div id="firstWrapper">
+
         <div class="footer-section">
             <img src="/public/images/logo.png" alt="Logo Laurelin" class="logo" />
         </div>
@@ -19,7 +21,6 @@
             </ul>
         </div>
 
-
         <div class="footer-section">
             <p class="section-title font-title-24">Canaux Principaux</p>
             <div class="social-links">
@@ -37,9 +38,11 @@
     </div>
 
     <div id="secondWrapper">
-        <a href="http://spadassins.fr/">Notre association</a>
+        <a href="#">Notre association</a>
     </div>
+
 </div>
+
 </template>
 
 <script setup>
@@ -49,7 +52,8 @@ const content = {
             Bagues: "/categories/Bagues",
             Bracelets: "/categories/Bracelets",
             Colliers: "/categories/Colliers",
-            "Boucles d'oreilles": "/categories/Boucles%20d%27oreilles",        },
+            "Boucles d'oreilles": "/categories/Boucles%20d%27oreilles",
+        },
         "À propos de nous": {
             Créateur: "/histoire",
             Créations: "/histoire",
