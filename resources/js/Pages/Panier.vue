@@ -12,10 +12,13 @@
                         <div class="panierproduitinfo">
                             <h3>{{ produitCmd.PRODUIT.NOM }}</h3>
                             <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
-                            <p class="addOther" @click="addOtherProduct(produitCmd.PRODUIT.ID)">En ajouter un autre</p>
+                            <div v-if="produitCmd.TAILLE !== 0" >
+                                <p>{{produitCmd.TAILLE}} cm</p>
+                            </div>
+                            <p class="addOther" @click="addOtherProduct(produitCmd.PRODUIT.ID, produitCmd.TAILLE)">En ajouter un autre</p>
                             <h2>{{ formatPrix(produitCmd.PRODUIT.PRIX) }}€</h2>
                         </div>
-                        <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produitCmd.PRODUIT.ID)">close</span>
+                        <span id="closeButton" class="material-symbols-rounded" @click="supprimerDuPanier(produitCmd.PRODUIT.ID, produitCmd.TAILLE)">close</span>
                     </div>
                 </div>
                 <div v-else>
@@ -54,7 +57,7 @@ import Header from "./Components/Header.vue";
 import {ref, watch} from "vue";
 
 const props = defineProps({
-    "panier": Object
+    "panier": Object,
 })
 
 let panierData = ref(props.panier)
@@ -73,11 +76,12 @@ function updatePanierSomme(){
     somme.value = temp
 }
 
-function addOtherProduct(id){
+function addOtherProduct(id, tailleProd){
     fetch("/panier/ajout",{
         method : "POST",
         body : JSON.stringify({
-            produit : id
+            produit : id,
+            taille : tailleProd
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -92,10 +96,10 @@ function addOtherProduct(id){
     })
 }
 
-function supprimerDuPanier(id){
+function supprimerDuPanier(id, tailleProd){
     fetch("/panier/supprimer",{
         method:"POST",
-        body:JSON.stringify({"produit" : id}),
+        body:JSON.stringify({"produit" : id, "taille" : tailleProd}),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             "Content-Type":"application/json"

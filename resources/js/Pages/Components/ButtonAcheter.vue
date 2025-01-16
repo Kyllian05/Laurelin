@@ -29,9 +29,7 @@ function ajoutAuPanier(){
         if(response.status === 200) {
             let prods = await response.json()
             emits("ajout")
-            console.log(prods)
             for (let i=0; i<prods.PRODUITS.length; i++) {
-                console.log(prods.PRODUITS[i])
                 if (prods.PRODUITS[i].PRODUIT.ID == props.id && prods.PRODUITS[i].PRODUIT.STOCK == 0) {
                     window.location.reload()
                 }

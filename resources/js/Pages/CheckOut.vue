@@ -95,9 +95,13 @@
                     <p>{{ produitCmd.PRODUIT.NOM }}</p>
                     <b>{{ formatPrix(produitCmd.PRODUIT.PRIX * produitCmd.QUANTITE) }} €</b>
                 </div>
-                <div id="quantite" >
+                <div id="sousMenu" >
                     <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
-                    <p>x{{ produitCmd.QUANTITE }}</p>
+                    <div id="quantite">
+                        <span id="quantiteIcon" class="material-symbols-rounded" > close </span>
+                        <p> {{ produitCmd.QUANTITE }} </p>
+                    </div>
+                    <p> {{produitCmd.TAILLE}} cm</p>
                 </div>
             </div>
 
@@ -406,7 +410,7 @@ const formatPrix = (prix) => {
     border: none;
     cursor: pointer;
     margin-bottom: 50px;
-    width: 230px;
+    width: 50%;
 }
 .adresseUser {
     display: grid;
@@ -475,8 +479,15 @@ const formatPrix = (prix) => {
     margin-bottom: 30px;
 }
 
-#quantite {
+#sousMenu {
+    display: flex;
+    flex-direction: column;
     padding-left: 10px;
+    gap: 5px;
+}
+
+#quantite {
+    display: inline-flex;
 }
 
 #Recap b {
