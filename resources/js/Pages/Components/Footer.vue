@@ -1,12 +1,10 @@
 <template>
 <div id="footer">
     <div id="firstWrapper">
-        <!-- Logo Section -->
         <div class="footer-section">
             <img src="/public/images/logo.png" alt="Logo Laurelin" class="logo" />
         </div>
 
-        <!-- Content Sections -->
         <div class="footer-section" v-for="(sections, sectionTitle) in content" :key="sectionTitle">
             <p class="section-title font-title-24">{{ sectionTitle }}</p>
             <ul class="first-rank">
@@ -21,7 +19,7 @@
             </ul>
         </div>
 
-        <!-- Social Media Links -->
+
         <div class="footer-section">
             <p class="section-title font-title-24">Canaux Principaux</p>
             <div class="social-links">
@@ -31,7 +29,7 @@
                 <a href="https://x.com/LaurelinJewels">
                     <img src="/public/images/x.svg" alt="X" class="icon" />
                 </a>
-                <a href="#">
+                <a href="https://fr.pinterest.com/search/pins/?q=Luxury%20Jewels&rs=typed">
                     <img src="/public/images/pinterest.svg" alt="Pinterest" class="icon" />
                 </a>
             </div>
@@ -39,7 +37,7 @@
     </div>
 
     <div id="secondWrapper">
-        <a href="#">Notre association</a>
+        <a href="http://spadassins.fr/">Notre association</a>
     </div>
 </div>
 </template>
@@ -51,8 +49,7 @@ const content = {
             Bagues: "/categories/Bagues",
             Bracelets: "/categories/Bracelets",
             Colliers: "/categories/Colliers",
-            "Boucles d'oreilles": "/categories/Boucles%20d%27oreilles",
-        },
+            "Boucles d'oreilles": "/categories/Boucles%20d%27oreilles",        },
         "À propos de nous": {
             Créateur: "/histoire",
             Créations: "/histoire",
@@ -65,21 +62,20 @@ const content = {
     },
     "Légal": {
         "Mentions Légales": {
-            "Conditions d’utilisation": "/conditions",
-            "Conditions de vente": "/conditions",
-            "Politique de confidentialité": "/conditions",
-            "Politique de cookies": "/conditions",
+            "Conditions d’utilisation": "/contact",
+            "Conditions de vente": "/contact",
+            "Politique de confidentialité": "/contact",
+            "Politique de cookies": "/contact",
         },
         Support: {
-            Accessibilité: "/conditions",
-            "Effectuer un signalement": "/conditions",
+            Accessibilité: "/contact",
+            "Effectuer un signalement": "/contact",
         },
     },
 };
 </script>
 
 <style scoped>
-    /* Global */
     a {
         text-decoration: none;
         color: #000000;
