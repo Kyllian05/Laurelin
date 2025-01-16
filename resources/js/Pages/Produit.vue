@@ -550,6 +550,7 @@ img {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-top: 70px;
 }
 
 #avis .commentaire {
