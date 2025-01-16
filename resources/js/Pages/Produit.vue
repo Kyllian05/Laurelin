@@ -10,7 +10,7 @@
             <div v-if="Categorie !== 4" >
                 <select id="taille">
                     <option value="">Séléctionner une taille</option>
-                    <option :value="taille" v-for="taille in taille[Categorie-1]" class="tailleValeur">{{taille}}</option>
+                    <option :value="taille" v-for="taille in taille[Categorie-1]" class="tailleValeur">{{taille}} cm</option>
                 </select>
             </div>
             <div id="prixDiv">
@@ -18,7 +18,7 @@
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
             <div id="dispo" class="font-body-m">Stock: {{produit.ETAT}}</div>
-            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()"></ButtonAcheter>
+            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()" :disabled="produit.ETAT === 'Indisponible'"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
         </div>
