@@ -26,6 +26,8 @@ function ajoutAuPanier(){
     }).then(async response => {
         if(response.status === 200){
             emits("ajout")
+        } else {
+            window.location.href = "/auth/login"
         }
     })
 }

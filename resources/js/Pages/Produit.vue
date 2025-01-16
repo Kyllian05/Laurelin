@@ -2,6 +2,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite" />
     <Header current-page="Nos bijoux" :updatePanier="updatePanier" @panierUpdated="()=>{updatePanier = false}"></Header>
     <div id="page">
+        <Error :message="errorMesage" v-if="errorMesage != ''" @click="errorMesage = ''"></Error>
         <div id="produitEnVente">
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
             <div id="materiaux" class="font-body-l">{{produit.MATERIAUX}} </div>
@@ -76,6 +77,7 @@ import {onMounted, ref, watch} from "vue";
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
 import '@splidejs/vue-splide/css';
 import {router} from "@inertiajs/vue3";
+import Error from "./Components/Error.vue";
 
 const props = defineProps({
     "produit" : Object,
@@ -94,6 +96,8 @@ const hasUserComment = ref(false)
 const commentaireInput = ref("")
 
 const updatePanier = ref(false)
+
+const errorMesage = ref("")
 
 const taille = ref([[38,39,40,41,42,43,44,45,46,47,48,49,50], [15,16,17,18,19,20], [45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,67,68,69,70]])
 
@@ -124,6 +128,9 @@ function changeFavorite(id){
     }).then(async response=>{
         if(response.status === 200){
             prodAssocier.value[index].FAVORITE = !prodAssocier.value[index].FAVORITE
+        } else {
+            const reader = response.body.getReader()
+            errorMesage.value = new TextDecoder().decode((await reader.read()).value)
         }
     })
 }
@@ -157,6 +164,9 @@ function deleteCommentaire(){
         if(response.status === 200){
             dynamicCommentaire.value = dynamicCommentaire.value.filter(commentaire => commentaire.DELETABLE === false)
             updateUserComment()
+        } else {
+            const reader = response.body.getReader()
+            errorMesage.value = new TextDecoder().decode((await reader.read()).value)
         }
     })
 }
@@ -176,6 +186,9 @@ function sendCommentaire(){
         if(response.status === 200){
             dynamicCommentaire.value.push(await response.json())
             updateUserComment()
+        } else {
+            const reader = response.body.getReader()
+            errorMesage.value = new TextDecoder().decode((await reader.read()).value)
         }
     })
 }
@@ -208,6 +221,9 @@ function favorisAction(){
     }).then(async response => {
         if(response.status === 200){
             dynamicFavorite.value = !dynamicFavorite.value
+        } else {
+            const reader = response.body.getReader()
+            errorMesage.value = new TextDecoder().decode((await reader.read()).value)
         }
     })
 }
