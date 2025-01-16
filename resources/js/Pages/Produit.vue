@@ -18,7 +18,7 @@
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
             <div id="dispo" class="font-body-m">Stock: {{produit.ETAT}}</div>
-            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()" :taille="dynamicTaille" :disabled="produit.ETAT === 'Indisponible'"></ButtonAcheter>
+            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()" :taille="dynamicTaille" :disabled="produit.ETAT === 'Indisponible' || dynamicTaille === 'Séléctionner une taille'"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
         </div>

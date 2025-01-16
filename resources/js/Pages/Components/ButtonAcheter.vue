@@ -29,6 +29,7 @@ function ajoutAuPanier(){
         if(response.status === 200){
             emits("ajout")
         } else {
+            document.cookie += ";redirect=/produit/"+props.id
             window.location.href = "/auth/login"
         }
     })
