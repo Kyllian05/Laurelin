@@ -6,7 +6,9 @@
             <div class="panier">
                 <div v-for="produitCmd in panierData.PRODUITS" v-if="panierData.PRODUITS.length > 0">
                     <div class="panierproduit"  v-for="i in produitCmd.QUANTITE">
-                        <img alt="Produit" :src="produitCmd.PRODUIT.IMAGES[0]"/>
+                        <a :href="'/produit/'+produitCmd.PRODUIT.ID" target="_self">
+                            <img alt="Produit" :src="produitCmd.PRODUIT.IMAGES[0]"/>
+                        </a>
                         <div class="panierproduitinfo">
                             <h3>{{ produitCmd.PRODUIT.NOM }}</h3>
                             <p>{{ produitCmd.PRODUIT.MATERIAUX }}</p>
@@ -115,7 +117,8 @@ const formatPrix = (prix) => {
 };
 
 updatePanierSomme()
-watch(panierData.value,async () => {
+
+watch(panierData,async () => {
     updatePanierSomme()
 })
 </script>

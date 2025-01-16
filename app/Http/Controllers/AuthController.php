@@ -62,7 +62,11 @@ class AuthController extends Controller
                 try {
                     $user = $this->userService->login($data[$currentFields["fields"][0]], $data[$currentFields["fields"][1]]);
                 } catch (\Exception $e) {
-                    throw Exceptions::createError(515);
+                    if ($e->getCode() == 517) {
+                        throw $e;
+                    } else {
+                        throw Exceptions::createError(515);
+                    }
                 }
 
                 if($data[$currentFields["checkBoxs"][0]]){

@@ -33,9 +33,6 @@
                 <div id="formWrapper1">
                     <Form :fields="infoFields[0]" :check-boxs="[]" buttonText="Valider les modifications" :displayColumn="true" dest="/updateInfo" succeed-message="Les modifications ont bien étés effectuées" @error-occured="message => errorMesage = message"></Form>
                 </div>
-                <div id="formWrapper2">
-                    <Form :fields="infoFields[1]" :check-boxs="[]" buttonText="Valider les modifications"  dest="/updateInfo" style="margin-top: 5vh" @error-occured="message => errorMesage = message"></Form>
-                </div>
                 <div id="logoutWrapper">
                     <button id="buttonDeco" class="deco font-body-l" @click="logout"> Déconnexion </button>
                 </div>

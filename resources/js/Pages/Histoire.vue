@@ -1,7 +1,6 @@
 <template>
   <div class="notre-histoire">
     <Header current-page="Notre histoire" />
-
     <section class="hero">
       <div class="hero-overlay">
         <h1 class="font-title hero-title">À propos de Laurelin</h1>
@@ -38,35 +37,65 @@
       </div>
     </section>
 
-    <section class="le-createur" @click="redirectTo('#')">
-      <div class="section-content left">
-        <div class="background-blur"></div>
-        <div class="text-box text-left">
-          <h3 class="font-subtitle-16">Le Créateur</h3>
-          <p>Les innovations de Laurelin au cours du temps marquent l'histoire du bijou à jamais.</p>
-        </div>
-      </div>
-    </section>
 
-    <section class="nos-creations" @click="redirectTo('#')">
-      <div class="section-content right">
-        <div class="background-blur"></div>
-        <div class="text-box text-right">
-          <h3 class="font-subtitle-16">Nos Créations</h3>
-          <p>L'histoire de la feuille est inextricablement liée à l'esprit innovateur de Jeffrey Souchet, son créateur.</p>
-        </div>
-      </div>
-    </section>
 
-    <section class="localisation" @click="redirectTo('#')">
-      <div class="section-content left">
-        <div class="background-blur"></div>
-        <div class="text-box text-left black-text">
-          <h3 class="font-subtitle-16">Durabilité</h3>
-          <p>La vision à long terme est au cœur de la philosophie de Laurelin.</p>
-        </div>
+    <section class="le-createur" :class="{ expanded: isCreatorExpanded }" @click="toggleSection('creator')">
+  <div class="section-content left">
+    <div class="background-blur" :class="{ active: isCreatorExpanded || isHoveredCreator }" @mouseenter="hoverSection('creator', true)" @mouseleave="hoverSection('creator', false)"></div>
+    <div class="text-box text-left ">
+      <h3 class="font-subtitle-16">Le Créateur</h3>
+      <p v-if="!isCreatorExpanded">Voir plus...</p>
+      <p v-else>Découvrez comment Laurelin a redéfini le monde du luxe avec des créations intemporelles.</p>
+      <div v-if="isCreatorExpanded" class="extra-content">
+        <p>Les innovations de Laurelin au cours du temps marquent l'histoire du bijou à jamais.</p>
+        <ul>
+          <li>Laurelin a introduit des techniques artisanales révolutionnaires.</li>
+          <li>Ses inspirations proviennent d’une fusion unique entre nature et architecture.</li>
+          <li>Une vision qui marie innovation et tradition pour des pièces inoubliables.</li>
+        </ul>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+
+<section class="nos-creations" :class="{ expanded: isCreationsExpanded }" @click="toggleSection('creations')">
+  <div class="section-content left">
+    <div class="background-blur" :class="{ active: isCreationsExpanded || isHoveredCreations }" @mouseenter="hoverSection('creations', true)" @mouseleave="hoverSection('creations', false)"></div>
+    <div class="text-box text-left ">
+      <h3 class="font-subtitle-16">Nos Créations</h3>
+      <p v-if="!isCreationsExpanded">Voir plus...</p>
+      <p v-else>Explorez les chefs-d'œuvre qui incarnent l'essence de Laurelin.</p>
+      <div v-if="isCreationsExpanded" class="extra-content">
+        <p>L'histoire de la feuille est inextricablement liée à l'esprit innovateur de Jeffrey Souchet.</p>
+        <ul>
+          <li>Chaque création est soigneusement conçue pour capturer l'essence de l'élégance.</li>
+          <li>Des matériaux précieux, éthiquement sourcés, confèrent une qualité exceptionnelle.</li>
+          <li>Un design qui parle à l'âme et transcende les tendances éphémères.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="localisation" :class="{ expanded: isDurabilityExpanded }" @click="toggleSection('durability')">
+  <div class="section-content left">
+    <div class="background-blur" :class="{ active: isDurabilityExpanded || isHoveredDurability }" @mouseenter="hoverSection('durability', true)" @mouseleave="hoverSection('durability', false)"></div>
+    <div class="text-box text-left ">
+      <h3 class="font-subtitle-16">Durabilité</h3>
+      <p v-if="!isDurabilityExpanded">Voir plus...</p>
+      <p v-else>Notre engagement envers l'éthique et l'environnement guide chaque décision.</p>
+      <div v-if="isDurabilityExpanded" class="extra-content">
+        <p>La vision à long terme est au cœur de la philosophie de Laurelin.</p>
+        <ul>
+          <li>Une chaîne d'approvisionnement entièrement traçable et respectueuse des normes éthiques.</li>
+          <li>Utilisation de matériaux recyclés et recyclables dans nos emballages.</li>
+          <li>Initiatives pour réduire l'empreinte carbone et favoriser des pratiques durables.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 
     <Footer />
   </div>
@@ -75,9 +104,36 @@
 <script setup>
 import Footer from "./Components/Footer.vue";
 import Header from "./Components/Header.vue";
+import { ref } from "vue";
 
-const redirectTo = (url) => {
-  window.location.href = url;
+const isCreatorExpanded = ref(false);
+const isCreationsExpanded = ref(false);
+const isDurabilityExpanded = ref(false);
+
+const isHoveredCreator = ref(false);
+const isHoveredCreations = ref(false);
+const isHoveredDurability = ref(false);
+
+const toggleSection = (section) => {
+  if (section === "creator") {
+    isCreatorExpanded.value = !isCreatorExpanded.value;
+    isCreationsExpanded.value = false;
+    isDurabilityExpanded.value = false;
+  } else if (section === "creations") {
+    isCreatorExpanded.value = false;
+    isCreationsExpanded.value = !isCreationsExpanded.value;
+    isDurabilityExpanded.value = false;
+  } else if (section === "durability") {
+    isCreatorExpanded.value = false;
+    isCreationsExpanded.value = false;
+    isDurabilityExpanded.value = !isDurabilityExpanded.value;
+  }
+};
+
+const hoverSection = (section, isHovered) => {
+  if (section === "creator") isHoveredCreator.value = isHovered;
+  if (section === "creations") isHoveredCreations.value = isHovered;
+  if (section === "durability") isHoveredDurability.value = isHovered;
 };
 </script>
 
@@ -111,7 +167,7 @@ body {
 
 .hero-title {
   color: white;
-  font-size: 48px;
+  font-size: 50px;
   text-align: center;
 }
 
@@ -164,37 +220,46 @@ body {
   max-width: 500px;
 }
 
+
+
 .le-createur,
 .nos-creations,
 .localisation {
   position: relative;
-  height: 500px;
+  height: 300px;
   width: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
-  margin-bottom: 5px;
-    cursor: pointer;
+  padding: 24px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+  color: black;
+}
+
+.expanded {
+  height: 500px;
 }
 
 .background-blur {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-size: cover;
-background-position: center;
-z-index: 1;
-transition: 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+  transition: all 0.3s ease-in-out;
+  filter: blur(0);
 }
 
-.section-content:hover .background-blur {
+.background-blur.active {
   filter: blur(4px);
-  transform: scale(1.05);
 }
+
 .le-createur .background-blur {
   background-image: url('/public/images/createur.jpg');
 }
@@ -207,28 +272,12 @@ transition: 0.3s ease;
   background-image: url('/public/images/durabilite.jpg');
 }
 
-
 .text-box {
   position: relative;
   z-index: 2;
   max-width: 500px;
   padding: 16px;
-}
-
-.text-box h3 {
-  font-size: 35px;
-  color: white;
-  margin: 0;
-  transition: transform 0.3s ease-in-out;
-  margin-bottom: 32px;
-}
-
-.text-box p {
-  font-size: 15px;
-  color: white;
-  margin: 0;
-  word-wrap: break-word;
-  transition: transform 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .text-box.text-left {
@@ -236,20 +285,19 @@ transition: 0.3s ease;
   text-align: left;
 }
 
-.text-box.text-right {
-  margin-left: 600px;
-  text-align: right;
-}
 
-.section-content:hover .text-box h3,
-.section-content:hover .text-box p {
-  transform: scale(1.05);
-}
-
-.text-box.black-text h3,
-.text-box.black-text p {
+.extra-content {
+  margin-top: 15px;
   color: black;
 }
+
+.text-box h3 {
+    font-size: 25px;
+  }
+
+  .text-box p {
+    font-size: 15px;
+  }
 
 @media (max-width: 768px) {
   .hero {
@@ -261,42 +309,19 @@ transition: 0.3s ease;
     padding: 0 16px;
   }
 
-  .reputation-content {
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-  }
-
-  .reputation-title h2 {
-    font-size: 28px;
-  }
-
-  .reputation-details .small-title,
-  .reputation-details p {
-    font-size: 16px;
-    text-align: center;
-    max-width: 100%;
-  }
-
-  .text-box.text-left,
-  .text-box.text-right {
-    margin: 0;
-    text-align: center;
-  }
-
-  .text-box h3 {
-    font-size: 24px;
-  }
-
-  .text-box p {
-    font-size: 16px;
-  }
-
   .le-createur,
   .nos-creations,
   .localisation {
     height: auto;
     padding: 16px;
+  }
+
+  .text-box h3 {
+    font-size: 30px;
+  }
+
+  .text-box p {
+    font-size: 20px;
   }
 }
 </style>

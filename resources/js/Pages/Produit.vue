@@ -6,10 +6,12 @@
             <div id="nom" class="font-subtitle-16"> {{produit.NOM}} </div>
             <div id="materiaux" class="font-body-l">{{produit.MATERIAUX}} </div>
             <div id="annee" class="font-body-s"> Année création: {{produit.ANNEE_CREATION}} </div>
-            <select id="taille">
-                <option name="selcetionner" class="font-body-m">Sélectionner une taille</option>
-                <!-- TODO : mettre les tailles -->
-            </select>
+            <div v-if="Categorie !== 4" >
+                <select id="taille">
+                    <option value="">Séléctionner une taille</option>
+                    <option :value="taille" v-for="taille in taille[Categorie-1]" class="tailleValeur">{{taille}} cm</option>
+                </select>
+            </div>
             <div id="prixDiv">
                 <div id="prix" class="font-body-m"> {{formatPrix(produit.PRIX)}}€</div>
                 <div id="tva" class="font-body-m">incl. TVA</div>
@@ -79,7 +81,8 @@ const props = defineProps({
     "produit" : Object,
     "isFavorite" : Boolean,
     "autreProduits" : Array,
-    "donneesCommentaires" : Array
+    "donneesCommentaires" : Array,
+    "Categorie": Number
 })
 
 const dynamicFavorite = ref(props.isFavorite)
@@ -91,6 +94,9 @@ const hasUserComment = ref(false)
 const commentaireInput = ref("")
 
 const updatePanier = ref(false)
+
+const taille = ref([[38,39,40,41,42,43,44,45,46,47,48,49,50], [15,16,17,18,19,20], [45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,67,68,69,70]])
+
 
 function changeFavorite(id){
     let index = -1

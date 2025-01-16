@@ -37,11 +37,7 @@ class MagasinController extends Controller
         try{
             $user = $this->utilisateurService->getAuthenticatedUser($request);
         }catch(\Exception $e){
-            if($e->getCode() == 518){
-                $user = null;
-            }else{
-                throw $e;
-            }
+            $user = null;
         }
 
         $allSerializedProducts = [];

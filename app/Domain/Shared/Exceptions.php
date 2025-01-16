@@ -10,7 +10,7 @@ class Exceptions
         513 => "API invalide",
         515 => "Identifiant ou mot de passe invalide",
         516 => "Erreur lors de la création du code de vérification",
-        517 => "Email non vérifiée",
+        517 => "Adresse email non vérifiée",
         518 => "Token invalide",
         519 => "Impossible de supprimer un produit d'une commande",
         520 => "Méthode de livraison invalide",

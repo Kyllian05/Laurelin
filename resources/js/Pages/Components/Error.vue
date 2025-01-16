@@ -6,7 +6,6 @@
 </template>
 
 <script setup>
-
 const props = defineProps(["message"])
 </script>
 
@@ -15,10 +14,16 @@ const props = defineProps(["message"])
         position: fixed;
         right: 1vw;
         bottom: 1vw;
-        background-color: rgba(255,100,100);
+        background-color: #ffffff;
+        color: darkred;
+        box-shadow: 0 0 12px rgba(139, 0, 0, 0.3);
         cursor: pointer;
-        border-radius: 20px;
-        padding: 1vw;
+        border-radius: 8px;
+        padding: 16px 32px;
         z-index: 1001;
+        border: solid 1px darkred;
+        display: flex;
+        gap: 16px;
+        align-items: center;
     }
 </style>
