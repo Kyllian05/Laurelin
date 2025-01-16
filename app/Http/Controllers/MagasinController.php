@@ -43,7 +43,7 @@ class MagasinController extends Controller
         $allSerializedProducts = $this->produitService->serializes($allProducts);
 
         if($user != null){
-            $favoriteStates = $this->utilisateurService->isFavorites($user,$allSerializedProducts);
+            $favoriteStates = $this->utilisateurService->isFavorites($user,$allProducts);
 
             for($i=0;$i<sizeof($allSerializedProducts);$i++){
                 $allSerializedProducts[$i]['FAVORITE'] = $favoriteStates[$allSerializedProducts[$i]['ID']];

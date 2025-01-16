@@ -297,7 +297,13 @@ abstract class UtilisateurEntity
         if (is_null($this->favoris)) {
             throw new \Exception("Set must be called before from UtilisateurService");
         }
-        return in_array($produit, $this->favoris);
+        foreach ($this->favoris as $favori) {
+            assert($favori instanceof ProduitEntity);
+            if($produit->id == $favori->id){
+                return true;
+            }
+        }
+        return false;
     }
 
     // Static

@@ -191,7 +191,7 @@ class UtilisateurService
         return $utilisateurEntity->isFavorite($produitEntity);
     }
 
-    public function isFavorites(UtilisateurEntity $utilisateurEntity, array $produitsEntity): bool
+    public function isFavorites(UtilisateurEntity $utilisateurEntity, array $produitsEntity): array
     {
         $this->getFavoris($utilisateurEntity);
 
