@@ -9,6 +9,7 @@
 let props = defineProps({
     "whiteBorder" : Boolean,
     "id" : Number,
+    "taille" : Number
 })
 
 let emits = defineEmits(["ajout"])
@@ -17,7 +18,8 @@ function ajoutAuPanier(){
     fetch("/panier/ajout",{
         method : "POST",
         body : JSON.stringify({
-            produit : props.id
+            produit : props.id,
+            taille : props.taille
         }),
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

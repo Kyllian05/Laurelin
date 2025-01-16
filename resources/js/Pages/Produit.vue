@@ -8,8 +8,8 @@
             <div id="materiaux" class="font-body-l">{{produit.MATERIAUX}} </div>
             <div id="annee" class="font-body-s"> Année création: {{produit.ANNEE_CREATION}} </div>
             <div v-if="Categorie !== 4" >
-                <select id="taille">
-                    <option value="">Séléctionner une taille</option>
+                <select id="taille" v-model="dynamicTaille">
+                    <option value="Séléctionner une taille" selected>Séléctionner une taille</option>
                     <option :value="taille" v-for="taille in taille[Categorie-1]" class="tailleValeur">{{taille}} cm</option>
                 </select>
             </div>
@@ -18,7 +18,7 @@
                 <div id="tva" class="font-body-m">incl. TVA</div>
             </div>
             <div id="dispo" class="font-body-m">Stock: {{produit.ETAT}}</div>
-            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()" :disabled="produit.ETAT === 'Indisponible'"></ButtonAcheter>
+            <ButtonAcheter :white-border="true" :id="produit.ID" @ajout="eventPanier()" :taille="dynamicTaille" :disabled="produit.ETAT === 'Indisponible'"></ButtonAcheter>
             <div id="description" class="font-body-m"> {{produit.DESCRIPTION}} </div>
             <span @click="favorisAction()" id="favoriteButton" :class="dynamicFavorite ? 'material-symbols-outlined' : 'material-symbols-rounded'">favorite</span>
         </div>
@@ -87,6 +87,8 @@ const props = defineProps({
     "Categorie": Number
 })
 
+const dynamicTaille = ref("Séléctionner une taille")
+
 const dynamicFavorite = ref(props.isFavorite)
 
 const dynamicCommentaire = ref(props.donneesCommentaires)
@@ -100,6 +102,14 @@ const updatePanier = ref(false)
 const errorMesage = ref("")
 
 const taille = ref([[38,39,40,41,42,43,44,45,46,47,48,49,50], [15,16,17,18,19,20], [45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,67,68,69,70]])
+
+
+if (props.Categorie === 4) {
+    dynamicTaille.value = "0";
+} else {
+    dynamicTaille.value = "Séléctionner une taille";
+};
+
 
 
 function changeFavorite(id){

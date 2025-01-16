@@ -55,6 +55,7 @@ class PanierController extends Controller
         $this->cartService->addProduct(
             $panier,
             $this->produitService->findById($data["produit"]),
+            $data["taille"],
         );
 
         return response($panier->serialize(), 200)->header('Content-Type', 'application/json');
@@ -75,6 +76,7 @@ class PanierController extends Controller
             $this->cartService->removeProduct(
                 $panier,
                 $this->produitService->findById($data["produit"]),
+                $data["taille"],
             );
             return response($panier->serialize(), 200)->header('Content-Type', 'application/json');
         } catch (\Exception $e) {
