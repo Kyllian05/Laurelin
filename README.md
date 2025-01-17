@@ -19,6 +19,8 @@ Nous utilisons aussi **[Inertia](https://inertiajs.com/)** qui permet de faire l
 
 Nous avons suivi l'architecture MVC :
 
+Malgré le fait que Laravel offre une approche plus assouplie de l'implémentation de l'architecture MVC, nous avons fait le choix de réorganiser le code pour qu'il corresponde plus à l'approche MVC en séparant totalement la logique métier de la base de données et des classes de l'ORM, et aussi en limitant la logique dans les contrôleurs avec l'utilisation de classes de services.
+
 + **Modèle** : les classes du modèle se trouvent dans le dossier `app/Domain`, elles sont réparties par fonctionnalitées (utilisateur, produit, etc). Dans chaque sous-dossier de `app/domain` on trouve trois dossiers `entities` qui contient les classes métier, `repositories` qui gère la persistance dans la base de données et `services` qui gère l'interaction avec les sessions et les cookies et met à disposition des fonctionnalités pour les contrôleurs. Les fichiers qui sont présents dans le dossier `app/Models` correspondent seulement aux classes de l'ORM Eloquent utilisé par Laravel.
 + **Vue** : du fait de l'utilisation d'un framework JS, les vues ne sont pas stockées dans `ressources/views` mais dans `ressources/js/Pages`. Dans ce dossier on retrouve les différentes pages du sites qui utilisent aussi certains composant présents dans le sous-dossier `Components`.
 + **Contrôleur** : ils sont présents dans le dossier `app/Http/Controllers`.
