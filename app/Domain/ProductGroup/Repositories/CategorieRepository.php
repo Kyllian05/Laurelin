@@ -52,10 +52,7 @@ class CategorieRepository
     public function getProducts(CategorieEntity $category): void
     {
         $productsModel = ProduitModel::where("ID_CATEGORIE", $category->getId())->pluck("ID")->toArray();
-        $allProducts = [];
-        foreach ($productsModel as $product) {
-            $allProducts[] = $this->produitRepository->findById($product);
-        }
+        $allProducts = $this->produitRepository->findAll($productsModel);
         $category->setProductList($allProducts);
     }
 

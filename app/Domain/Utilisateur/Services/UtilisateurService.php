@@ -191,6 +191,19 @@ class UtilisateurService
         return $utilisateurEntity->isFavorite($produitEntity);
     }
 
+    public function isFavorites(UtilisateurEntity $utilisateurEntity, array $produitsEntity): array
+    {
+        $this->getFavoris($utilisateurEntity);
+
+        $result = [];
+
+        foreach ($produitsEntity as $produitEntity) {
+            assert($produitEntity instanceof ProduitEntity);
+            $result[$produitEntity->id] = $utilisateurEntity->isFavorite($produitEntity);
+        }
+        return $result;
+    }
+
     public function addFavoris(UtilisateurEntity $utilisateurEntity, ProduitEntity $produitEntity): void
     {
         $this->favorisRepository->addFavoris($utilisateurEntity, $produitEntity);

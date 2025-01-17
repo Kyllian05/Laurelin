@@ -40,12 +40,20 @@ class MagasinController extends Controller
             $user = null;
         }
 
-        $allSerializedProducts = [];
-        foreach($allProducts as $product){
-            $productSerialized = $this->produitService->serialize($product);
-            $productSerialized["FAVORITE"] = $user && $this->utilisateurService->isFavorite($user, $product);
-            $allSerializedProducts[] = $productSerialized;
+        $allSerializedProducts = $this->produitService->serializes($allProducts);
+
+        if($user != null){
+            $favoriteStates = $this->utilisateurService->isFavorites($user,$allProducts);
+
+            for($i=0;$i<sizeof($allSerializedProducts);$i++){
+                $allSerializedProducts[$i]['FAVORITE'] = $favoriteStates[$allSerializedProducts[$i]['ID']];
+            }
+        }else{
+            for($i=0;$i<sizeof($allSerializedProducts);$i++){
+                $allSerializedProducts[$i]['FAVORITE'] = false;
+            }
         }
+
         return Inertia::render("ListeProduit", [
             'produits' => $allSerializedProducts,
             'categories' => $categorie->getId(),
@@ -58,10 +66,9 @@ class MagasinController extends Controller
             return response("", 404);
         }
         $allProducts = $this->collectionService->getProducts($collection);
-        $allSerializedProducts = [];
-        foreach($allProducts as $product){
-            $allSerializedProducts[] = $this->produitService->serialize($product);
-        }
+
+        $allSerializedProducts = $this->produitService->serializes($allProducts);
+
         return Inertia::render("ListeProduit", [
             'produits' => $allSerializedProducts,
             'collections' => $collection->getId(),

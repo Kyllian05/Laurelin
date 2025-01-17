@@ -38,6 +38,7 @@ class ProduitService
         $this->imageRepository->getAllProductsImages($produits);
         $result = [];
         foreach ($produits as $produit){
+            assert($produit instanceof ProduitEntity);
             $result[] = $produit->serialize();
         }
         return $result;
