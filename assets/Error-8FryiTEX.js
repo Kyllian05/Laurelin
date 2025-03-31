@@ -1,1 +1,0 @@
-import{_ as t}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{c as r,o as a,e as s,t as n}from"./app-KpCk85lR.js";const c={id:"content"},p={__name:"Error",props:["message"],setup(o){return(l,e)=>(a(),r("div",c,[e[0]||(e[0]=s("span",{class:"material-symbols-rounded"},"close",-1)),s("p",null,n(o.message),1)]))}},d=t(p,[["__scopeId","data-v-afd8fcbe"]]);export{d as default};
